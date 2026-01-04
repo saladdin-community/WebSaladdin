@@ -1,20 +1,19 @@
-// app/page.tsx
-import Header from "@/components/landing-page/header";
-import Hero from "@/components/landing-page/hero";
-import Features from "@/components/landing-page/urgency";
-import Testimonials from "@/components/landing-page/testimonials";
-import CTA from "@/components/landing-page/contact-us";
-import Footer from "@/components/landing-page/footer";
+import Header from "./components/layout/Header";
+import Footer from "./components/layout/Footer";
+import HeroSection from "./components/landing-page/HeroSection";
+import AboutSection from "./components/landing-page/AboutSection";
+import CoursesSection from "./components/landing-page/CoursesSection";
+import MentorsSection from "./components/landing-page/MentorsSections";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-white">
       <Header />
       <main>
-        <Hero />
-        <Features />
-        <Testimonials />
-        <CTA />
+        <HeroSection />
+        <AboutSection />
+        <CoursesSection />
+        <MentorsSection />
       </main>
       <Footer />
     </div>
