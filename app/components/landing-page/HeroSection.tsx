@@ -129,34 +129,3 @@ export default function HeroSection({
     </section>
   );
 }
-
-/*
-PANDUAN PENGGUNAAN DI CMS:
-
-1. Cara menggunakan di page.tsx:
-   <HeroSection 
-     backgroundImage="/images/custom-background.jpg"  // Ganti path ini
-     title="Custom Title Here"
-     description="Custom description here"
-   />
-
-2. Untuk CMS, buat form dengan field:
-   - backgroundImage (text input untuk URL gambar)
-   - title (text input)
-   - description (textarea)
-   - stats (array of objects: value, label, icon)
-
-3. Contoh data dari CMS:
-   {
-     "backgroundImage": "https://cdn.example.com/hero-image.jpg",
-     "title": "Custom Hero Title",
-     "description": "Custom hero description from CMS",
-     "stats": [
-       { "value": "100+", "label": "Expert Mentors", "icon": "Users" },
-       { "value": "200+", "label": "Courses", "icon": "BookOpen" }
-     ]
-   }
-
-4. Icon yang tersedia dari lucide-react:
-   - Users, BookOpen, Star, Award, GraduationCap, etc.
-*/
