@@ -1,6 +1,7 @@
 "use client";
 
 import { Play, ChevronRight, Users, BookOpen, Star, Award } from "lucide-react";
+import { useEffect, useState } from "react";
 
 // Interface untuk props background image
 interface HeroSectionProps {
@@ -25,6 +26,26 @@ export default function HeroSection({
     { icon: Star, value: "4.9", label: "Average Rating" },
   ],
 }: HeroSectionProps) {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const backgroundStyle = backgroundImage
     ? {
         backgroundImage: `
@@ -117,8 +138,14 @@ export default function HeroSection({
         </div>
       </div>
 
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+      {/* Scroll Indicator - Akan hilang saat scroll */}
+      <div
+        className={`absolute bottom-8 left-1/2 -translate-x-1/2 transition-all duration-500 ease-in-out ${
+          isScrolled
+            ? "opacity-0 translate-y-4 pointer-events-none"
+            : "opacity-100 animate-bounce"
+        }`}
+      >
         <div className="flex flex-col items-center">
           <span className="text-xs text-neutral-400 mb-2">
             Scroll to explore

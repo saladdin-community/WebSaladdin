@@ -1,16 +1,15 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useState } from "react";
 import {
   GraduationCap,
-  Briefcase,
-  Heart,
-  Award,
-  Users,
-  Book,
   Mail,
   Linkedin,
   Twitter,
+  Award,
+  Book,
+  Users,
 } from "lucide-react";
 
 const mentors = [
@@ -36,6 +35,53 @@ const mentors = [
 export default function MentorsSection() {
   const [selectedMentor, setSelectedMentor] = useState<number | null>(null);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 40, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.5, ease: "easeOut" },
+    },
+    hover: {
+      y: -8,
+      transition: { duration: 0.3, ease: "easeInOut" },
+    },
+    selected: {
+      scale: 1.05,
+      transition: { duration: 0.3 },
+    },
+  };
+
+  const featureVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
   return (
     <section
       id="mentors"
@@ -43,29 +89,44 @@ export default function MentorsSection() {
     >
       <div className="container-custom">
         {/* Header */}
-        <div className="mx-auto max-w-4xl text-center mb-16">
-          <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={containerVariants}
+          className="mx-auto max-w-4xl text-center mb-16"
+        >
+          <motion.h2
+            variants={itemVariants}
+            className="mb-4 text-3xl font-bold md:text-4xl"
+          >
             Meet Our <span className="text-gradient-gold">Teacher</span>
-          </h2>
-          <p className="text-lg text-neutral-300">
+          </motion.h2>
+          <motion.p
+            variants={itemVariants}
+            className="text-lg text-neutral-300"
+          >
             Learn directly from scholars and industry experts who have dedicated
             their lives to mastering their craft.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
         {/* Mentors Grid */}
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-16">
-          {mentors.map((mentor) => {
+          {mentors.map((mentor, index) => {
             const Icon = mentor.icon;
             return (
-              <div
+              <motion.div
                 key={mentor.id}
-                className={`card card-hover transition-all duration-300 ${
-                  selectedMentor === mentor.id
-                    ? "ring-2 ring-gold scale-105"
-                    : ""
-                }`}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+                variants={cardVariants}
+                whileHover="hover"
+                animate={selectedMentor === mentor.id ? "selected" : "visible"}
+                transition={{ delay: index * 0.1 }}
                 onClick={() => setSelectedMentor(mentor.id)}
+                className="card card-hover transition-all duration-300"
               >
                 {/* Mentor Header */}
                 <div className="relative">
@@ -170,13 +231,19 @@ export default function MentorsSection() {
                     </a>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
 
         {/* Platform Features */}
-        <div className="mb-16">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={containerVariants}
+          className="mb-16"
+        >
           <div className="card border-gold/20 p-8 md:p-12">
             <div className="grid gap-8 md:grid-cols-4">
               {[
@@ -201,7 +268,13 @@ export default function MentorsSection() {
                   desc: "Recognized certificates",
                 },
               ].map((feature, index) => (
-                <div key={index} className="text-center">
+                <motion.div
+                  key={index}
+                  variants={featureVariants}
+                  custom={index}
+                  transition={{ delay: index * 0.1 }}
+                  className="text-center"
+                >
                   <div className="mb-4 flex justify-center">
                     <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-gold/20 to-gold/10">
                       <feature.icon className="h-6 w-6 text-gold" />
@@ -209,11 +282,11 @@ export default function MentorsSection() {
                   </div>
                   <h4 className="mb-2 font-bold text-white">{feature.title}</h4>
                   <p className="text-sm text-neutral-400">{feature.desc}</p>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

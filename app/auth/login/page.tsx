@@ -1,9 +1,13 @@
-// app/(auth)/login/page.tsx
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
-import { FaGoogle, FaFacebook, FaLock, FaEnvelope } from "react-icons/fa";
+import {
+  FaGoogle,
+  FaFacebook,
+  FaLock,
+  FaEnvelope
+} from "react-icons/fa";
 import { MdArrowBack } from "react-icons/md";
 import LoginBackground from "@/public/images/login-background.jpg";
 
@@ -27,29 +31,17 @@ export default function LoginPage() {
           />
         </div>
 
-        <div className="relative z-10 w-full h-full flex items-center justify-center p-12">
-          <div className="max-w-xl text-center">
-            <div className="mb-12">
-              <h1 className="text-5xl md:text-6xl font-sans text-gradient-gold drop-shadow-lg">
-                Saladdin Ma'rifi
-              </h1>
-              <div className="h-1 w-32 mx-auto bg-gradient-to-r from-transparent via-gold to-transparent"></div>
+        <div className="relative z-10 w-full h-full flex items-end p-12">
+          {/* Container utama */}
+          <div className="flex items-start gap-4 md:gap-6">
+            <div className="relative">
+              <div className="w-1 h-12 bg-gradient-gold from-red-500 via-red-400 to-transparent ml-1"></div>
             </div>
 
-            {/* Quote with clean background */}
-            <div className="mt-12 p-8 rounded-2xl bg-black/60 backdrop-blur-sm border border-gold/30">
-              <p className="text-2xl md:text-3xl text-gold font-sans italic mb-6">
+            <div className="flex-1">
+              <p className="text-2xl md:text-3xl text-white font-serif leading-relaxed">
                 "Seek knowledge from the cradle to the grave."
               </p>
-              <div className="text-center">
-                <div className="inline-flex items-center gap-2">
-                  <div className="w-6 h-px bg-gold/50"></div>
-                  <span className="text-gold/70 text-sm">
-                    — Islamic Proverb
-                  </span>
-                  <div className="w-6 h-px bg-gold/50"></div>
-                </div>
-              </div>
             </div>
           </div>
         </div>

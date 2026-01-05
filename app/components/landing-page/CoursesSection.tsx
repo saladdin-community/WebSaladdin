@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useState } from "react";
 import { Users, Star, BookOpen, ChevronRight } from "lucide-react";
 
@@ -36,36 +37,83 @@ const courses = [
   },
 ];
 
-const categories = [
-  "All",
-  "History",
-  "Leadership",
-  "Ethics",
-  "Finance",
-  "Science",
-];
-
 export default function CoursesSection() {
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory] = useState("All");
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 40, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.5, ease: "easeOut" },
+    },
+    hover: {
+      y: -8,
+      transition: { duration: 0.3, ease: "easeInOut" },
+    },
+  };
 
   return (
     <section id="courses" className="section bg-card">
       <div className="container-custom">
         {/* Header */}
-        <div className="mb-12 text-center">
-          <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={containerVariants}
+          className="mb-12 text-center"
+        >
+          <motion.h2
+            variants={itemVariants}
+            className="mb-4 text-3xl font-bold md:text-4xl"
+          >
             Available <span className="text-gradient-gold">Courses</span>
-          </h2>
-          <p className="mx-auto max-w-2xl text-lg text-neutral-300">
+          </motion.h2>
+          <motion.p
+            variants={itemVariants}
+            className="mx-auto max-w-2xl text-lg text-neutral-300"
+          >
             Explore our curated curriculum designed to empower the next
             generation of leaders.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
         {/* Courses Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {courses.map((course) => (
-            <div key={course.id} className="card card-hover">
+          {courses.map((course, index) => (
+            <motion.div
+              key={course.id}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              variants={cardVariants}
+              whileHover="hover"
+              custom={index}
+              transition={{ delay: index * 0.1 }}
+              className="card card-hover"
+            >
               {/* Course Header */}
               <div className="relative mb-6">
                 <div className="h-40 rounded-xl bg-gradient-to-br from-primary-500/10 to-primary-400/5">
@@ -149,17 +197,23 @@ export default function CoursesSection() {
                   </button>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
         {/* View All Button */}
-        <div className="mt-12 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="mt-12 text-center"
+        >
           <button className="btn btn-outline px-8 py-3">
             View All Courses
             <ChevronRight className="ml-2 h-5 w-5" />
           </button>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
