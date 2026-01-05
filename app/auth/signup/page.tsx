@@ -41,9 +41,15 @@ export default function RegisterPage() {
           </div>
 
           {/* Quote */}
-          <blockquote className="text-2xl leading-relaxed text-neutral-100 font-serif">
-            “The ink of the scholar is more holy than the blood of the martyr.”
-          </blockquote>
+          <div className="flex items-start gap-4 md:gap-6">
+            <div className="relative">
+              <div className="w-1 h-12 bg-gradient-gold from-red-500 via-red-400 to-transparent ml-1"></div>
+            </div>
+            <blockquote className="text-2xl leading-relaxed text-neutral-100 font-serif">
+              “The ink of the scholar is more holy than the blood of the
+              martyr.”
+            </blockquote>
+          </div>
 
           {/* Community */}
           <div className="flex items-center gap-4 pt-4">
