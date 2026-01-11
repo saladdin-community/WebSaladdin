@@ -82,7 +82,8 @@ export default function CoursesPage() {
     },
     {
       id: "3",
-      title: "Islamic History: The Golden Age",
+      title:
+        "Islamic History: The Golden AgeIslamic History: The Golden AgeIslamic History: The Golden AgeIslamic History: The Golden Age",
       description:
         "Explore the golden age of Islamic civilization from 8th to 14th century",
       instructor: "Prof. Khalid Al-Andalusi",
@@ -163,7 +164,7 @@ export default function CoursesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#121212] to-black text-white">
       {/* Header */}
-      <header className="border-b border-[rgba(255,255,255,0.1)] bg-[#121212]/80 backdrop-blur-sm">
+      <header className=" bg-[#121212]/80 backdrop-blur-sm">
         <div className="container-custom py-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -255,15 +256,22 @@ export default function CoursesPage() {
 
                 {/* Course Content */}
                 <div className="p-6">
-                  <div className="flex justify-between items-start mb-3">
+                  <div className="flex justify-between items-start mb-3 min-h-28 max-h-28">
                     <div>
                       <span className="inline-block px-3 py-1 text-xs rounded-full bg-[#262626] text-[#d4d4d4] mb-2 font-medium">
                         {course.level}
                       </span>
-                      <h3 className="text-xl font-bold mb-2 text-white group-hover:text-[#d4af35] transition-colors duration-300">
+                      <h3 className="text-xl font-bold mb-2 text-white group-hover:text-[#d4af35] transition-colors duration-300 line-clamp-title">
                         {course.title}
                       </h3>
                     </div>
+                  </div>
+
+                  <p className="text-[#a3a3a3] mb-4 text-sm line-clamp-2 leading-relaxed">
+                    {course.description}
+                  </p>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-[rgba(255,255,255,0.1)]">
                     {course.isFree ? (
                       <span className="px-3 py-1 bg-[rgba(34,197,94,0.2)] text-[#22c55e] rounded-full text-sm font-semibold border border-[rgba(34,197,94,0.3)]">
                         FREE
@@ -275,40 +283,6 @@ export default function CoursesPage() {
                         </div>
                       </div>
                     )}
-                  </div>
-
-                  <p className="text-[#a3a3a3] mb-4 text-sm line-clamp-2 leading-relaxed">
-                    {course.description}
-                  </p>
-
-                  <div className="flex items-center justify-between text-sm text-[#737373] mb-4">
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="h-4 w-4" />
-                        {course.duration}
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <Users className="h-4 w-4" />
-                        {course.students.toLocaleString()}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Star className="h-4 w-4 text-[#fde047] fill-[#fde047]" />
-                      {course.rating}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-[rgba(255,255,255,0.1)]">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#d4af35] to-[#fde047]"></div>
-                      <span className="text-sm text-[#d4d4d4]">
-                        {course.instructor}
-                      </span>
-                    </div>
-                    <button className="flex items-center gap-2 text-[#d4af35] hover:text-[#fde047] transition-colors duration-300 font-semibold text-sm">
-                      {course.progress ? "Continue" : "Start Learning"}
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
                   </div>
                 </div>
               </div>

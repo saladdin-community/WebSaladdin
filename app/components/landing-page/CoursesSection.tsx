@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Users, Star, BookOpen, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 const courses = [
   {
@@ -202,18 +203,20 @@ export default function CoursesSection() {
         </div>
 
         {/* View All Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-12 text-center"
-        >
-          <button className="btn btn-outline px-8 py-3">
-            View All Courses
-            <ChevronRight className="ml-2 h-5 w-5" />
-          </button>
-        </motion.div>
+        <Link href="/courses" className="flex items-center gap-3">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="mt-12 text-center"
+          >
+            <button className="btn btn-outline px-8 py-3">
+              View All Courses
+              <ChevronRight className="ml-2 h-5 w-5" />
+            </button>
+          </motion.div>
+        </Link>
       </div>
     </section>
   );

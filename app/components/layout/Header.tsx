@@ -10,10 +10,10 @@ export default function Header() {
   const { theme, setTheme } = useTheme();
 
   const navItems = [
-    { label: "Home", href: "#home" },
-    { label: "About", href: "#about" },
-    { label: "Course", href: "#course" },
-    { label: "Mentor", href: "#mentor" },
+    { label: "Home", href: "/" },
+    { label: "About", href: "/" },
+    { label: "Course", href: "/" },
+    { label: "Mentor", href: "/" },
   ];
 
   return (
