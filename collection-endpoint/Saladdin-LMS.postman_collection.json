@@ -1,0 +1,1415 @@
+{
+	"info": {
+		"_postman_id": "d382b03b-cd76-48c4-82b2-2d96fd399487",
+		"name": "Saladdin-LMS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "51321329",
+		"_collection_link": "https://isa-5901396.postman.co/workspace/Saladdin-LMS~257953ec-f819-4430-be1a-e349104ef6aa/collection/45699243-d382b03b-cd76-48c4-82b2-2d96fd399487?action=share&source=collection_link&creator=51321329"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = pm.response.json();\r",
+									"\r",
+									"pm.collectionVariables.set(\"token\", res.access_token);\r",
+									"\r",
+									"pm.collectionVariables.set(\"token_type\", res.token_type || \"Bearer\");\r",
+									"\r",
+									"console.log(\"Token saved:\", pm.collectionVariables.get(\"token\"));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"admin@saladdin.com\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "**Endpoint Login Manual**\n\nDigunakan untuk menukarkan email dan password menjadi Token Akses.\n\n**Body Params (JSON):**\n\n- `email` (required): Email terdaftar.\n    \n- `password` (required): Password user.\n    \n\n**Response:**\n\n- `access_token`: Token Sanctum (Bearer Token).\n    \n- `user`: Data detail user."
+					},
+					"response": [
+						{
+							"name": "Success Login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"admin@saladdin.com\",\r\n    \"password\": \"password\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.1"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 07 Jan 2026 01:58:48 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Login successful\",\n    \"access_token\": \"19|w1KpBPWjAUqfeuuIKdpMeupGArQoNrUxSeyImQq247a4ec00\",\n    \"token_type\": \"Bearer\",\n    \"user\": {\n        \"id\": 1,\n        \"name\": \"Saladin Admin\",\n        \"email\": \"admin@saladdin.com\",\n        \"email_verified_at\": null,\n        \"google_id\": null,\n        \"avatar\": null,\n        \"role\": \"admin\",\n        \"bio\": \"Administrator Utama\",\n        \"created_at\": \"2026-01-05T07:10:48.000000Z\",\n        \"updated_at\": \"2026-01-05T07:10:48.000000Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "**Logout (Hapus Token)**\n\nMenghapus/menghanguskan token yang sedang digunakan, sehingga tidak bisa dipakai lagi.\n\n**Headers:**\n\n- `Authorization`: `Bearer`"
+					},
+					"response": [
+						{
+							"name": "Success Logout",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/auth/logout",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"logout"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.1"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 07 Jan 2026 02:02:07 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Logged out successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Register",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"New Student 2\",\r\n    \"email\": \"student2@test.com\",\r\n    \"password\": \"password123\",\r\n    \"password_confirmation\": \"password123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "**Endpoint Pendaftaran User Baru**\n\nEndpoint ini digunakan untuk mendaftarkan siswa baru secara manual (email & password).\n\n**Body Params (JSON):**\n\n- `name` (required, string): Nama lengkap.\n    \n- `email` (required, email, unique): Alamat email.\n    \n- `password` (required, min 8 chars): Password.\n    \n- `password_confirmation` (required): Harus sama dengan password.\n    \n\n**Response:**  \nMengembalikan `access_token` yang harus disimpan untuk sesi login."
+					},
+					"response": [
+						{
+							"name": "Success Register",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"New Student 2\",\r\n    \"email\": \"student2@test.com\",\r\n    \"password\": \"password123\",\r\n    \"password_confirmation\": \"password123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/auth/register",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.1"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 07 Jan 2026 02:01:21 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Registration successful\",\n    \"access_token\": \"20|f2tPY8okpG3vF8lW8lBGtB4neyxlRMRP25bKf5ch0b7acc75\",\n    \"token_type\": \"Bearer\",\n    \"user\": {\n        \"name\": \"New Student 2\",\n        \"email\": \"student2@test.com\",\n        \"role\": \"student\",\n        \"updated_at\": \"2026-01-07T02:01:21.000000Z\",\n        \"created_at\": \"2026-01-07T02:01:21.000000Z\",\n        \"id\": 6\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"me"
+							]
+						},
+						"description": "**Cek Data User Login (Me)**\n\nEndpoint untuk mengambil data profil user yang sedang login berdasarkan Token yang dikirim.\n\n**Headers:**\n\n- `Authorization`: `Bearer`\n    \n- `Accept`: `application/json`"
+					},
+					"response": [
+						{
+							"name": "Success Get Profile",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/auth/me",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"me"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Host",
+									"value": "127.0.0.1:8000"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/8.4.1"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 07 Jan 2026 02:00:03 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"name\": \"Saladin Admin\",\n    \"email\": \"admin@saladdin.com\",\n    \"email_verified_at\": null,\n    \"google_id\": null,\n    \"avatar\": null,\n    \"role\": \"admin\",\n    \"bio\": \"Administrator Utama\",\n    \"created_at\": \"2026-01-05T07:10:48.000000Z\",\n    \"updated_at\": \"2026-01-05T07:10:48.000000Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Initiate Google Login/Register",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/auth/google",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"google"
+							]
+						},
+						"description": "### ⚠️ PENTING: Jangan di-fetch!\n\nEndpoint ini **BUKAN** untuk dipanggil menggunakan `axios.get()` atau `fetch()`.  \nEndpoint ini berfungsi untuk **Redirect Browser** ke halaman persetujuan Google.\n\n### Cara Penggunaan di Frontend:\n\nGunakan tag anchor HTML biasa (`[](null)`[) atau <code>window.location.href</code>:](null)[<br>Login with Google<br>](http://127.0.0.1:8000/api/auth/google)\n\nBuatlah halaman di /auth/callback, lalu ambil token dari URL parameter dan simpan ke Cookies/LocalStorageEndFragment"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Student",
+			"item": [
+				{
+					"name": "Courses",
+					"item": [
+						{
+							"name": "Get Courses",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/auth/courses",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"courses"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Success Get Courses",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{base_url}}/api/auth/courses",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"courses"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": null,
+									"header": [
+										{
+											"key": "Host",
+											"value": "127.0.0.1:8000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.1"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 10 Jan 2026 06:40:59 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"title\": \"Sejarah Lengkap Masjidil Aqsa\",\n            \"slug\": \"sejarah-lengkap-masjidil-aqsa\",\n            \"thumbnail\": \"https://placehold.co/600x400/1e1e1e/d4af37?text=Aqsa+Course\",\n            \"instructor\": \"Dr. Yasir Qadhi\",\n            \"price\": 150000,\n            \"price_formatted\": \"Rp 150.000\"\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "Get Course Detail By Slug",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/auth/courses/sejarah-lengkap-masjidil-aqsa",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"courses",
+										"sejarah-lengkap-masjidil-aqsa"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Success Get Course Detail By Slug",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}/api/auth/courses/sejarah-lengkap-masjidil-aqsa",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"courses",
+												"sejarah-lengkap-masjidil-aqsa"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": null,
+									"header": [
+										{
+											"key": "Host",
+											"value": "127.0.0.1:8000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.1"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 10 Jan 2026 06:41:38 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 1,\n        \"title\": \"Sejarah Lengkap Masjidil Aqsa\",\n        \"slug\": \"sejarah-lengkap-masjidil-aqsa\",\n        \"thumbnail\": \"https://placehold.co/600x400/1e1e1e/d4af37?text=Aqsa+Course\",\n        \"price\": \"150000.00\",\n        \"description\": \"Mempelajari sejarah Baitul Maqdis dari masa Nabi Adam hingga sekarang.\",\n        \"instructor_name\": \"Dr. Yasir Qadhi\",\n        \"sections\": [\n            {\n                \"id\": 1,\n                \"course_id\": 1,\n                \"title\": \"Modul 1: Era Umayyah\",\n                \"sort_order\": 1,\n                \"lessons\": [\n                    {\n                        \"id\": 1,\n                        \"section_id\": 1,\n                        \"title\": \"Pembangunan Kubah Shakhrah\",\n                        \"slug\": \"pembangunan-kubah\",\n                        \"type\": \"video\"\n                    },\n                    {\n                        \"id\": 2,\n                        \"section_id\": 1,\n                        \"title\": \"Arsitektur Interior\",\n                        \"slug\": \"arsitektur-interior\",\n                        \"type\": \"text\"\n                    },\n                    {\n                        \"id\": 3,\n                        \"section_id\": 1,\n                        \"title\": \"Evaluasi Modul 1\",\n                        \"slug\": \"evaluasi-modul-1\",\n                        \"type\": \"quiz\"\n                    }\n                ]\n            },\n            {\n                \"id\": 2,\n                \"course_id\": 1,\n                \"title\": \"Testing\",\n                \"sort_order\": 2,\n                \"lessons\": []\n            }\n        ]\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "Get Lesson By ID",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "title",
+											"value": "Testing",
+											"type": "text"
+										},
+										{
+											"key": "type",
+											"value": "video",
+											"type": "text"
+										},
+										{
+											"key": "video_source",
+											"value": "youtube",
+											"type": "text"
+										},
+										{
+											"key": "video_url",
+											"value": "https://youtu.be/uHn0YK8sW44?si=fe66_9PaBi0x1Hyi",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/auth/lessons/:lessonId",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"lessons",
+										":lessonId"
+									],
+									"variable": [
+										{
+											"key": "lessonId",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Success File Document Type",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "title",
+													"value": "Testing",
+													"type": "text"
+												},
+												{
+													"key": "type",
+													"value": "video",
+													"type": "text"
+												},
+												{
+													"key": "video_source",
+													"value": "youtube",
+													"type": "text"
+												},
+												{
+													"key": "video_url",
+													"value": "https://youtu.be/uHn0YK8sW44?si=fe66_9PaBi0x1Hyi",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{base_url}}/api/auth/lessons/:lessonId",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"lessons",
+												":lessonId"
+											],
+											"variable": [
+												{
+													"key": "lessonId",
+													"value": "5"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": null,
+									"header": [
+										{
+											"key": "Host",
+											"value": "127.0.0.1:8000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.1"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 10 Jan 2026 14:47:49 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 5,\n        \"title\": \"Testing PDF Upload\",\n        \"slug\": \"testing-pdf-upload-QKS5O\",\n        \"type\": \"document\",\n        \"content\": {\n            \"source\": \"upload\",\n            \"url\": \"http://127.0.0.1:8000/storage/lessons/documents/J9sD0Eg4vH7lrASZoBOASOl0Yyh97EHllpFGbD0j.pdf\",\n            \"mime\": \"application/pdf\"\n        },\n        \"content_text\": \"Ini content text testing\",\n        \"content_quiz\": null\n    }\n}"
+								},
+								{
+									"name": "Success Link Video Type",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "title",
+													"value": "Testing",
+													"type": "text"
+												},
+												{
+													"key": "type",
+													"value": "video",
+													"type": "text"
+												},
+												{
+													"key": "video_source",
+													"value": "youtube",
+													"type": "text"
+												},
+												{
+													"key": "video_url",
+													"value": "https://youtu.be/uHn0YK8sW44?si=fe66_9PaBi0x1Hyi",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{base_url}}/api/auth/lessons/:lessonId",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"lessons",
+												":lessonId"
+											],
+											"variable": [
+												{
+													"key": "lessonId",
+													"value": "4"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": null,
+									"header": [
+										{
+											"key": "Host",
+											"value": "127.0.0.1:8000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.1"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 10 Jan 2026 14:48:53 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 4,\n        \"title\": \"Testing Video Youtube\",\n        \"slug\": \"testing-video-youtube-M3Azd\",\n        \"type\": \"video\",\n        \"content\": {\n            \"source\": \"external\",\n            \"url\": \"https://youtu.be/uHn0YK8sW44\",\n            \"mime\": null\n        },\n        \"content_text\": \"Ini content text testing link video youtube\",\n        \"content_quiz\": null\n    }\n}"
+								},
+								{
+									"name": "Success Quiz Type",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "title",
+													"value": "Testing",
+													"type": "text"
+												},
+												{
+													"key": "type",
+													"value": "video",
+													"type": "text"
+												},
+												{
+													"key": "video_source",
+													"value": "youtube",
+													"type": "text"
+												},
+												{
+													"key": "video_url",
+													"value": "https://youtu.be/uHn0YK8sW44?si=fe66_9PaBi0x1Hyi",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{base_url}}/api/auth/lessons/:lessonId",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"lessons",
+												":lessonId"
+											],
+											"variable": [
+												{
+													"key": "lessonId",
+													"value": "3"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": null,
+									"header": [
+										{
+											"key": "Host",
+											"value": "127.0.0.1:8000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.1"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 10 Jan 2026 15:50:34 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"id\": 3,\n        \"title\": \"Evaluasi Modul 1\",\n        \"slug\": \"evaluasi-modul-1\",\n        \"type\": \"quiz\",\n        \"content\": {\n            \"source\": null,\n            \"url\": null,\n            \"mime\": null\n        },\n        \"content_text\": \"<p>Kerjakan kuis ini dengan teliti. KKM 75.</p>\",\n        \"content_quiz\": {\n            \"duration\": \"15 Menit\",\n            \"passing_grade\": 75,\n            \"questions_count\": 1\n        }\n    }\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Courses",
+					"item": [
+						{
+							"name": "Create Section",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"title\": \"Testing\"}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/auth/admin/courses/1/sections",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"admin",
+										"courses",
+										"1",
+										"sections"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Success Create Section",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"title\": \"Testing\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{base_url}}/api/auth/admin/courses/1/sections",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"admin",
+												"courses",
+												"1",
+												"sections"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": null,
+									"header": [
+										{
+											"key": "Host",
+											"value": "127.0.0.1:8000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.1"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 10 Jan 2026 14:22:05 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"course_id\": \"1\",\n        \"title\": \"Testing\",\n        \"sort_order\": 2,\n        \"updated_at\": \"2026-01-10T14:22:05.000000Z\",\n        \"created_at\": \"2026-01-10T14:22:05.000000Z\",\n        \"id\": 2\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "Create Lesson Link Video Type",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "title",
+											"value": "Testing Video Youtube",
+											"type": "text"
+										},
+										{
+											"key": "type",
+											"value": "video",
+											"type": "text"
+										},
+										{
+											"key": "content_source",
+											"value": "external",
+											"type": "text"
+										},
+										{
+											"key": "content_url",
+											"value": "https://youtu.be/uHn0YK8sW44",
+											"type": "text"
+										},
+										{
+											"key": "content_text",
+											"value": "Ini content text testing link video youtube",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/auth/admin/sections/::sectionId/lessons",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"admin",
+										"sections",
+										"::sectionId",
+										"lessons"
+									],
+									"variable": [
+										{
+											"key": ":sectionId",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Success Link Video Type",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "title",
+													"value": "Testing Video Youtube",
+													"type": "text"
+												},
+												{
+													"key": "type",
+													"value": "video",
+													"type": "text"
+												},
+												{
+													"key": "content_source",
+													"value": "external",
+													"type": "text"
+												},
+												{
+													"key": "content_url",
+													"value": "https://youtu.be/uHn0YK8sW44",
+													"type": "text"
+												},
+												{
+													"key": "content_text",
+													"value": "Ini content text testing link video youtube",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{base_url}}/api/auth/admin/sections/::sectionId/lessons",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"admin",
+												"sections",
+												"::sectionId",
+												"lessons"
+											],
+											"variable": [
+												{
+													"key": ":sectionId",
+													"value": "2"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": null,
+									"header": [
+										{
+											"key": "Host",
+											"value": "127.0.0.1:8000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.1"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 10 Jan 2026 14:34:27 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"title\": \"Testing Video Youtube\",\n        \"type\": \"video\",\n        \"content_source\": \"external\",\n        \"content_url\": \"https://youtu.be/uHn0YK8sW44\",\n        \"content_text\": \"Ini content text testing link video youtube\",\n        \"section_id\": \"2\",\n        \"slug\": \"testing-video-youtube-M3Azd\",\n        \"sort_order\": 1,\n        \"content_path\": null,\n        \"content_mime\": null,\n        \"updated_at\": \"2026-01-10T14:34:27.000000Z\",\n        \"created_at\": \"2026-01-10T14:34:27.000000Z\",\n        \"id\": 4\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "Create Lesson File Document Type",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "title",
+											"value": "Testing PDF Upload",
+											"type": "text"
+										},
+										{
+											"key": "type",
+											"value": "document",
+											"type": "text"
+										},
+										{
+											"key": "content_source",
+											"value": "upload",
+											"type": "text"
+										},
+										{
+											"key": "content_file",
+											"type": "file",
+											"src": "postman-cloud:///1f0ee32c-56da-4c80-a512-dc0bb50880f1"
+										},
+										{
+											"key": "content_text",
+											"value": "Ini content text testing",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/auth/admin/sections/::sectionId/lessons",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"admin",
+										"sections",
+										"::sectionId",
+										"lessons"
+									],
+									"variable": [
+										{
+											"key": ":sectionId",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Success File Document Type",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "title",
+													"value": "Testing PDF Upload",
+													"type": "text"
+												},
+												{
+													"key": "type",
+													"value": "document",
+													"type": "text"
+												},
+												{
+													"key": "content_source",
+													"value": "upload",
+													"type": "text"
+												},
+												{
+													"key": "content_file",
+													"type": "file",
+													"src": "postman-cloud:///1f0ee32c-56da-4c80-a512-dc0bb50880f1"
+												},
+												{
+													"key": "content_text",
+													"value": "Ini content text testing",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{base_url}}/api/auth/admin/sections/::sectionId/lessons",
+											"host": [
+												"{{base_url}}"
+											],
+											"path": [
+												"api",
+												"auth",
+												"admin",
+												"sections",
+												"::sectionId",
+												"lessons"
+											],
+											"variable": [
+												{
+													"key": ":sectionId",
+													"value": "2"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": null,
+									"header": [
+										{
+											"key": "Host",
+											"value": "127.0.0.1:8000"
+										},
+										{
+											"key": "Connection",
+											"value": "close"
+										},
+										{
+											"key": "X-Powered-By",
+											"value": "PHP/8.4.1"
+										},
+										{
+											"key": "Cache-Control",
+											"value": "no-cache, private"
+										},
+										{
+											"key": "Date",
+											"value": "Sat, 10 Jan 2026 14:44:08 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"data\": {\n        \"title\": \"Testing PDF Upload\",\n        \"type\": \"document\",\n        \"content_source\": \"upload\",\n        \"content_text\": \"Ini content text testing\",\n        \"section_id\": \"2\",\n        \"slug\": \"testing-pdf-upload-QKS5O\",\n        \"sort_order\": 2,\n        \"content_path\": \"lessons/documents/J9sD0Eg4vH7lrASZoBOASOl0Yyh97EHllpFGbD0j.pdf\",\n        \"content_url\": null,\n        \"content_mime\": \"application/pdf\",\n        \"updated_at\": \"2026-01-10T14:44:08.000000Z\",\n        \"created_at\": \"2026-01-10T14:44:08.000000Z\",\n        \"id\": 5\n    }\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "token_type",
+			"value": ""
+		},
+		{
+			"key": "base_url",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
