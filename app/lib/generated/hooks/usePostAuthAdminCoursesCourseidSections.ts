@@ -3,8 +3,8 @@
 * Do not edit manually.
 */
 
-import fetch from "@kubb/plugin-client/clients/axios";
-import type { RequestConfig, ResponseErrorConfig } from "@kubb/plugin-client/clients/axios";
+import fetch from "../../api-client";
+import type { RequestConfig, ResponseErrorConfig } from "../../api-client";
 import type { UseMutationOptions, UseMutationResult, QueryClient } from "@tanstack/react-query";
 import type { PostAuthAdminCoursesCourseidSectionsMutationResponse, PostAuthAdminCoursesCourseidSectionsPathParams } from "../types/PostAuthAdminCoursesCourseidSections.ts";
 import { mutationOptions, useMutation } from "@tanstack/react-query";

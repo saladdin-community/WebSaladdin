@@ -1,0 +1,159 @@
+[12/01/2026, 23.08.17]
+ℹ Config loaded kubb.config.mjs
+
+[12/01/2026, 23.08.17]
+✓ Config loaded successfully kubb.config.mjs
+
+[12/01/2026, 23.08.17]
+ℹ Setup generation ./collection-endpoint/open-api/versi1.yaml
+
+[12/01/2026, 23.08.17]
+Configuration:
+  • Name: unnamed
+  • Root: C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin
+  • Output: ./app/lib/generated
+  • Plugins: 3
+Output Settings:
+  • Write: enabled
+  • Formater: prettier
+  • Linter: none
+Environment:
+  • nodeVersion: v22.15.1
+  • KubbVersion: 4.15.0
+  • platform: win32
+  • arch: x64
+  • cwd: C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin
+
+[12/01/2026, 23.08.17]
+✓ Input file validated: ./collection-endpoint/open-api/versi1.yaml
+
+[12/01/2026, 23.08.17]
+Cleaning output directories
+  • Output: ./app/lib/generated
+
+[12/01/2026, 23.08.17]
+✓ Fabric initialized
+  • File writing: enabled
+  • Barrel type: named
+
+[12/01/2026, 23.08.17]
+ℹ Build generation ./collection-endpoint/open-api/versi1.yaml
+
+[12/01/2026, 23.08.17]
+Generating plugin-oas
+
+[12/01/2026, 23.08.17]
+Installing plugin...
+  • Plugin Key: [plugin-oas, 1]
+
+[12/01/2026, 23.08.18]
+Building 0 schemas
+  • Content Type: application/json
+  • Generators: 1
+
+[12/01/2026, 23.08.18]
+Building 10 operations
+  • Generators: 1
+
+[12/01/2026, 23.08.18]
+plugin-oas completed in 1.14s
+
+[12/01/2026, 23.08.18]
+✓ Plugin installed successfully (1.14s)
+
+[12/01/2026, 23.08.18]
+Generating plugin-ts
+
+[12/01/2026, 23.08.18]
+Installing plugin...
+  • Plugin Key: [plugin-ts, 1]
+
+[12/01/2026, 23.08.18]
+Building 0 schemas
+  • Content Type: application/json
+  • Generators: 1
+
+[12/01/2026, 23.08.18]
+Building 10 operations
+  • Generators: 1
+
+[12/01/2026, 23.08.18]
+plugin-ts completed in 137ms
+
+[12/01/2026, 23.08.18]
+✓ Plugin installed successfully (137ms)
+
+[12/01/2026, 23.08.18]
+Generating plugin-react-query
+
+[12/01/2026, 23.08.18]
+Installing plugin...
+  • Plugin Key: [plugin-react-query, 1]
+
+[12/01/2026, 23.08.18]
+Building 10 operations
+  • Generators: 7
+
+[12/01/2026, 23.08.18]
+plugin-react-query completed in 166ms
+
+[12/01/2026, 23.08.18]
+✓ Plugin installed successfully (166ms)
+
+[12/01/2026, 23.08.18]
+Generating barrel file
+  • Type: named
+  • Path: C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\index.ts
+
+[12/01/2026, 23.08.18]
+Found 25 indexable files for barrel export
+
+[12/01/2026, 23.08.18]
+✓ Generated barrel file (109 exports)
+
+[12/01/2026, 23.08.18]
+ℹ Writing 29 files undefined
+
+[12/01/2026, 23.08.18]
+Start 29 writing:
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\index.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\index.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\index.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\.kubb\config.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetAuthMe.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetAuthMe.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostAuthLogin.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetAuthGoogle.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostAuthLogout.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetAuthCourses.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostAuthRegister.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetAuthGoogle.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostAuthLogin.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetAuthCourses.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostAuthLogout.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetAuthCoursesSlug.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostAuthRegister.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetAuthMeSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetAuthCoursesSlug.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetAuthLessonsLessonid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetAuthGoogleSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetAuthLessonsLessonid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetAuthCoursesSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetAuthCoursesSlugSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetAuthLessonsLessonidSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostAuthAdminCoursesCourseidSections.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostAuthAdminSectionsSectionidLessons.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostAuthAdminCoursesCourseidSections.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostAuthAdminSectionsSectionidLessons.ts
+
+[12/01/2026, 23.08.18]
+Writing 29 files...
+
+[12/01/2026, 23.08.18]
+✓ File write process completed for 29 files
+
+[12/01/2026, 23.08.18]
+ℹ Load summary undefined
+
+[12/01/2026, 23.08.18]
+✓ Generation successfully ./collection-endpoint/open-api/versi1.yaml

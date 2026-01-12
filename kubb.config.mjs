@@ -1,3 +1,4 @@
+// kubb.config.mjs
 import { defineConfig } from "@kubb/core";
 import { pluginOas } from "@kubb/plugin-oas";
 import { pluginTs } from "@kubb/plugin-ts";
@@ -8,7 +9,7 @@ export default defineConfig({
     path: "./collection-endpoint/open-api/versi1.yaml",
   },
   output: {
-    path: "./src/gen",
+    path: "./app/lib/generated", // atau "./app/lib/generated" jika tanpa src/
     clean: true,
   },
   plugins: [
@@ -17,6 +18,19 @@ export default defineConfig({
     pluginReactQuery({
       framework: "react",
       version: 5,
+      client: {
+        importPath: "../../api-client",
+      },
+      query: {
+        // Optional: tambah query options
+        enabled: true,
+        staleTime: 1000 * 60 * 5, // 5 menit
+      },
+      // Untuk grouping by tag
+      groupBy: {
+        type: "tag",
+        output: "./{tag}",
+      },
     }),
   ],
 });

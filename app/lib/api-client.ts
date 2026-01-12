@@ -2,7 +2,7 @@
 import axios from "axios";
 
 export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -12,17 +12,12 @@ export const apiClient = axios.create({
 // Request interceptor
 apiClient.interceptors.request.use(
   (config) => {
-    // Get token based on environment
-    let token: string | null = null;
-
+    // Fix: get token dari localStorage hanya di client-side
     if (typeof window !== "undefined") {
-      // Client-side: get from localStorage
-      token = localStorage.getItem("auth_token");
-    }
-    // Server-side: get from cookies (you'll need to implement this)
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      const token = localStorage.getItem("auth_token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
 
     return config;
@@ -32,26 +27,28 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response interceptor
+// Response interceptor - PERBAIKAN
 apiClient.interceptors.response.use(
   (response) => {
-    return response.data; // Kubb expects response.data
+    // Kubb expects the full response, not response.data
+    // Jadi kita return response, bukan response.data
+
+    return response;
   },
   (error) => {
-    const originalRequest = error.config;
+    // Fix error handling
 
-    // Handle 401 Unauthorized
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      if (typeof window !== "undefined") {
-        // Redirect to login
-        window.location.href = "/auth/login";
-      }
+    if (typeof window !== "undefined" && error.response?.status === 401) {
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("user");
+      window.location.href = "/auth/login";
     }
-
     return Promise.reject(error);
   }
 );
 
+// Export default dengan nama yang diharapkan Kubb
 export default apiClient;
+
+// Export juga sebagai 'fetch' untuk compat dengan Kubb
+export const fetch = apiClient;
