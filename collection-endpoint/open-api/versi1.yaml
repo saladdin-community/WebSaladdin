@@ -1,0 +1,128 @@
+openapi: 3.0.0
+info:
+  title: Saladdin-LMS
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+
+paths:
+  /auth/login:
+    post:
+      summary: Login
+      tags: [Auth]
+      responses:
+        "200":
+          description: Success
+
+  /auth/logout:
+    post:
+      summary: Logout
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Success
+
+  /auth/register:
+    post:
+      summary: Register
+      tags: [Auth]
+      responses:
+        "200":
+          description: Success
+
+  /auth/me:
+    get:
+      summary: Get Profile
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Success
+
+  /auth/google:
+    get:
+      summary: Initiate Google Login/Register
+      tags: [Auth]
+      responses:
+        "200":
+          description: Success
+
+  /auth/courses:
+    get:
+      summary: Get Courses
+      tags: [Courses]
+      responses:
+        "200":
+          description: Success
+
+  /auth/courses/{slug}:
+    get:
+      summary: Get Course Detail By Slug
+      tags: [Courses]
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+
+  /auth/lessons/{lessonId}:
+    get:
+      summary: Get Lesson By ID
+      tags: [Courses]
+      parameters:
+        - name: lessonId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+
+  /auth/admin/courses/{courseId}/sections:
+    post:
+      summary: Create Section
+      tags: [Courses]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+
+  /auth/admin/sections/{sectionId}/lessons:
+    post:
+      summary: Create Lesson
+      tags: [Courses]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sectionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

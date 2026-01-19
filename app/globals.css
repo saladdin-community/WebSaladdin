@@ -427,3 +427,23 @@
     display: none;
   }
 }
+
+/* Tambahkan di globals.css di bagian @layer utilities */
+.line-clamp-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+  min-height: 3.5rem;
+  max-height: 3.5rem;
+}
+
+.line-clamp-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+  min-height: 2.8rem;
+}

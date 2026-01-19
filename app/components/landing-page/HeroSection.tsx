@@ -2,6 +2,7 @@
 
 import { Play, ChevronRight, Users, BookOpen, Star, Award } from "lucide-react";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 // Interface untuk props background image
 interface HeroSectionProps {
@@ -102,10 +103,12 @@ export default function HeroSection({
 
             {/* Action Buttons */}
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <button className="btn btn-primary flex items-center gap-2 px-8 py-3 text-lg animate-glow">
-                Browse Courses
-                <ChevronRight className="h-5 w-5" />
-              </button>
+              <Link href={`/courses`} key={`course`}>
+                <button className="btn btn-primary flex items-center gap-2 px-8 py-3 text-lg animate-glow">
+                  Browse Courses
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </Link>
               <button className="btn btn-outline flex items-center gap-2 px-8 py-3 text-lg">
                 <Play className="h-5 w-5" />
                 Watch Trailer
