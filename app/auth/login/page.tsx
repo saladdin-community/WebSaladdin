@@ -1,17 +1,41 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 import Image from "next/image";
 import Link from "next/link";
-import {
-  FaGoogle,
-  FaFacebook,
-  FaLock,
-  FaEnvelope
-} from "react-icons/fa";
+import { FaGoogle, FaFacebook, FaLock, FaEnvelope } from "react-icons/fa";
 import { MdArrowBack } from "react-icons/md";
 import LoginBackground from "@/public/images/login-background.jpg";
+import { usePostApiAuthLogin } from "@/app/lib/generated";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const loginMutation = usePostApiAuthLogin({
+    mutation: {
+      onSuccess: (data) => {
+        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        router.push("/dashboard");
+      },
+      onError: (error) => {
+        console.error("Login failed:", error);
+        alert("Email atau password salah");
+      },
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    loginMutation.mutate({ data: { email, password } }, {});
+  };
+
   return (
     <div className="min-h-screen bg-gradient-dark flex">
       {/* ================= LEFT VISUAL ================= */}
@@ -25,19 +49,15 @@ export default function LoginPage() {
             className="object-cover scale-110"
             sizes="50vw"
             quality={85}
-            style={{
-              filter: "blur(1px)",
-            }}
+            style={{ filter: "blur(1px)" }}
           />
         </div>
 
         <div className="relative z-10 w-full h-full flex items-end p-12">
-          {/* Container utama */}
           <div className="flex items-start gap-4 md:gap-6">
             <div className="relative">
               <div className="w-1 h-12 bg-gradient-gold from-red-500 via-red-400 to-transparent ml-1"></div>
             </div>
-
             <div className="flex-1">
               <p className="text-2xl md:text-3xl text-white font-serif leading-relaxed">
                 "Seek knowledge from the cradle to the grave."
@@ -61,7 +81,6 @@ export default function LoginPage() {
 
         <div className="w-full max-w-md">
           <div className="text-center mb-10">
-            {/* Brand */}
             <div className="flex items-center gap-2 mb-4 justify-center">
               <div className="w-8 h-8 rounded-md bg-gradient-gold" />
               <span className="font-semibold text-white">
@@ -77,7 +96,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label className="block text-sm font-medium text-neutral-300 mb-3 flex items-center gap-2">
                 <FaEnvelope className="text-gold" />
@@ -88,9 +107,12 @@ export default function LoginPage() {
                   type="email"
                   className="input pl-10"
                   placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                  <div className="w-4 h-px bg-neutral-500"></div>
+                <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                  <div className="w-4 h-px bg-neutral-500" />
                 </div>
               </div>
             </div>
@@ -105,34 +127,22 @@ export default function LoginPage() {
                   type="password"
                   className="input pl-10"
                   placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                  <div className="w-4 h-px bg-neutral-500"></div>
+                <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                  <div className="w-4 h-px bg-neutral-500" />
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-between mb-6">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  className="rounded border-border bg-card text-gold focus:ring-gold focus:ring-2"
-                />
-                <span className="ml-3 text-neutral-300">Remember me</span>
-              </label>
-              <Link
-                href="/auth/forgot-password"
-                className="text-sm text-gold hover:text-primary-300 transition-colors"
-              >
-                Forgot Password?
-              </Link>
-            </div>
-
             <button
               type="submit"
-              className="btn btn-primary w-full text-lg py-4 font-sans text-secondary-900 hover:text-white transition-all duration-300"
+              disabled={loginMutation.isPending}
+              className="btn btn-primary w-full text-lg py-4 font-sans text-secondary-900 hover:text-white transition-all duration-300 disabled:opacity-60"
             >
-              Sign In
+              {loginMutation.isPending ? "Signing in..." : "Sign In"}
             </button>
           </form>
 
