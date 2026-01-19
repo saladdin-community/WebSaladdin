@@ -4,7 +4,7 @@
 import { Search, Filter, BookOpen, Bookmark } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
-import { useGetAuthCourses } from "../lib/generated";
+import { useGetApiCourses } from "../lib/generated";
 
 interface Course {
   id: number;
@@ -35,7 +35,7 @@ export default function CoursesPage() {
     isLoading,
     error,
     refetch,
-  } = useGetAuthCourses({
+  } = useGetApiCourses({
     query: {
       enabled: true,
       retry: 2,
