@@ -2,127 +2,840 @@ openapi: 3.0.0
 info:
   title: Saladdin-LMS
   version: 1.0.0
-
+  description: ""
 servers:
-  - url: http://localhost:3000/api
-    description: Development server
-
+  - url: "{{base_url}}"
 paths:
-  /auth/login:
+  /api/auth/login:
     post:
       summary: Login
-      tags: [Auth]
       responses:
         "200":
-          description: Success
+          description: Success Login
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Wed, 07 Jan 2026 01:58:48 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Auth
+      description: |-
+        **Endpoint Login Manual**
 
-  /auth/logout:
+        Digunakan untuk menukarkan email dan password menjadi Token Akses.
+
+        **Body Params (JSON):**
+
+        - `email` (required): Email terdaftar.
+            
+        - `password` (required): Password user.
+            
+
+        **Response:**
+
+        - `access_token`: Token Sanctum (Bearer Token).
+            
+        - `user`: Data detail user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+            example:
+              email: student@saladdin.com
+              password: password
+  /api/logout:
     post:
       summary: Logout
-      tags: [Auth]
-      security:
-        - bearerAuth: []
       responses:
         "200":
-          description: Success
+          description: Success Logout
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Wed, 07 Jan 2026 02:02:07 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Auth
+      description: >-
+        **Logout (Hapus Token)**
 
-  /auth/register:
+
+        Menghapus/menghanguskan token yang sedang digunakan, sehingga tidak bisa
+        dipakai lagi.
+
+
+        **Headers:**
+
+
+        - `Authorization`: `Bearer`
+  /api/auth/register:
     post:
       summary: Register
-      tags: [Auth]
       responses:
-        "200":
-          description: Success
+        "201":
+          description: Success Register
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Wed, 07 Jan 2026 02:01:21 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Auth
+      description: >-
+        **Endpoint Pendaftaran User Baru**
 
-  /auth/me:
+
+        Endpoint ini digunakan untuk mendaftarkan siswa baru secara manual
+        (email & password).
+
+
+        **Body Params (JSON):**
+
+
+        - `name` (required, string): Nama lengkap.
+            
+        - `email` (required, email, unique): Alamat email.
+            
+        - `password` (required, min 8 chars): Password.
+            
+        - `password_confirmation` (required): Harus sama dengan password.
+            
+
+        **Response:**  
+
+        Mengembalikan `access_token` yang harus disimpan untuk sesi login.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                password_confirmation:
+                  type: string
+            example:
+              name: New Student 2
+              email: student2@test.com
+              password: password123
+              password_confirmation: password123
+  /api/me:
     get:
       summary: Get Profile
-      tags: [Auth]
-      security:
-        - bearerAuth: []
       responses:
         "200":
-          description: Success
+          description: Success Get Profile
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Wed, 07 Jan 2026 02:00:03 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Auth
+      description: >-
+        **Cek Data User Login (Me)**
 
-  /auth/google:
+
+        Endpoint untuk mengambil data profil user yang sedang login berdasarkan
+        Token yang dikirim.
+
+
+        **Headers:**
+
+
+        - `Authorization`: `Bearer`
+            
+        - `Accept`: `application/json`
+  /api/auth/google:
     get:
       summary: Initiate Google Login/Register
-      tags: [Auth]
-      responses:
-        "200":
-          description: Success
-
-  /auth/courses:
+      responses: {}
+      tags:
+        - Auth
+      description: "### ⚠️ PENTING: Jangan di-fetch!\n\nEndpoint ini **BUKAN** untuk dipanggil menggunakan `axios.get()` atau `fetch()`.  \nEndpoint ini berfungsi untuk **Redirect Browser** ke halaman persetujuan Google.\n\n### Cara Penggunaan di Frontend:\n\nGunakan tag anchor HTML biasa (`[](null)`[) atau <code>window.location.href</code>:](null)[<br>Login with Google<br>](http://127.0.0.1:8000/api/auth/google)\n\nBuatlah halaman di\_/auth/callback, lalu ambil\_token\_dari URL parameter dan simpan ke Cookies/LocalStorageEndFragment"
+  /api/lessons/{lessonId}/questions/{seq}:
     get:
-      summary: Get Courses
-      tags: [Courses]
+      summary: Get Question Quiz by ID
       responses:
         "200":
-          description: Success
-
-  /auth/courses/{slug}:
+          description: Success Get Question Quiz by ID
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Fri, 16 Jan 2026 10:19:03 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Student
+        - Courses
+        - Course Detail
+        - Quiz
+    parameters:
+      - name: lessonId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "4"
+      - name: seq
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "1"
+  /api/lessons/{lessonId}/submit-quiz:
+    post:
+      summary: Submit Quiz
+      responses:
+        "200":
+          description: Success Submit Quiz
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Fri, 16 Jan 2026 10:21:22 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Student
+        - Courses
+        - Course Detail
+        - Quiz
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                answers:
+                  type: object
+                  properties:
+                    "1":
+                      type: integer
+            example:
+              answers:
+                "1": 5
+    parameters:
+      - name: lessonId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "4"
+  /api/quiz-attempts/1/review:
+    get:
+      summary: Get Review Quiz Attempt
+      responses:
+        "200":
+          description: Success Get Review Quiz Attempt
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Fri, 16 Jan 2026 10:28:34 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Student
+        - Courses
+        - Course Detail
+        - Quiz
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+  /api/courses/:{slug}:
     get:
       summary: Get Course Detail By Slug
-      tags: [Courses]
-      parameters:
-        - name: slug
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
         "200":
-          description: Success
-
-  /auth/lessons/{lessonId}:
+          description: Success Get Course Detail By Slug
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Fri, 16 Jan 2026 07:10:48 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Student
+        - Courses
+        - Course Detail
+    parameters:
+      - name: ":slug"
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: sejarah-masjidil-aqsa-baitul-maqdis
+  /api/lessons/{lessonId}:
     get:
       summary: Get Lesson By ID
-      tags: [Courses]
-      parameters:
-        - name: lessonId
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
         "200":
-          description: Success
-
-  /auth/admin/courses/{courseId}/sections:
+          description: Success File Document Type
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Sat, 10 Jan 2026 14:47:49 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+        "403":
+          description: Fail Get Lesson By ID
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Fri, 16 Jan 2026 10:05:41 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Student
+        - Courses
+        - Course Detail
+    parameters:
+      - name: lessonId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "4"
+  /api/lessons/{lessonId}/complete:
+    post:
+      summary: Complete Lesson
+      responses:
+        "200":
+          description: Success Complete Lesson
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Fri, 16 Jan 2026 07:49:28 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+        "403":
+          description: Fail Complete Lesson
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Fri, 16 Jan 2026 10:16:00 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Student
+        - Courses
+        - Course Detail
+    parameters:
+      - name: lessonId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "4"
+  /api/courses:
+    get:
+      summary: Get All Courses
+      responses:
+        "200":
+          description: Success Get All Courses
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Sat, 10 Jan 2026 06:40:59 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Student
+        - Courses
+  /api/my-courses:
+    get:
+      summary: Get My Courses
+      responses:
+        "200":
+          description: Success Get My Courses
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Thu, 15 Jan 2026 06:38:24 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Student
+        - Courses
+  /api/courses/{courseId}/enroll:
+    post:
+      summary: Enroll Course
+      responses:
+        "200":
+          description: Enroll Free Course
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Thu, 15 Jan 2026 04:12:45 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Student
+        - Courses
+    parameters:
+      - name: courseId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "1"
+  /api/dashboard/stats:
+    get:
+      summary: Get Stats
+      responses:
+        "200":
+          description: Stats
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Fri, 16 Jan 2026 07:12:19 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Student
+  /api/dashboard/continue-learning:
+    get:
+      summary: Get Last Learn
+      responses:
+        "200":
+          description: Success Get Last Learn
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Fri, 16 Jan 2026 04:05:21 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Student
+  /api/admin/courses/1/sections:
     post:
       summary: Create Section
-      tags: [Courses]
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: courseId
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
         "200":
-          description: Success
-
-  /auth/admin/sections/{sectionId}/lessons:
+          description: Success Create Section
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Sat, 10 Jan 2026 14:22:05 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Courses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+            example:
+              title: Testing
+  /api/admin/sections/:{sectionId}/lessons:
     post:
-      summary: Create Lesson
-      tags: [Courses]
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: sectionId
-          in: path
-          required: true
-          schema:
-            type: string
+      summary: Create Lesson Link Video Type
       responses:
         "200":
-          description: Success
-
+          description: Success Link Video Type
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Sat, 10 Jan 2026 14:34:27 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Courses
+    parameters:
+      - name: ":sectionId"
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "2"
 components:
   securitySchemes:
-    bearerAuth:
+    BearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT
+security:
+  - BearerAuth: []
