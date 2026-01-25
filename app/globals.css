@@ -447,3 +447,39 @@
   line-height: 1.4;
   min-height: 2.8rem;
 }
+
+/* Previous styles remain, add these: */
+
+@layer components {
+  .admin-card {
+    @apply bg-gradient-to-br from-[#1a1a1a] to-[#121212] rounded-xl border border-[rgba(255,255,255,0.1)] p-6;
+  }
+
+  .btn-gradient {
+    @apply bg-gradient-to-r from-[#d4af35] to-[#fde047] text-black font-semibold rounded-lg hover:opacity-90 transition-opacity;
+  }
+
+  .btn-dark {
+    @apply bg-gradient-to-r from-[#1f1f1f] to-[#171717] text-white rounded-lg hover:from-[#262626] hover:to-[#1c1c1c] border border-[rgba(255,255,255,0.1)] transition-all;
+  }
+}
+
+/* Custom scrollbar for admin */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #d4af35;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #fde047;
+}
