@@ -1,0 +1,207 @@
+[31/01/2026, 13.01.01]
+ℹ Config loaded kubb.config.mjs
+
+[31/01/2026, 13.01.01]
+✓ Config loaded successfully kubb.config.mjs
+
+[31/01/2026, 13.01.01]
+ℹ Setup generation ./collection-endpoint/open-api/versi1.yaml
+
+[31/01/2026, 13.01.01]
+Configuration:
+  • Name: unnamed
+  • Root: C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin
+  • Output: ./app/lib/generated
+  • Plugins: 3
+Output Settings:
+  • Write: enabled
+  • Formater: prettier
+  • Linter: none
+Environment:
+  • nodeVersion: v22.15.1
+  • KubbVersion: 4.15.0
+  • platform: win32
+  • arch: x64
+  • cwd: C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin
+
+[31/01/2026, 13.01.01]
+✓ Input file validated: ./collection-endpoint/open-api/versi1.yaml
+
+[31/01/2026, 13.01.01]
+Cleaning output directories
+  • Output: ./app/lib/generated
+
+[31/01/2026, 13.01.01]
+✓ Fabric initialized
+  • File writing: enabled
+  • Barrel type: named
+
+[31/01/2026, 13.01.01]
+ℹ Build generation ./collection-endpoint/open-api/versi1.yaml
+
+[31/01/2026, 13.01.01]
+Generating plugin-oas
+
+[31/01/2026, 13.01.01]
+Installing plugin...
+  • Plugin Key: [plugin-oas, 1]
+
+[31/01/2026, 13.01.01]
+ℹ OpenAPI schema validation failed.
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  275 |       "get": {
+  276 |         "summary": "Initiate Google Login/Register",
+> 277 |         "responses": {},
+      |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  278 |         "tags": [
+  279 |           "Auth"
+  280 |         ], undefined
+
+[31/01/2026, 13.01.01]
+✗ OAS Validation failed
+OpenAPI schema validation failed.
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  275 |       "get": {
+  276 |         "summary": "Initiate Google Login/Register",
+> 277 |         "responses": {},
+      |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  278 |         "tags": [
+  279 |           "Auth"
+  280 |         ],
+
+[31/01/2026, 13.01.01]
+Building 0 schemas
+  • Content Type: application/json
+  • Generators: 1
+
+[31/01/2026, 13.01.01]
+Building 18 operations
+  • Generators: 1
+
+[31/01/2026, 13.01.01]
+plugin-oas completed in 776ms
+
+[31/01/2026, 13.01.01]
+✓ Plugin installed successfully (776ms)
+
+[31/01/2026, 13.01.01]
+Generating plugin-ts
+
+[31/01/2026, 13.01.01]
+Installing plugin...
+  • Plugin Key: [plugin-ts, 1]
+
+[31/01/2026, 13.01.01]
+Building 0 schemas
+  • Content Type: application/json
+  • Generators: 1
+
+[31/01/2026, 13.01.01]
+Building 18 operations
+  • Generators: 1
+
+[31/01/2026, 13.01.02]
+plugin-ts completed in 152ms
+
+[31/01/2026, 13.01.02]
+✓ Plugin installed successfully (152ms)
+
+[31/01/2026, 13.01.02]
+Generating plugin-react-query
+
+[31/01/2026, 13.01.02]
+Installing plugin...
+  • Plugin Key: [plugin-react-query, 1]
+
+[31/01/2026, 13.01.02]
+Building 18 operations
+  • Generators: 7
+
+[31/01/2026, 13.01.02]
+plugin-react-query completed in 299ms
+
+[31/01/2026, 13.01.02]
+✓ Plugin installed successfully (299ms)
+
+[31/01/2026, 13.01.02]
+Generating barrel file
+  • Type: named
+  • Path: C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\index.ts
+
+[31/01/2026, 13.01.02]
+Found 46 indexable files for barrel export
+
+[31/01/2026, 13.01.02]
+✓ Generated barrel file (207 exports)
+
+[31/01/2026, 13.01.02]
+ℹ Writing 50 files undefined
+
+[31/01/2026, 13.01.02]
+Start 50 writing:
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\index.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\index.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\index.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\.kubb\config.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiMe.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiMe.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiLogout.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiCourses.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiMyCourses.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiAuthLogin.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiAuthGoogle.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiCourses.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiLogout.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiCoursesSlug.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiMyCourses.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiAuthRegister.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAuthGoogle.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiMeSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiAuthLogin.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiDashboardStats.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiCoursesSlug.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiLessonsLessonid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiAuthRegister.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiDashboardStats.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiLessonsLessonid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiCoursesSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiQuizAttempts1Review.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiMyCoursesSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAuthGoogleSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiCoursesCourseidEnroll.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiAdminCourses1Sections.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiQuizAttempts1Review.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiCoursesSlugSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiLessonsLessonidComplete.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiDashboardContinueLearning.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiDashboardStatsSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiCoursesCourseidEnroll.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiAdminCourses1Sections.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiLessonsLessonidSubmitQuiz.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiLessonsLessonidSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiLessonsLessonidQuestionsSeq.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiLessonsLessonidComplete.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiDashboardContinueLearning.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiLessonsLessonidSubmitQuiz.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiAdminSectionsSectionidLessons.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiLessonsLessonidQuestionsSeq.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiQuizAttempts1ReviewSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiAdminSectionsSectionidLessons.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiDashboardContinueLearningSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiLessonsLessonidQuestionsSeqSuspense.ts
+
+[31/01/2026, 13.01.02]
+Writing 50 files...
+
+[31/01/2026, 13.01.02]
+✓ File write process completed for 50 files
+
+[31/01/2026, 13.01.02]
+ℹ Load summary undefined
+
+[31/01/2026, 13.01.02]
+✓ Generation successfully ./collection-endpoint/open-api/versi1.yaml

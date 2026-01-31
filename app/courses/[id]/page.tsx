@@ -1,178 +1,208 @@
-// app/courses/[id]/page.tsx
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
-  Play,
-  Pause,
-  Volume2,
-  Maximize,
-  Minimize,
-  ChevronLeft,
-  ChevronRight,
   BookOpen,
   Clock,
   MessageSquare,
   FileText,
-  Download,
-  Share2,
   CheckCircle,
   Circle,
   Lock,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
+import PrivateYouTubePlayer from "@/app/components/video/PrivateYoutubePlayer";
+import { useGetApiCoursesSlug } from "@/app/lib/generated/hooks";
 
-interface Lesson {
-  id: string;
+interface VideoLesson {
+  id: number;
   title: string;
-  duration: string;
-  isCompleted: boolean;
-  isLocked: boolean;
+  slug: string;
+  type: string;
+  status: "Completed" | "On Progress" | "Locked";
+  video_url?: string;
+  duration?: number;
+  description?: string;
 }
 
-interface Module {
-  id: string;
+interface CourseSection {
+  id: number;
   title: string;
-  description: string;
-  lessons: Lesson[];
+  lessons: VideoLesson[];
 }
 
-export default function CourseDetailPage() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [volume, setVolume] = useState(1);
-  const [progress, setProgress] = useState(25);
-  const [currentTime, setCurrentTime] = useState("5:42");
-  const [duration, setDuration] = useState("22:45");
-  const [activeModule, setActiveModule] = useState<string>("module1");
-  const [activeLesson, setActiveLesson] = useState<string>("lesson2");
-  const videoRef = useRef<HTMLVideoElement>(null);
+export default function CourseDetailPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const [activeSection, setActiveSection] = useState<string>("1");
+  const [activeLesson, setActiveLesson] = useState<string>("1");
+  const [currentVideoUrl, setCurrentVideoUrl] = useState<string>("");
 
-  const modules: Module[] = [
-    {
-      id: "module1",
-      title: "The Umayyad Era",
-      description:
-        "Foundational period of Al-Aqsa's construction and early Islamic architecture",
-      lessons: [
-        {
-          id: "lesson1",
-          title: "Historical Context",
-          duration: "15:30",
-          isCompleted: true,
-          isLocked: false,
-        },
-        {
-          id: "lesson2",
-          title: "Construction of the Dome",
-          duration: "22:45",
-          isCompleted: false,
-          isLocked: false,
-        },
-        {
-          id: "lesson3",
-          title: "Interior Mosaics",
-          duration: "18:20",
-          isCompleted: false,
-          isLocked: false,
-        },
-        {
-          id: "lesson4",
-          title: "Interior Architecture",
-          duration: "20:15",
-          isCompleted: false,
-          isLocked: false,
-        },
-      ],
-    },
-    {
-      id: "module2",
-      title: "The Abbasid Era",
-      description: "Renovations and developments during the Abbasid Caliphate",
-      lessons: [
-        {
-          id: "lesson5",
-          title: "Abbasid Contributions",
-          duration: "25:10",
-          isCompleted: false,
-          isLocked: true,
-        },
-        {
-          id: "lesson6",
-          title: "Architectural Changes",
-          duration: "19:45",
-          isCompleted: false,
-          isLocked: true,
-        },
-      ],
-    },
-    {
-      id: "module3",
-      title: "The Crusader Period",
-      description: "Al-Aqsa during the Crusades and its subsequent liberation",
-      lessons: [
-        {
-          id: "lesson7",
-          title: "Crusader Occupation",
-          duration: "30:20",
-          isCompleted: false,
-          isLocked: true,
-        },
-        {
-          id: "lesson8",
-          title: "Salahuddin's Liberation",
-          duration: "28:15",
-          isCompleted: false,
-          isLocked: true,
-        },
-      ],
-    },
-  ];
+  // Fetch course data
+  const { data: courseData, isLoading } = useGetApiCoursesSlug(params.id);
 
-  const handlePlayPause = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
+  // Set current video URL when lesson changes
+  useEffect(() => {
+    const currentLesson = getCurrentLesson();
+    if (currentLesson?.video_url) {
+      setCurrentVideoUrl(currentLesson.video_url);
     }
+  }, [activeLesson, activeSection, courseData]);
+
+  // Handler functions
+  const handlePlayPause = (isPlaying: boolean) => {
+    console.log("Video is playing:", isPlaying);
   };
 
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = parseFloat(e.target.value);
-    setVolume(newVolume);
-    if (videoRef.current) {
-      videoRef.current.volume = newVolume;
-    }
+  const handleFullscreenChange = (isFullscreen: boolean) => {
+    console.log("Fullscreen:", isFullscreen);
   };
 
-  const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newProgress = parseInt(e.target.value);
-    setProgress(newProgress);
-    if (videoRef.current) {
-      videoRef.current.currentTime =
-        (newProgress / 100) * videoRef.current.duration;
-    }
+  const handleProgressChange = (progress: number) => {
+    console.log("Progress:", progress);
   };
 
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-      setIsFullscreen(true);
+  const handleVolumeChange = (volume: number) => {
+    console.log("Volume:", volume);
+  };
+
+  const handleNextLesson = () => {
+    const currentLesson = getCurrentLesson();
+    const currentSection = getCurrentSection();
+
+    if (!currentLesson || !currentSection) return;
+
+    const currentIndex = currentSection.lessons.findIndex(
+      (l) => l.id === currentLesson.id,
+    );
+
+    if (currentIndex < currentSection.lessons.length - 1) {
+      const nextLesson = currentSection.lessons[currentIndex + 1];
+      setActiveLesson(nextLesson.id.toString());
     } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
+      const sections = courseData?.data?.sections || [];
+      const currentSectionIndex = sections.findIndex(
+        (s) => s.id === currentSection.id,
+      );
+
+      if (currentSectionIndex < sections.length - 1) {
+        const nextSection = sections[currentSectionIndex + 1];
+        setActiveSection(nextSection.id.toString());
+        setActiveLesson(nextSection.lessons[0].id.toString());
+      }
     }
   };
+
+  const handlePreviousLesson = () => {
+    const currentLesson = getCurrentLesson();
+    const currentSection = getCurrentSection();
+
+    if (!currentLesson || !currentSection) return;
+
+    const currentIndex = currentSection.lessons.findIndex(
+      (l) => l.id === currentLesson.id,
+    );
+
+    if (currentIndex > 0) {
+      const prevLesson = currentSection.lessons[currentIndex - 1];
+      setActiveLesson(prevLesson.id.toString());
+    } else {
+      const sections = courseData?.data?.sections || [];
+      const currentSectionIndex = sections.findIndex(
+        (s) => s.id === currentSection.id,
+      );
+
+      if (currentSectionIndex > 0) {
+        const prevSection = sections[currentSectionIndex - 1];
+        setActiveSection(prevSection.id.toString());
+        setActiveLesson(
+          prevSection.lessons[prevSection.lessons.length - 1].id.toString(),
+        );
+      }
+    }
+  };
+
+  // Helper functions
+  const getCurrentSection = () => {
+    if (!courseData?.data?.sections) return null;
+    return courseData.data.sections.find(
+      (s) => s.id === parseInt(activeSection),
+    );
+  };
+
+  const getCurrentLesson = () => {
+    const currentSection = getCurrentSection();
+    if (!currentSection) return null;
+
+    return currentSection.lessons.find((l) => l.id === parseInt(activeLesson));
+  };
+
+  const getLessonIcon = (status: string) => {
+    switch (status) {
+      case "Completed":
+        return <CheckCircle className="h-5 w-5 text-[#22c55e]" />;
+      case "On Progress":
+        return (
+          <div className="h-5 w-5 rounded-full border-2 border-[#d4af35] border-t-transparent animate-spin" />
+        );
+      case "Locked":
+        return <Lock className="h-5 w-5 text-[#737373]" />;
+      default:
+        return <Circle className="h-5 w-5 text-[#404040]" />;
+    }
+  };
+
+  const calculateOverallProgress = () => {
+    if (!courseData?.data?.sections) return 0;
+
+    let totalLessons = 0;
+    let completedLessons = 0;
+
+    courseData.data.sections.forEach((section: CourseSection) => {
+      section.lessons.forEach((lesson: VideoLesson) => {
+        totalLessons++;
+        if (lesson.status === "Completed") {
+          completedLessons++;
+        }
+      });
+    });
+
+    return totalLessons > 0
+      ? Math.round((completedLessons / totalLessons) * 100)
+      : 0;
+  };
+
+  const formatDuration = (seconds?: number) => {
+    if (!seconds) return "";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#121212] text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="h-12 w-12 border-4 border-[#d4af35] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[#d4d4d4]">Loading course...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const currentLesson = getCurrentLesson();
+  const overallProgress = calculateOverallProgress();
 
   return (
     <div className="min-h-screen bg-[#121212] text-white">
-      {/* Header */}
+      {/* Header - Simplified */}
       <header className="border-b border-[rgba(255,255,255,0.1)] bg-[#121212]/90 backdrop-blur-sm sticky top-0 z-50">
         <div className="container-custom py-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link
                 href="/courses"
@@ -183,29 +213,31 @@ export default function CourseDetailPage() {
               </Link>
               <div>
                 <h1 className="text-xl font-bold text-white">
-                  The History of Al-Aqsa
+                  {courseData?.data?.title || "Course Title"}
                 </h1>
-                <p className="text-sm text-[#737373]">
-                  Module 1: The Umayyad Era • Lesson 2 of 4
-                </p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
+
+            <div className="flex items-center gap-6">
               <div className="text-right hidden md:block">
-                <p className="text-sm text-[#737373]">Course Progress</p>
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-32 bg-[#404040] rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-[#d4af35] to-[#fde047] rounded-full transition-all duration-500"
-                      style={{ width: "13%" }}
+                      style={{ width: `${overallProgress}%` }}
                     ></div>
                   </div>
-                  <span className="text-sm text-[#d4d4d4]">13%</span>
+                  <span className="text-sm text-[#d4d4d4]">
+                    {overallProgress}%
+                  </span>
                 </div>
               </div>
-              <button className="btn btn-primary px-6 py-2.5 font-bold">
-                Mark Complete
-              </button>
+
+              {currentLesson?.status === "On Progress" && (
+                <button className="btn btn-primary px-6 py-2.5 font-bold">
+                  Mark Complete
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -213,158 +245,81 @@ export default function CourseDetailPage() {
 
       <main className="container-custom py-8">
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Left Column - Video Player */}
+          {/* Left Column - Video Player & Content */}
           <div className="lg:w-2/3">
-            {/* Video Player */}
-            <div className="bg-[#0a0a0a] rounded-xl overflow-hidden mb-6 border border-[rgba(255,255,255,0.1)]">
-              <div className="relative aspect-video">
-                {/* Video Placeholder */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] to-[#121212] flex items-center justify-center">
-                  <div className="text-center">
-                    <button
-                      onClick={handlePlayPause}
-                      className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-gold flex items-center justify-center hover:shadow-glow transition-all duration-300"
-                    >
-                      {isPlaying ? (
-                        <Pause className="h-8 w-8 text-black" />
-                      ) : (
-                        <Play className="h-8 w-8 text-black ml-1" />
-                      )}
-                    </button>
-                    <p className="text-[#737373]">
-                      Click play to start the video
-                    </p>
-                  </div>
-                </div>
-
-                {/* Custom Video Controls */}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4">
-                  {/* Progress Bar */}
-                  <div className="mb-4">
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={progress}
-                      onChange={handleProgressChange}
-                      className="w-full h-1.5 bg-[#404040] rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-gold"
-                    />
-                    <div className="flex justify-between text-sm text-[#a3a3a3] mt-1.5">
-                      <span>{currentTime}</span>
-                      <span>{duration}</span>
-                    </div>
-                  </div>
-
-                  {/* Control Buttons */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <button
-                        onClick={handlePlayPause}
-                        className="p-2 hover:bg-white/10 rounded-full transition-colors duration-300"
-                      >
-                        {isPlaying ? (
-                          <Pause className="h-6 w-6 text-white" />
-                        ) : (
-                          <Play className="h-6 w-6 text-white" />
-                        )}
-                      </button>
-
-                      <div className="flex items-center gap-2">
-                        <Volume2 className="h-5 w-5 text-[#d4d4d4]" />
-                        <input
-                          type="range"
-                          min="0"
-                          max="1"
-                          step="0.1"
-                          value={volume}
-                          onChange={handleVolumeChange}
-                          className="w-24 h-1.5 bg-[#404040] rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-gold"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                      <button className="p-2 hover:bg-white/10 rounded-full transition-colors duration-300 text-[#d4d4d4]">
-                        <Download className="h-5 w-5" />
-                      </button>
-                      <button className="p-2 hover:bg-white/10 rounded-full transition-colors duration-300 text-[#d4d4d4]">
-                        <Share2 className="h-5 w-5" />
-                      </button>
-                      <button
-                        onClick={toggleFullscreen}
-                        className="p-2 hover:bg-white/10 rounded-full transition-colors duration-300 text-[#d4d4d4]"
-                      >
-                        {isFullscreen ? (
-                          <Minimize className="h-5 w-5" />
-                        ) : (
-                          <Maximize className="h-5 w-5" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* Private YouTube Video Player */}
+            <div className="mb-6">
+              <PrivateYouTubePlayer
+                youtubeUrl={"https://www.youtube.com/watch?v=mlVgtBajMTE"}
+                title={currentLesson?.title || "Course Video"}
+                onPlayPause={handlePlayPause}
+                onFullscreenChange={handleFullscreenChange}
+                onProgressChange={handleProgressChange}
+                onVolumeChange={handleVolumeChange}
+                maxPlaybackRate={2}
+                showControls={true}
+              />
             </div>
 
-            {/* Video Info */}
-            <div className="card mb-6">
-              <div className="flex flex-col md:flex-row md:items-start justify-between mb-6">
-                <div className="mb-4 md:mb-0">
+            {/* Lesson Info - Simplified */}
+            {currentLesson && (
+              <div className="card mb-6">
+                <div className="mb-6">
                   <h2 className="text-2xl font-bold text-white mb-3">
-                    Construction of the Dome
+                    {currentLesson.title}
                   </h2>
-                  <div className="flex items-center gap-4 text-sm text-[#737373] mb-4">
-                    <span className="flex items-center gap-1.5">
-                      <Clock className="h-4 w-4" />
-                      22:45 min
-                    </span>
+                  <div className="flex items-center gap-4 text-sm text-[#737373]">
+                    {currentLesson.duration && (
+                      <span className="flex items-center gap-1.5">
+                        <Clock className="h-4 w-4" />
+                        {formatDuration(currentLesson.duration)}
+                      </span>
+                    )}
                     <span className="flex items-center gap-1.5">
                       <BookOpen className="h-4 w-4" />
-                      Module 1 • Lesson 2
+                      {currentLesson.type}
+                    </span>
+                    <span
+                      className={`px-2 py-1 rounded text-xs ${
+                        currentLesson.status === "Completed"
+                          ? "bg-green-500/20 text-green-400"
+                          : currentLesson.status === "On Progress"
+                            ? "bg-yellow-500/20 text-yellow-400"
+                            : "bg-gray-500/20 text-gray-400"
+                      }`}
+                    >
+                      {currentLesson.status}
                     </span>
                   </div>
                 </div>
-                <button className="btn btn-primary px-6 py-2.5 font-bold self-start">
-                  Mark Complete
-                </button>
-              </div>
 
-              <div className="space-y-4 text-[#d4d4d4] leading-relaxed">
-                <p>
-                  The Dome of the Rock (Qubbat al-Sakhra) was constructed
-                  between 685 and 691 CE by the Umayyad Caliph Abd al-Malik ibn
-                  Marwan. It is one of the oldest extant works of Islamic
-                  architecture.
-                </p>
-                <p>
-                  Its architecture and mosaics were patterned after nearby
-                  Byzantine churches and palaces, although its outside
-                  appearance has been significantly changed in the Ottoman
-                  period and again in the modern period.
-                </p>
-                <p>
-                  In this lesson, we will explore the political and religious
-                  motivations behind its construction. We will look at the
-                  architectural innovations introduced during this period,
-                  including the octagonal plan and the double-shelled timber
-                  dome.
-                </p>
-                <p>
-                  We will also discuss the significance of the location on the
-                  Temple Mount (Haram al-Sharif) and its relation to the
-                  Prophet's Night Journey (Isra and Mi'raj).
-                </p>
+                <div className="space-y-4 text-[#d4d4d4] leading-relaxed">
+                  <p>
+                    {currentLesson.description ||
+                      `This lesson covers important concepts related to ${currentLesson.title.toLowerCase()}.`}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Navigation */}
-            <div className="flex flex-col sm:flex-row justify-between gap-4">
-              <button className="flex items-center justify-center gap-2 px-6 py-3 bg-[#1f1f1f] hover:bg-[#262626] text-[#d4d4d4] hover:text-white rounded-md transition-all duration-300 border border-[rgba(255,255,255,0.1)] font-semibold">
+            {/* Navigation Only */}
+            <div className="flex justify-between gap-4">
+              <button
+                onClick={handlePreviousLesson}
+                disabled={!getCurrentLesson()}
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-[#1f1f1f] hover:bg-[#262626] text-[#d4d4d4] hover:text-white rounded-md transition-all duration-300 border border-[rgba(255,255,255,0.1)] font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 <ChevronLeft className="h-5 w-5" />
-                Previous Lesson
+                Previous
               </button>
-              <button className="flex items-center justify-center gap-2 px-6 py-3 btn-primary font-bold">
-                Next Lesson
+              <button
+                onClick={handleNextLesson}
+                disabled={
+                  !getCurrentLesson() || currentLesson?.status === "Locked"
+                }
+                className="flex items-center justify-center gap-2 px-6 py-3 btn-primary font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
                 <ChevronRight className="h-5 w-5" />
               </button>
             </div>
@@ -372,86 +327,89 @@ export default function CourseDetailPage() {
 
           {/* Right Column - Course Navigation */}
           <div className="lg:w-1/3">
-            <div className="card space-y-6">
-              {/* Course Modules */}
+            <div className="card">
+              {/* Course Sections */}
               <div>
                 <h3 className="text-xl font-bold text-white mb-4">
                   Course Modules
                 </h3>
                 <div className="space-y-4">
-                  {modules.map((module) => (
+                  {courseData?.data?.sections?.map((section: CourseSection) => (
                     <div
-                      key={module.id}
+                      key={section.id}
                       className="border border-[rgba(255,255,255,0.1)] rounded-lg overflow-hidden bg-[#1a1a1a]"
                     >
                       <button
                         onClick={() =>
-                          setActiveModule(
-                            activeModule === module.id ? "" : module.id
+                          setActiveSection(
+                            activeSection === section.id.toString()
+                              ? ""
+                              : section.id.toString(),
                           )
                         }
                         className={`w-full p-4 text-left transition-colors duration-300 ${
-                          activeModule === module.id
+                          activeSection === section.id.toString()
                             ? "bg-[rgba(212,175,53,0.1)]"
                             : "hover:bg-[#262626]"
                         }`}
                       >
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-semibold text-white">
-                            {module.title}
+                            {section.title}
                           </h4>
                           <ChevronRight
                             className={`h-5 w-5 text-[#737373] transition-transform duration-300 ${
-                              activeModule === module.id ? "rotate-90" : ""
+                              activeSection === section.id.toString()
+                                ? "rotate-90"
+                                : ""
                             }`}
                           />
                         </div>
-                        <p className="text-sm text-[#737373] text-left">
-                          {module.description}
+                        <p className="text-xs text-[#737373] text-left">
+                          {section.lessons.length} lessons
                         </p>
                       </button>
 
-                      {activeModule === module.id && (
+                      {activeSection === section.id.toString() && (
                         <div className="p-4 pt-2 border-t border-[rgba(255,255,255,0.1)]">
                           <div className="space-y-2">
-                            {module.lessons.map((lesson) => (
+                            {section.lessons.map((lesson: VideoLesson) => (
                               <button
                                 key={lesson.id}
                                 onClick={() =>
-                                  !lesson.isLocked && setActiveLesson(lesson.id)
+                                  lesson.status !== "Locked" &&
+                                  setActiveLesson(lesson.id.toString())
                                 }
                                 className={`w-full p-3 rounded-md flex items-center justify-between transition-all duration-300 ${
-                                  activeLesson === lesson.id
+                                  activeLesson === lesson.id.toString()
                                     ? "bg-gradient-to-r from-[rgba(212,175,53,0.2)] to-[rgba(253,224,71,0.1)] border border-[rgba(212,175,53,0.3)]"
-                                    : lesson.isLocked
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : "hover:bg-[#262626] border border-transparent"
+                                    : lesson.status === "Locked"
+                                      ? "opacity-50 cursor-not-allowed"
+                                      : "hover:bg-[#262626] border border-transparent"
                                 }`}
-                                disabled={lesson.isLocked}
+                                disabled={lesson.status === "Locked"}
                               >
                                 <div className="flex items-center gap-3">
-                                  {lesson.isCompleted ? (
-                                    <CheckCircle className="h-5 w-5 text-[#22c55e]" />
-                                  ) : (
-                                    <Circle className="h-5 w-5 text-[#404040]" />
-                                  )}
+                                  {getLessonIcon(lesson.status)}
                                   <span
-                                    className={`text-sm ${
-                                      activeLesson === lesson.id
+                                    className={`text-sm truncate ${
+                                      activeLesson === lesson.id.toString()
                                         ? "text-[#d4af35] font-semibold"
-                                        : lesson.isLocked
-                                        ? "text-[#737373]"
-                                        : "text-[#d4d4d4]"
+                                        : lesson.status === "Locked"
+                                          ? "text-[#737373]"
+                                          : "text-[#d4d4d4]"
                                     }`}
                                   >
                                     {lesson.title}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <span className="text-xs text-[#737373]">
-                                    {lesson.duration}
-                                  </span>
-                                  {lesson.isLocked && (
+                                  {lesson.duration && (
+                                    <span className="text-xs text-[#737373] whitespace-nowrap">
+                                      {formatDuration(lesson.duration)}
+                                    </span>
+                                  )}
+                                  {lesson.status === "Locked" && (
                                     <Lock className="h-3 w-3 text-[#737373]" />
                                   )}
                                 </div>
@@ -465,27 +423,17 @@ export default function CourseDetailPage() {
                 </div>
               </div>
 
-              {/* Resources */}
-              <div className="pt-6 border-t border-[rgba(255,255,255,0.1)]">
-                <h3 className="text-xl font-bold text-white mb-4">Resources</h3>
+              {/* Resources - Simplified */}
+              <div className="pt-6 mt-6 border-t border-[rgba(255,255,255,0.1)]">
+                <h3 className="text-lg font-bold text-white mb-4">Resources</h3>
                 <div className="space-y-3">
-                  <button className="w-full flex items-center justify-between p-3 bg-[#1f1f1f] hover:bg-[#262626] rounded-md transition-all duration-300 border border-[rgba(255,255,255,0.1)] group">
-                    <div className="flex items-center gap-3">
-                      <FileText className="h-5 w-5 text-[#d4d4d4]" />
-                      <span className="text-[#d4d4d4] group-hover:text-white transition-colors">
-                        Lesson Notes (PDF)
-                      </span>
-                    </div>
-                    <Download className="h-5 w-5 text-[#737373] group-hover:text-[#d4af35] transition-colors" />
+                  <button className="w-full flex items-center gap-3 p-3 bg-[#1f1f1f] hover:bg-[#262626] rounded-md transition-all duration-300 border border-[rgba(255,255,255,0.1)]">
+                    <FileText className="h-5 w-5 text-[#d4d4d4]" />
+                    <span className="text-[#d4d4d4]">Lesson Notes</span>
                   </button>
-                  <button className="w-full flex items-center justify-between p-3 bg-[#1f1f1f] hover:bg-[#262626] rounded-md transition-all duration-300 border border-[rgba(255,255,255,0.1)] group">
-                    <div className="flex items-center gap-3">
-                      <MessageSquare className="h-5 w-5 text-[#d4d4d4]" />
-                      <span className="text-[#d4d4d4] group-hover:text-white transition-colors">
-                        Discussion Forum
-                      </span>
-                    </div>
-                    <ChevronRight className="h-5 w-5 text-[#737373] group-hover:text-[#d4af35] transition-colors" />
+                  <button className="w-full flex items-center gap-3 p-3 bg-[#1f1f1f] hover:bg-[#262626] rounded-md transition-all duration-300 border border-[rgba(255,255,255,0.1)]">
+                    <MessageSquare className="h-5 w-5 text-[#d4d4d4]" />
+                    <span className="text-[#d4d4d4]">Discussion Forum</span>
                   </button>
                 </div>
               </div>
