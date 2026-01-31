@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import Link from "next/link";
 import {
   Mail,
@@ -53,7 +53,7 @@ const contactInfo = [
 ];
 
 export default function Footer() {
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -64,7 +64,7 @@ export default function Footer() {
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
@@ -73,7 +73,7 @@ export default function Footer() {
     },
   };
 
-  const linkVariants = {
+  const linkVariants: Variants = {
     hidden: { opacity: 0, x: -10 },
     visible: {
       opacity: 1,
@@ -82,7 +82,7 @@ export default function Footer() {
     },
   };
 
-  const socialIconVariants = {
+  const socialIconVariants: Variants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: {
       opacity: 1,
@@ -96,7 +96,7 @@ export default function Footer() {
     },
   };
 
-  const contactItemVariants = {
+  const contactItemVariants: Variants = {
     hidden: { opacity: 0, x: -20 },
     visible: {
       opacity: 1,
@@ -199,7 +199,7 @@ export default function Footer() {
                     ))}
                   </ul>
                 </motion.div>
-              )
+              ),
             )}
 
             {/* Contact Column */}

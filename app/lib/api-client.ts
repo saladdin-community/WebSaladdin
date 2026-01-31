@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api",
@@ -18,7 +18,7 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 apiClient.interceptors.response.use(
@@ -30,9 +30,12 @@ apiClient.interceptors.response.use(
       window.location.href = "/auth/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;
 
 export const fetch = apiClient;
+
+export type RequestConfig = AxiosRequestConfig;
+export type ResponseErrorConfig<T> = AxiosError<T>;

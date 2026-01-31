@@ -34,6 +34,13 @@ interface LessonFormData {
   duration: number;
   instructions: string;
   content: string;
+  id?: number;
+}
+
+interface Sections {
+  id: number;
+  title: string;
+  lessons: LessonFormData[];
 }
 
 export default function CourseFormModal({
@@ -58,13 +65,6 @@ export default function CourseFormModal({
     thumbnail: courseData?.thumbnail || "",
   });
 
-  const [formData, setFormData] = useState<Omit<CourseFormData, "sections">>({
-    title: "",
-    instructor: "",
-    description: "",
-    thumbnail: undefined,
-  });
-
   const [lessonForm, setLessonForm] = useState<LessonFormData>({
     title: "",
     type: "video",
@@ -73,7 +73,7 @@ export default function CourseFormModal({
     content: "",
   });
 
-  const [sections, setSections] = useState([
+  const [sections, setSections] = useState<Sections[]>([
     { id: 1, title: "Section 1: Introduction", lessons: [] },
   ]);
 

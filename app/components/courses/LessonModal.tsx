@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { X, Video, FileText, BookOpen, ChevronRight } from "lucide-react";
 import UploadArea from "../form/UploadArea";
-import { Lesson } from "@/constants/courses";
+import { Lesson } from "@/types/types";
 
 interface LessonModalProps {
   isOpen: boolean;

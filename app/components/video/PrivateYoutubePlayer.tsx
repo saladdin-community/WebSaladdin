@@ -116,20 +116,20 @@ export default function PrivateYouTubePlayer({
   const onPlayerStateChange: YouTubeProps["onStateChange"] = (event) => {
     const playerState = event.data;
 
-    switch (playerState) {
-      case window.YT.PlayerState.PLAYING:
-        setIsPlaying(true);
-        onPlayPause?.(true);
-        break;
-      case window.YT.PlayerState.PAUSED:
-      case window.YT.PlayerState.ENDED:
-        setIsPlaying(false);
-        onPlayPause?.(false);
-        break;
-      case window.YT.PlayerState.UNSTARTED:
-        // Video might be restricted
-        break;
-    }
+    // switch (playerState) {
+    //   case window.Yt.PlayerState.PLAYING:
+    //     setIsPlaying(true);
+    //     onPlayPause?.(true);
+    //     break;
+    //   case window.YT.PlayerState.PAUSED:
+    //   case window.YT.PlayerState.ENDED:
+    //     setIsPlaying(false);
+    //     onPlayPause?.(false);
+    //     break;
+    //   case window.YT.PlayerState.UNSTARTED:
+    //     // Video might be restricted
+    //     break;
+    // }
   };
 
   const onPlayerError: YouTubeProps["onError"] = (event) => {

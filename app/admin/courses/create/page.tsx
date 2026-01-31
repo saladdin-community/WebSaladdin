@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import LessonModal from "@/app/components/courses/LessonModal";
-import { Section } from "@/constants/courses";
+import { Section } from "@/types/types";
 
 export default function CreateCoursePage() {
   // State untuk Course Form

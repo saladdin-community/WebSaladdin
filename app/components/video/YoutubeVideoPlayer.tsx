@@ -147,17 +147,17 @@ export default function YouTubeVideoPlayer({
   const onPlayerStateChange: YouTubeProps["onStateChange"] = (event) => {
     const playerState = event.data;
 
-    switch (playerState) {
-      case window.YT.PlayerState.PLAYING:
-        setIsPlaying(true);
-        onPlayPause?.(true);
-        break;
-      case window.YT.PlayerState.PAUSED:
-      case window.YT.PlayerState.ENDED:
-        setIsPlaying(false);
-        onPlayPause?.(false);
-        break;
-    }
+    // switch (playerState) {
+    //   case window.YT.PlayerState.PLAYING:
+    //     setIsPlaying(true);
+    //     onPlayPause?.(true);
+    //     break;
+    //   case window.YT.PlayerState.PAUSED:
+    //   case window.YT.PlayerState.ENDED:
+    //     setIsPlaying(false);
+    //     onPlayPause?.(false);
+    //     break;
+    // }
   };
 
   // Control functions
