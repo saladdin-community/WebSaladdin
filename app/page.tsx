@@ -1,8 +1,8 @@
-import Footer from "./components/layout/Footer";
-import HeroSection from "./components/landing-page/HeroSection";
-import AboutSection from "./components/landing-page/AboutSection";
-import CoursesSection from "./components/landing-page/CoursesSection";
-import MentorsSection from "./components/landing-page/MentorsSections";
+import Footer from "@/app/components/layout/Footer";
+import HeroSection from "@/app/components/landing-page/HeroSection";
+import AboutSection from "@/app/components/landing-page/AboutSection";
+import CoursesSection from "@/app/components/landing-page/CoursesSection";
+import MentorsSection from "@/app/components/landing-page/MentorsSections";
 
 export default function Home() {
   return (

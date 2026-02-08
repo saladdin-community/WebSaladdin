@@ -4,7 +4,7 @@
 import { Search, Filter, BookOpen, Bookmark } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
-import { useGetApiCourses } from "../lib/generated";
+import { useGetApiCourses } from "../../lib/generated";
 
 interface Course {
   id: number;
