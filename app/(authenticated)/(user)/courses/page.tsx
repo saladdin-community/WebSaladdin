@@ -4,7 +4,7 @@
 import { Search, Filter, BookOpen, Bookmark } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
-import { useGetApiCourses } from "../../lib/generated";
+import { useGetApiCourses } from "@/app/lib/generated";
 
 interface Course {
   id: number;
@@ -29,7 +29,6 @@ export default function CoursesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  // Integration Data
   const {
     data: coursesData,
     isLoading,
@@ -48,8 +47,6 @@ export default function CoursesPage() {
     },
   });
 
-  console.log("This is courses data: ", coursesData);
-
   const categories = [
     { id: "all", label: "All Courses" },
     { id: "history", label: "Islamic History" },
@@ -59,7 +56,6 @@ export default function CoursesPage() {
     { id: "leadership", label: "Leadership" },
   ];
 
-  // Transform data dari backend ke format yang dibutuhkan
   const courses: Course[] =
     coursesData?.data?.map((course: any) => ({
       id: course.id,
@@ -90,7 +86,6 @@ export default function CoursesPage() {
     return matchesSearch && matchesCategory;
   });
 
-  // Loading state
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#121212] to-black text-white">
@@ -126,7 +121,6 @@ export default function CoursesPage() {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#121212] to-black text-white">
@@ -155,7 +149,6 @@ export default function CoursesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#121212] to-black text-white">
-      {/* Header */}
       <header className="bg-[#121212]/80 backdrop-blur-sm">
         <div className="container-custom py-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -185,7 +178,6 @@ export default function CoursesPage() {
       </header>
 
       <main className="container-custom py-8">
-        {/* Categories */}
         <div className="flex flex-wrap gap-2 mb-8">
           {categories.map((category) => (
             <button

@@ -6,7 +6,7 @@ import SidebarNav from "@/app/components/sidebar/SidebarNav";
 import SectionHeader from "@/app/components/header/SectionHeader";
 import ContinueLearningCard from "@/app/components/card/ContinueLearningCard";
 import CourseCard from "@/app/components/card/CourseCard";
-import { useGetApiCourses } from "../lib/generated";
+import { useGetApiCourses } from "@/app/lib/generated";
 
 interface DashboardCourse {
   id: number;

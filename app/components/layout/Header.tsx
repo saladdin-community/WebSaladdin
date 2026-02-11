@@ -24,7 +24,7 @@ export default function Header() {
       onSuccess: () => {
         logoutLocal();
         setUser(null);
-        router.push("/auth/login");
+        router.push("/login");
       },
     },
   });
@@ -78,10 +78,10 @@ export default function Header() {
             {/* AUTH SECTION */}
             {!user ? (
               <div className="flex gap-3">
-                <Link href="/auth/login">
+                <Link href="/login">
                   <button className="btn outline-1">Login</button>
                 </Link>
-                <Link href="/auth/signup">
+                <Link href="/signup">
                   <button className="btn btn-primary">Sign Up</button>
                 </Link>
               </div>

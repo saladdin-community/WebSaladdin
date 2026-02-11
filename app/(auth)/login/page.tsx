@@ -1,5 +1,7 @@
 "use client";
 
+import Cookies from "js-cookie";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -18,6 +20,10 @@ export default function LoginPage() {
   const loginMutation = usePostApiAuthLogin({
     mutation: {
       onSuccess: (data) => {
+        // Set cookies for middleware access
+        Cookies.set("access_token", data.access_token, { expires: 7 });
+        Cookies.set("user_role", data.user.role, { expires: 7 });
+
         localStorage.setItem("access_token", data.access_token);
         localStorage.setItem("user", JSON.stringify(data.user));
 
@@ -172,7 +178,7 @@ export default function LoginPage() {
             <p className="text-neutral-400">
               Don't have an account?{" "}
               <Link
-                href="/auth/signup"
+                href="/signup"
                 className="text-gold font-medium hover:text-primary-300 transition-colors"
               >
                 Sign up

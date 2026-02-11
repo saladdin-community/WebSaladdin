@@ -1,3 +1,5 @@
+import Cookies from "js-cookie";
+
 export function getAuthUser() {
   if (typeof window === "undefined") return null;
 
@@ -16,4 +18,6 @@ export function getAuthUser() {
 export function logoutLocal() {
   localStorage.removeItem("access_token");
   localStorage.removeItem("user");
+  Cookies.remove("access_token");
+  Cookies.remove("user_role");
 }
