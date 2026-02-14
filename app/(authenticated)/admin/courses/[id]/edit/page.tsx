@@ -1,44 +1,86 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, use } from "react";
 import { Save, Upload } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AdminCourseDetailResponse } from "@/app/lib/api/admin-courses";
 import {
-  usePostApiAdminCourses,
-  postApiAdminCourses,
-} from "@/app/lib/generated/hooks/usePostApiAdminCourses";
+  usePutApiAdminCoursesId,
+  putApiAdminCoursesId,
+} from "@/app/lib/generated/hooks/usePutApiAdminCoursesId";
+import { useGetApiAdminCoursesId } from "@/app/lib/generated/hooks/useGetApiAdminCoursesId";
 import { courseCategories, courseLevels } from "@/constants/courses";
 
-export default function CreateCoursePage() {
+export default function EditCoursePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
+  const courseId = parseInt(id);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  // State untuk Course Form
+  // State
   const [title, setTitle] = useState("");
   const [instructor_name, setInstructorName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [previewThumbnail, setPreviewThumbnail] = useState<string | null>(null);
 
-  const { mutate: createCourse, isPending } = usePostApiAdminCourses({
-    mutation: {
-      mutationFn: async (data: any) => {
-        return postApiAdminCourses({
-          data,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+  // Fetch Course Data
+  const {
+    data: rawData,
+    isLoading,
+    isError,
+  } = useGetApiAdminCoursesId(courseId);
+
+  const courseData = rawData as unknown as AdminCourseDetailResponse;
+
+  // Populate Form
+  useEffect(() => {
+    if (courseData?.data) {
+      const course = courseData.data;
+      setTitle(course.title || "");
+      setInstructorName(course.instructor_name || "");
+      setDescription(course.description || "");
+      setPrice(course.price ? course.price.toString() : "");
+      setPreviewThumbnail(course.thumbnail || null);
+    }
+  }, [courseData]);
+
+  // Update Mutation
+  const { mutate: updateCourse, isPending: isUpdating } =
+    usePutApiAdminCoursesId({
+      mutation: {
+        mutationFn: async ({ id, data }: { id: number; data: any }) => {
+          return putApiAdminCoursesId(id, {
+            data,
+            method: "PUT",
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+        },
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: ["admin-course", courseId],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [{ url: "/api/admin/courses" }],
+          });
+          alert("Course updated successfully!");
+          router.push("/admin/courses");
+        },
+        onError: (error) => {
+          console.error("Failed to update course", error);
+          alert("Failed to update course. Please check your inputs.");
+        },
       },
-      onSuccess: () => {
-        router.push("/admin/courses");
-      },
-      onError: (error) => {
-        console.error("Failed to create course", error);
-        alert("Failed to create course. Please check your inputs.");
-      },
-    },
-  }) as any;
+    }) as any;
 
   const handleSaveCourse = () => {
     if (!title || !instructor_name || !price || !description) {
@@ -47,17 +89,36 @@ export default function CreateCoursePage() {
     }
 
     const formData = new FormData();
+    formData.append("_method", "PUT");
     formData.append("title", title);
-    formData.append("price", price.replace(/[^0-9]/g, ""));
     formData.append("instructor_name", instructor_name);
+    formData.append("price", price.replace(/[^0-9]/g, ""));
     formData.append("description", description);
 
     if (thumbnail) {
       formData.append("thumbnail", thumbnail);
     }
 
-    createCourse(formData);
+    // Call mutation with config overriding the default request
+    // We override method to POST to handle FormData with _method: PUT (Laravel style)
+    updateCourse({ id: courseId, data: formData });
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#121212] to-[#1a1a1a] flex items-center justify-center text-white">
+        Loading course data...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#121212] to-[#1a1a1a] flex items-center justify-center text-red-500">
+        Error loading course. Please try again.
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#121212] to-[#1a1a1a]">
@@ -65,9 +126,9 @@ export default function CreateCoursePage() {
       <div className="p-6 border-b border-[rgba(255,255,255,0.1)]">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">Create New Course</h1>
+            <h1 className="text-2xl font-bold text-white">Edit Course</h1>
             <p className="text-[#737373] mt-1">
-              Design your course structure and content
+              Update course details and content
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -76,17 +137,17 @@ export default function CreateCoursePage() {
             </Link>
             <button
               onClick={handleSaveCourse}
-              disabled={isPending}
+              disabled={isUpdating}
               className="px-5 py-2.5 btn-gradient flex items-center gap-2 disabled:opacity-50"
             >
               <Save className="h-5 w-5" />
-              {isPending ? "Saving..." : "Save Course"}
+              {isUpdating ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Main Content - Split View */}
+      {/* Main Content */}
       <div className="flex h-[calc(100vh-120px)]">
         {/* Left Panel - Course Form */}
         <div className="w-full md:w-2/3 border-r border-[rgba(255,255,255,0.1)] overflow-y-auto mx-auto">
@@ -165,9 +226,19 @@ export default function CreateCoursePage() {
                       document.getElementById("thumbnail-upload")?.click()
                     }
                   >
-                    <Upload className="h-8 w-8 text-[#d4af35] mx-auto mb-3" />
+                    {previewThumbnail && !thumbnail ? (
+                      <img
+                        src={previewThumbnail}
+                        alt="Thumbnail"
+                        className="h-32 w-auto mx-auto mb-3 object-cover rounded"
+                      />
+                    ) : (
+                      <Upload className="h-8 w-8 text-[#d4af35] mx-auto mb-3" />
+                    )}
                     <p className="text-white mb-1">
-                      Click to upload or drag and drop
+                      {thumbnail
+                        ? `Selected: ${thumbnail.name}`
+                        : "Click to upload or drag and drop"}
                     </p>
                     <p className="text-sm text-[#737373]">
                       SVG, PNG, JPG or GIF (max. 800x400px)
@@ -176,26 +247,15 @@ export default function CreateCoursePage() {
                       id="thumbnail-upload"
                       type="file"
                       accept="image/*"
-                      onChange={(e) =>
-                        setThumbnail(e.target.files?.[0] || null)
-                      }
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null;
+                        setThumbnail(file);
+                      }}
                       className="hidden"
                     />
                   </div>
-                  {thumbnail && (
-                    <p className="text-sm text-[#d4af35] mt-2">
-                      Selected: {thumbnail.name}
-                    </p>
-                  )}
                 </div>
               </div>
-            </div>
-
-            <div className="mt-8 p-4 bg-[#1f1f1f] rounded-lg border border-[rgba(255,255,255,0.1)]">
-              <p className="text-[#737373] text-sm text-center">
-                Note: You can add sections and lessons after saving the initial
-                course details.
-              </p>
             </div>
           </div>
         </div>

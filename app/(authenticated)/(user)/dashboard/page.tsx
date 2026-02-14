@@ -103,24 +103,24 @@ export default function DashboardPage() {
     );
   }
 
-  if (!error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-[#121212] to-black text-white">
-        <div className="container-custom py-8">
-          <div className="text-center py-16">
-            <div className="text-red-500 mb-4">
-              <h3 className="text-xl font-semibold text-white mb-2">
-                Failed to load dashboard
-              </h3>
-              <p className="text-[#737373] mb-4">
-                {error.message || "An error occurred"}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // if (!error) {
+  //   return (
+  //     <div className="min-h-screen bg-gradient-to-b from-[#121212] to-black text-white">
+  //       <div className="container-custom py-8">
+  //         <div className="text-center py-16">
+  //           <div className="text-red-500 mb-4">
+  //             <h3 className="text-xl font-semibold text-white mb-2">
+  //               Failed to load dashboard
+  //             </h3>
+  //             <p className="text-[#737373] mb-4">
+  //               {error.message || "An error occurred"}
+  //             </p>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#121212] to-black text-white">
