@@ -9,22 +9,22 @@ import type { QueryKey, QueryClient, QueryObserverOptions, UseQueryResult } from
 import type { GetApiCoursesSlugQueryResponse, GetApiCoursesSlugPathParams } from "../types/GetApiCoursesSlug.ts";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 
-export const getApiCoursesSlugQueryKey = (slug: GetApiCoursesSlugPathParams[":slug"]) => [{ url: '/api/courses/::slug', params: {slug:slug} }] as const
+export const getApiCoursesSlugQueryKey = (slug: GetApiCoursesSlugPathParams["slug"]) => [{ url: '/api/courses/:slug', params: {slug:slug} }] as const
 
 export type GetApiCoursesSlugQueryKey = ReturnType<typeof getApiCoursesSlugQueryKey>
 
 /**
- * @summary Get Course Detail By Slug
- * {@link /api/courses/::slug}
+ * @summary Get Course Detail By Slug (Public)
+ * {@link /api/courses/:slug}
  */
-export async function getApiCoursesSlug(slug: GetApiCoursesSlugPathParams[":slug"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export async function getApiCoursesSlug(slug: GetApiCoursesSlugPathParams["slug"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const { client: request = fetch, ...requestConfig } = config  
   
-  const res = await request<GetApiCoursesSlugQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : `/api/courses/:${slug}`, ... requestConfig })  
+  const res = await request<GetApiCoursesSlugQueryResponse, ResponseErrorConfig<Error>, unknown>({ method : "GET", url : `/api/courses/${slug}`, ... requestConfig })  
   return res.data
 }
 
-export function getApiCoursesSlugQueryOptions(slug: GetApiCoursesSlugPathParams[":slug"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
+export function getApiCoursesSlugQueryOptions(slug: GetApiCoursesSlugPathParams["slug"], config: Partial<RequestConfig> & { client?: typeof fetch } = {}) {
   const queryKey = getApiCoursesSlugQueryKey(slug)
   return queryOptions<GetApiCoursesSlugQueryResponse, ResponseErrorConfig<Error>, GetApiCoursesSlugQueryResponse, typeof queryKey>({
    enabled: !!(slug),
@@ -37,10 +37,10 @@ export function getApiCoursesSlugQueryOptions(slug: GetApiCoursesSlugPathParams[
 }
 
 /**
- * @summary Get Course Detail By Slug
- * {@link /api/courses/::slug}
+ * @summary Get Course Detail By Slug (Public)
+ * {@link /api/courses/:slug}
  */
-export function useGetApiCoursesSlug<TData = GetApiCoursesSlugQueryResponse, TQueryData = GetApiCoursesSlugQueryResponse, TQueryKey extends QueryKey = GetApiCoursesSlugQueryKey>(slug: GetApiCoursesSlugPathParams[":slug"], options: 
+export function useGetApiCoursesSlug<TData = GetApiCoursesSlugQueryResponse, TQueryData = GetApiCoursesSlugQueryResponse, TQueryKey extends QueryKey = GetApiCoursesSlugQueryKey>(slug: GetApiCoursesSlugPathParams["slug"], options: 
 {
   query?: Partial<QueryObserverOptions<GetApiCoursesSlugQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>> & { client?: QueryClient },
   client?: Partial<RequestConfig> & { client?: typeof fetch }
