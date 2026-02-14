@@ -1,10 +1,12 @@
 openapi: 3.0.0
 info:
-  title: Saladdin-LMS
+  title: Backend-Documentation
   version: 1.0.0
   description: ""
 servers:
   - url: "{{base_url}}"
+  - url: "{{baseUrl}}"
+  - url: api
 paths:
   /api/auth/login:
     post:
@@ -68,7 +70,7 @@ paths:
                 password:
                   type: string
             example:
-              email: student@saladdin.com
+              email: admin@saladdin.com
               password: password
   /api/logout:
     post:
@@ -245,6 +247,12 @@ paths:
       tags:
         - Auth
       description: "### ⚠️ PENTING: Jangan di-fetch!\n\nEndpoint ini **BUKAN** untuk dipanggil menggunakan `axios.get()` atau `fetch()`.  \nEndpoint ini berfungsi untuk **Redirect Browser** ke halaman persetujuan Google.\n\n### Cara Penggunaan di Frontend:\n\nGunakan tag anchor HTML biasa (`[](null)`[) atau <code>window.location.href</code>:](null)[<br>Login with Google<br>](http://127.0.0.1:8000/api/auth/google)\n\nBuatlah halaman di\_/auth/callback, lalu ambil\_token\_dari URL parameter dan simpan ke Cookies/LocalStorageEndFragment"
+  /api/auth/google/callback:
+    get:
+      summary: Handle Callback (Saat user balik dari Google)
+      responses: {}
+      tags:
+        - Auth
   /api/lessons/{lessonId}/questions/{seq}:
     get:
       summary: Get Question Quiz by ID
@@ -392,12 +400,12 @@ paths:
           application/json:
             schema:
               type: object
-  /api/courses/:{slug}:
+  /api/courses/{slug}:
     get:
-      summary: Get Course Detail By Slug
+      summary: Get Course Detail By Slug (Public)
       responses:
         "200":
-          description: Success Get Course Detail By Slug
+          description: Success Get Course Detail By Slug (Public)
           headers:
             Host:
               schema:
@@ -418,7 +426,7 @@ paths:
             Date:
               schema:
                 type: string
-              example: Fri, 16 Jan 2026 07:10:48 GMT
+              example: Fri, 30 Jan 2026 09:48:37 GMT
             Access-Control-Allow-Origin:
               schema:
                 type: string
@@ -428,7 +436,7 @@ paths:
         - Courses
         - Course Detail
     parameters:
-      - name: ":slug"
+      - name: slug
         in: path
         required: true
         deprecated: false
@@ -681,6 +689,55 @@ paths:
         deprecated: false
         schema: {}
         example: "1"
+  /api/certificates/verify/{certificateNumber}:
+    get:
+      summary: Verify Certificate (Public)
+      responses: {}
+      tags:
+        - Student
+        - Certificate
+    parameters:
+      - name: certificateNumber
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: CERT-2026-001234
+  /api/my-certificates:
+    get:
+      summary: Get My Certificates
+      responses: {}
+      tags:
+        - Student
+        - Certificate
+  /api/certificates/{id}:
+    get:
+      summary: Get Certificate Detail
+      responses: {}
+      tags:
+        - Student
+        - Certificate
+    parameters:
+      - name: id
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "2"
+  /api/certificates/{id}/download:
+    get:
+      summary: Download Certificate PDF
+      responses: {}
+      tags:
+        - Student
+        - Certificate
+    parameters:
+      - name: id
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "1"
   /api/dashboard/stats:
     get:
       summary: Get Stats
@@ -747,6 +804,244 @@ paths:
               example: "*"
       tags:
         - Student
+  /api/admin/courses:
+    get:
+      summary: Get List All Courses
+      parameters:
+        - name: status
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+        - name: search
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+        - name: instructor
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+        - name: per_page
+          in: query
+          required: false
+          deprecated: false
+          schema: {}
+          example: "5"
+      responses:
+        "200":
+          description: Success Get List All Courses
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Tue, 27 Jan 2026 06:12:45 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Courses
+    post:
+      summary: Create Courses
+      responses:
+        "201":
+          description: Success Create Courses
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Tue, 27 Jan 2026 06:42:27 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Courses
+  /api/admin/courses/{id}:
+    get:
+      summary: Get Course Detail
+      responses:
+        "200":
+          description: Success Get Course Detail
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Tue, 27 Jan 2026 06:18:28 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Courses
+    parameters:
+      - name: id
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "4"
+    put:
+      summary: Update Course
+      responses:
+        "200":
+          description: Success Update Course
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Tue, 27 Jan 2026 07:01:54 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Courses
+    delete:
+      summary: Delete Course
+      responses:
+        "200":
+          description: Success Delete Course
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Tue, 27 Jan 2026 07:57:10 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Courses
+  /api/admin/courses/{courseId}/sections:
+    get:
+      summary: Get List Sections in Course
+      responses:
+        "200":
+          description: Success Get List Sections in Course
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Tue, 27 Jan 2026 08:46:14 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Content Management
+        - Section CRUD
+    parameters:
+      - name: courseId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "1"
   /api/admin/courses/1/sections:
     post:
       summary: Create Section
@@ -780,7 +1075,8 @@ paths:
               example: "*"
       tags:
         - Admin
-        - Courses
+        - Content Management
+        - Section CRUD
       requestBody:
         content:
           application/json:
@@ -791,6 +1087,90 @@ paths:
                   type: string
             example:
               title: Testing
+  /admin/sections/{sectionId}:
+    put:
+      summary: Update Section
+      responses:
+        "200":
+          description: Success Update Section
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Tue, 27 Jan 2026 13:15:34 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Content Management
+        - Section CRUD
+    parameters:
+      - name: sectionId
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: "1"
+  /api/admin/sections/{sectionId}:
+    delete:
+      summary: Delete Section
+      responses:
+        "200":
+          description: Delete Section
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Tue, 27 Jan 2026 13:17:16 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Content Management
+        - Section CRUD
+    parameters:
+      - name: sectionId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "1"
   /api/admin/sections/:{sectionId}/lessons:
     post:
       summary: Create Lesson Link Video Type
@@ -824,7 +1204,8 @@ paths:
               example: "*"
       tags:
         - Admin
-        - Courses
+        - Content Management
+        - Lesson CRUD
     parameters:
       - name: ":sectionId"
         in: path
@@ -832,6 +1213,760 @@ paths:
         deprecated: false
         schema: {}
         example: "2"
+  /api/admin/sections/{sectionId}/lessons:
+    get:
+      summary: Get List Lesson in Section
+      responses:
+        "200":
+          description: Success Get List Lesson in Section
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Wed, 28 Jan 2026 09:56:31 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Content Management
+        - Lesson CRUD
+    parameters:
+      - name: sectionId
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: "3"
+  /api/admin/lessons/{lessonId}:
+    get:
+      summary: Get Lesson Detail
+      responses:
+        "200":
+          description: Success Get Lesson Detail
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Wed, 28 Jan 2026 10:00:59 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Content Management
+        - Lesson CRUD
+    parameters:
+      - name: lessonId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "5"
+    put:
+      summary: Update Lesson Link Video Type Copy
+      responses:
+        "200":
+          description: Success Update Lesson Link Video Type Copy
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Wed, 28 Jan 2026 10:31:24 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Content Management
+        - Lesson CRUD
+    delete:
+      summary: Delete Lesson
+      responses:
+        "200":
+          description: Success Delete Lesson
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Wed, 28 Jan 2026 10:33:16 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Content Management
+        - Lesson CRUD
+  /api/admin/lessons/{lessonId}/quiz:
+    get:
+      summary: Get Quiz with All Questions
+      responses:
+        "200":
+          description: Success Get Quiz with All Questions
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Wed, 28 Jan 2026 10:45:08 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Content Management
+        - Quiz Builder
+    parameters:
+      - name: lessonId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "12"
+  /api/admin/lessons/{lessonId}/questions:
+    post:
+      summary: Add Question
+      responses:
+        "201":
+          description: Success Add Question
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Wed, 28 Jan 2026 11:54:11 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Content Management
+        - Quiz Builder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question_text:
+                  type: string
+                points:
+                  type: integer
+                sequence:
+                  type: integer
+                options:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      option_text:
+                        type: string
+                      is_correct:
+                        type: boolean
+            example:
+              question_text: Apakah pertanyaan ini berhasil ditambahkan?
+              points: 10
+              sequence: 2
+              options:
+                - option_text: ya
+                  is_correct: true
+                - option_text: tidak
+                  is_correct: false
+                - option_text: mungkin
+                  is_correct: false
+    parameters:
+      - name: lessonId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "8"
+  /api/admin/questions/{questionId}:
+    put:
+      summary: Update Question
+      responses:
+        "200":
+          description: Success Update Question
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Wed, 28 Jan 2026 12:08:27 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Content Management
+        - Quiz Builder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question_text:
+                  type: string
+                points:
+                  type: integer
+                options:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      option_text:
+                        type: string
+                      is_correct:
+                        type: boolean
+            example:
+              question_text: Updated question text?
+              points: 10
+              options:
+                - option_text: New 1
+                  is_correct: true
+                - option_text: Option 1
+                  is_correct: false
+    parameters:
+      - name: questionId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "3"
+    delete:
+      summary: Delete Question
+      responses:
+        "200":
+          description: Succes Delete Question
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Wed, 28 Jan 2026 12:13:27 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Content Management
+        - Quiz Builder
+  /api/admin/lessons/{lessonId}/questions/reorder:
+    post:
+      summary: Reorder Questions (Drag & Drop)
+      responses:
+        "200":
+          description: Success Reorder Questions (Drag & Drop)
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Thu, 29 Jan 2026 16:12:07 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Content Management
+        - Quiz Builder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                questions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      sequence:
+                        type: integer
+            example:
+              questions:
+                - id: 3
+                  sequence: 1
+                - id: 1
+                  sequence: 2
+                - id: 2
+                  sequence: 3
+    parameters:
+      - name: lessonId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "3"
+  /api/admin/courses/{courseId}/signatures:
+    get:
+      summary: Get List Signatures
+      responses:
+        "200":
+          description: Success Get List Signatures
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Fri, 30 Jan 2026 10:47:23 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Certificate Management
+        - Certificate Signatures
+    parameters:
+      - name: courseId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "1"
+    post:
+      summary: Create Signature
+      responses:
+        "201":
+          description: Success Create Signature
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Fri, 30 Jan 2026 10:51:16 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Certificate Management
+        - Certificate Signatures
+  /api/admin/courses/{courseId}/signatures/{signatueId}:
+    put:
+      summary: Update Signature
+      responses:
+        "200":
+          description: Success Update Signature
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Fri, 30 Jan 2026 10:57:22 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Certificate Management
+        - Certificate Signatures
+    parameters:
+      - name: courseId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "1"
+      - name: signatueId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "3"
+    delete:
+      summary: Delete Signature
+      responses:
+        "200":
+          description: Success Delete Signature
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Fri, 30 Jan 2026 10:58:58 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Certificate Management
+        - Certificate Signatures
+  /api/admin/courses/{courseId}/signatures/reorder:
+    post:
+      summary: Reorder Signatures
+      responses: {}
+      tags:
+        - Admin
+        - Certificate Management
+        - Certificate Signatures
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                signatures:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      order:
+                        type: integer
+            example:
+              signatures:
+                - id: 2
+                  order: 1
+                - id: 1
+                  order: 2
+                - id: 3
+                  order: 3
+    parameters:
+      - name: courseId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "1"
+  /api/admin/courses/{courseId}/certificate:
+    get:
+      summary: Get Certificate Config
+      responses:
+        "200":
+          description: Success Get Certificate Config
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Thu, 29 Jan 2026 16:17:18 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Certificate Management
+    parameters:
+      - name: courseId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "1"
+  /api/certificate-preview/1:
+    get:
+      summary: Get Certificate Preview
+      responses: {}
+      tags:
+        - Admin
+        - Certificate Management
+  /api/admin/courses/{courseId}/certificate-config:
+    post:
+      summary: Create/Update Certificate Config
+      responses:
+        "200":
+          description: Success Create/Update Certificate Config
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Fri, 30 Jan 2026 10:06:21 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Certificate Management
+    parameters:
+      - name: courseId
+        in: path
+        required: true
+        deprecated: false
+        schema: {}
+        example: "1"
+    delete:
+      summary: Delete Certificate Config
+      responses:
+        "200":
+          description: Success Delete Certificate Config
+          headers:
+            Host:
+              schema:
+                type: string
+              example: 127.0.0.1:8000
+            Connection:
+              schema:
+                type: string
+              example: close
+            X-Powered-By:
+              schema:
+                type: string
+              example: PHP/8.4.1
+            Cache-Control:
+              schema:
+                type: string
+              example: no-cache, private
+            Date:
+              schema:
+                type: string
+              example: Fri, 30 Jan 2026 10:45:20 GMT
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+      tags:
+        - Admin
+        - Certificate Management
 components:
   securitySchemes:
     BearerAuth:
