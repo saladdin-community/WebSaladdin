@@ -51,3 +51,58 @@ export interface UpdateCoursePayload {
   thumbnail?: File | null;
   _method?: "PUT";
 }
+
+// Section & Lesson API
+export interface CreateSectionPayload {
+  title: string;
+}
+
+export interface CreateLessonPayload {
+  title: string;
+  overview?: string;
+  additional_text?: string;
+  passing_grade?: string;
+  evaluation_description?: string;
+  type: string;
+  content_source?: string;
+  content_path?: File | string;
+  videoUrl?: string; // For preview/optimistic updates
+  articleUrl?: string; // For preview/optimistic updates
+}
+
+import apiClient from "@/app/lib/api-client";
+import {
+  postApiAdminCourses1Sections,
+  postApiAdminSectionsSectionidLessons, // Corrected casing
+  putApiAdminCoursesId,
+  putApiAdminLessonsLessonid,
+  deleteApiAdminSectionsSectionid,
+  deleteApiAdminLessonsLessonid,
+} from "@/app/lib/generated/hooks";
+
+// Re-export generated hooks for direct use
+export {
+  putApiAdminCoursesId,
+  putApiAdminLessonsLessonid,
+  deleteApiAdminSectionsSectionid,
+  deleteApiAdminLessonsLessonid,
+};
+
+// Wrappers (if needed for backward compatibility or specific logic)
+
+export const postApiAdminCoursesCourseIdSections = async (
+  courseId: number,
+  data: CreateSectionPayload,
+) => {
+  return postApiAdminCourses1Sections(courseId, data);
+};
+
+// Renamed wrapper to avoid conflict if I were to export the original
+// But here I am exporting this wrapper as 'postApiAdminSectionsSectionIdLessons' (CamelCase Id)
+export const postApiAdminSectionsSectionIdLessons = async (
+  sectionId: number,
+  data: FormData | CreateLessonPayload,
+) => {
+  // Use the generated function (lowercase id)
+  return postApiAdminSectionsSectionidLessons(sectionId, data as any);
+};

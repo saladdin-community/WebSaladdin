@@ -119,6 +119,12 @@ export default function AdminCoursesPage() {
       render: (_: any, row: Course) => (
         <div className="flex items-center gap-2">
           <Link
+            href={`/admin/courses/${row.id}/curriculum`}
+            className="px-3 py-1.5 text-sm btn-dark text-blue-400 hover:text-blue-300"
+          >
+            Curriculum
+          </Link>
+          <Link
             href={`/admin/courses/${row.id}/edit`}
             className="px-3 py-1.5 text-sm btn-dark"
           >
@@ -187,6 +193,7 @@ export default function AdminCoursesPage() {
           <AdminTable
             columns={tableColumns}
             data={data?.data?.data || []}
+            showActions={false}
             rowKey="id"
           />
 

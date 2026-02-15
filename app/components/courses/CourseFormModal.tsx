@@ -29,8 +29,8 @@ export default function CourseFormModal({
       id: 1,
       title: "Introduction",
       lessons: [
-        { id: 1, title: "Welcome Video" },
-        { id: 2, title: "Course Syllabus" },
+        { id: 1, title: "Welcome Video", type: "video" },
+        { id: 2, title: "Course Syllabus", type: "document" },
       ],
     },
   ]);
@@ -73,6 +73,7 @@ export default function CourseFormModal({
     setExpandedSections([...expandedSections, newId]);
   };
 
+  // ...
   const handleAddLesson = (sectionId: number) => {
     const updatedSections = sections.map((section) => {
       if (section.id === sectionId) {
@@ -87,7 +88,8 @@ export default function CourseFormModal({
             {
               id: newLessonId,
               title: `Lesson ${section.lessons.length + 1}`,
-            },
+              type: "text", // Initialize type as required
+            } as Lesson, // Force cast or ensure type matches
           ],
         };
       }
@@ -103,13 +105,16 @@ export default function CourseFormModal({
     if (lesson) {
       setSelectedLesson({ sectionId, lessonId });
       setCurrentLessonData({
-        overview: lesson.overview || "",
-        additionalText: lesson.additionalText || "",
+        content_text: lesson.content_text || "",
+        content_url: lesson.content_url || "",
         passingGrade: lesson.passingGrade || 75,
         evaluationDesc: lesson.evaluationDesc || "",
+        type: lesson.type,
+        content_source: lesson.content_source,
       });
     }
   };
+  // ...
 
   const handleSaveLesson = () => {
     if (!selectedLesson) return;

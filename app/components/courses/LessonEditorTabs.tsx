@@ -24,7 +24,12 @@ export default function LessonEditorTabs({
 
   const handleFileUpload = (type: "video" | "article", file: File) => {
     onUpdateLesson({
-      [type === "video" ? "videoUrl" : "articleUrl"]: URL.createObjectURL(file),
+      // For preview, we might still want a URL, but for state we use file
+      // If uploading, we might set content_source="upload"
+      content_source: "upload",
+      // content_url usually for external. For upload preview we can use object URL but typically we just hold the file
+      [type === "video" ? "videoFile" : "articleFile"]: file,
+      type: type === "video" ? "video" : "document", // Ensure type is set
     });
   };
 
@@ -41,7 +46,7 @@ export default function LessonEditorTabs({
           active={activeTab === "text"}
           onClick={() => setActiveTab("text")}
           icon={<FileText className="h-4 w-4" />}
-          label="Additional Text"
+          label="Text Content"
         />
         <TabButton
           active={activeTab === "evaluation"}
@@ -70,16 +75,24 @@ export default function LessonEditorTabs({
               accept=".pdf,.doc,.docx,.txt"
             />
 
+            {/* Optional: Add External URL Input here if needed */}
             <div>
               <label className="block text-sm font-medium text-[#d4d4d4] mb-2">
-                Lesson Overview
+                External Content URL (Video/Doc)
               </label>
-              <textarea
-                value={lessonData.overview || ""}
-                onChange={(e) => onUpdateLesson({ overview: e.target.value })}
-                placeholder="Write an overview of this lesson..."
-                rows={4}
-                className="w-full input py-3 resize-none"
+              <input
+                type="text"
+                placeholder="https://..."
+                className="w-full input py-3"
+                value={lessonData.content_url || ""}
+                onChange={(e) =>
+                  onUpdateLesson({
+                    content_url: e.target.value,
+                    content_source: "external",
+                    // Infer type if empty?
+                    type: lessonData.type || "video",
+                  })
+                }
               />
             </div>
           </div>
@@ -88,20 +101,15 @@ export default function LessonEditorTabs({
         {activeTab === "text" && (
           <div>
             <label className="block text-sm font-medium text-[#d4d4d4] mb-2">
-              Additional Text Content
+              Lesson Text Content
             </label>
             <textarea
-              value={lessonData.additionalText || ""}
-              onChange={(e) =>
-                onUpdateLesson({ additionalText: e.target.value })
-              }
-              placeholder="Enter additional text content for this lesson..."
+              value={lessonData.content_text || ""}
+              onChange={(e) => onUpdateLesson({ content_text: e.target.value })}
+              placeholder="Enter text content for this lesson..."
               rows={12}
               className="w-full input py-3 resize-none"
             />
-            <p className="text-sm text-[#737373] mt-2">
-              You can add supplementary materials, notes, or references here.
-            </p>
           </div>
         )}
 
@@ -113,14 +121,18 @@ export default function LessonEditorTabs({
               </label>
               <input
                 type="number"
-                value={lessonData.passingGrade || 75}
-                onChange={(e) =>
-                  onUpdateLesson({ passingGrade: Number(e.target.value) })
-                }
                 min="0"
                 max="100"
+                value={lessonData.passingGrade || ""}
+                onChange={(e) =>
+                  onUpdateLesson({ passingGrade: parseInt(e.target.value) })
+                }
+                placeholder="e.g., 75"
                 className="w-full input py-3"
               />
+              <p className="text-xs text-[#737373] mt-2">
+                Leave empty if no grading required for this lesson.
+              </p>
             </div>
 
             <div>
@@ -132,7 +144,7 @@ export default function LessonEditorTabs({
                 onChange={(e) =>
                   onUpdateLesson({ evaluationDesc: e.target.value })
                 }
-                placeholder="Describe the evaluation criteria..."
+                placeholder="Instructions for the quiz/evaluation..."
                 rows={4}
                 className="w-full input py-3 resize-none"
               />

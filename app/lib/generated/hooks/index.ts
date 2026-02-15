@@ -68,8 +68,10 @@ export type { PostApiLessonsLessonidSubmitQuizMutationKey } from "./usePostApiLe
 export type { PostApiLogoutMutationKey } from "./usePostApiLogout.ts";
 export type { PutAdminSectionsSectionidMutationKey } from "./usePutAdminSectionsSectionid.ts";
 export type { PutApiAdminCoursesCourseidSignaturesSignatueidMutationKey } from "./usePutApiAdminCoursesCourseidSignaturesSignatueid.ts";
-export type { PutApiAdminCoursesIdMutationKey } from "./usePutApiAdminCoursesId.ts";
-export type { PutApiAdminLessonsLessonidMutationKey } from "./usePutApiAdminLessonsLessonid.ts";
+export * from "./usePutApiAdminCoursesId";
+export * from "./usePutApiAdminLessonsLessonid";
+export * from "./useDeleteApiAdminSectionsSectionid";
+export * from "./useDeleteApiAdminLessonsLessonid";
 export type { PutApiAdminQuestionsQuestionidMutationKey } from "./usePutApiAdminQuestionsQuestionid.ts";
 export { deleteApiAdminCoursesCourseidCertificateConfigMutationKey } from "./useDeleteApiAdminCoursesCourseidCertificateConfig.ts";
 export { deleteApiAdminCoursesCourseidCertificateConfig } from "./useDeleteApiAdminCoursesCourseidCertificateConfig.ts";
