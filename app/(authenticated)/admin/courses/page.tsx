@@ -12,6 +12,8 @@ import {
 import { useDeleteApiAdminCoursesId } from "@/app/lib/generated/hooks/useDeleteApiAdminCoursesId";
 import { AdminCoursesResponse } from "@/app/lib/api/admin-courses";
 import { useQueryClient } from "@tanstack/react-query";
+import { usePutApiAdminCoursesId } from "@/app/lib/generated/hooks/usePutApiAdminCoursesId";
+import { COURSE_STATUS, COURSE_STATUS_OPTIONS } from "@/constants/courses";
 
 export default function AdminCoursesPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,6 +51,24 @@ export default function AdminCoursesPage() {
   const handleDelete = (id: number) => {
     if (confirm("Are you sure you want to delete this course?")) {
       deleteMutation.mutate({ id });
+    }
+  };
+
+  const updateCourseMutation = usePutApiAdminCoursesId();
+
+  const handleStatusUpdate = async (id: number, newStatus: string) => {
+    try {
+      await updateCourseMutation.mutateAsync({
+        id,
+        data: { status: newStatus },
+      });
+      queryClient.invalidateQueries({
+        queryKey: [{ url: "/api/admin/courses" }],
+      });
+      // Optionally show toast/alert
+    } catch (error) {
+      console.error("Failed to update status", error);
+      alert("Failed to update status");
     }
   };
 
@@ -112,6 +132,45 @@ export default function AdminCoursesPage() {
       key: "status",
       label: "Status",
       sortable: true,
+      render: (value: string, row: Course) => {
+        const currentOption = COURSE_STATUS_OPTIONS.find(
+          (opt) => opt.value === value,
+        ) || {
+          label: value,
+          color: "bg-gray-500/10 text-gray-400",
+          value: value,
+        };
+
+        return (
+          <div className="relative group">
+            <button
+              className={`px-2.5 py-1 rounded-full text-xs font-medium border border-transparent ${currentOption.color} hover:border-current transition-all`}
+            >
+              {currentOption.label}
+            </button>
+
+            {/* Dropdown on hover/focus within group - Simple CSS hover implementation for speed */}
+            <div className="absolute left-0 mt-1 w-32 bg-[#262626] border border-[rgba(255,255,255,0.1)] rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
+              {COURSE_STATUS_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => handleStatusUpdate(row.id, opt.value)}
+                  className={`w-full text-left px-3 py-2 text-xs hover:bg-[#333] transition-colors ${
+                    opt.value === value
+                      ? "text-white font-medium bg-[#333]"
+                      : "text-[#a3a3a3]"
+                  }`}
+                  disabled={
+                    opt.value === value || updateCourseMutation.isPending
+                  }
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      },
     },
     {
       key: "actions",

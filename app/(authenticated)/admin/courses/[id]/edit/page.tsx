@@ -27,6 +27,7 @@ import CourseSectionList from "@/app/components/courses/CourseSectionList";
 import LessonModal from "@/app/components/courses/LessonModal";
 
 import { getApiAdminSectionsSectionidLessons } from "@/app/lib/generated/hooks/useGetApiAdminSectionsSectionidLessons";
+import { COURSE_STATUS, COURSE_STATUS_OPTIONS } from "@/constants/courses";
 
 export default function EditCoursePage({
   params,
@@ -47,6 +48,7 @@ export default function EditCoursePage({
   const [price, setPrice] = useState("");
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [previewThumbnail, setPreviewThumbnail] = useState<string | null>(null);
+  const [status, setStatus] = useState<string>(COURSE_STATUS.DRAFT);
 
   // Curriculum State
   const [sections, setSections] = useState<Section[]>([]);
@@ -86,6 +88,7 @@ export default function EditCoursePage({
       if (c.thumbnail) {
         setPreviewThumbnail(c.thumbnail);
       }
+      setStatus(c.status || COURSE_STATUS.DRAFT);
       isDataLoaded.current = true;
     }
   }, [courseData]);
@@ -274,6 +277,7 @@ export default function EditCoursePage({
       courseFormData.append("price", price.replace(/[^0-9]/g, ""));
       courseFormData.append("instructor_name", instructor_name);
       courseFormData.append("description", description);
+      courseFormData.append("status", status);
       if (thumbnail) {
         courseFormData.append("thumbnail", thumbnail);
       }
@@ -448,17 +452,38 @@ export default function EditCoursePage({
               Basic Information
             </h2>
             <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-[#d4d4d4] mb-2">
-                  Course Title <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g., Advanced Tajweed"
-                  className="w-full input py-3"
-                />
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-[#d4d4d4] mb-2">
+                    Course Title <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="e.g., Advanced Tajweed"
+                    className="w-full input py-3"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#d4d4d4] mb-2">
+                    Status
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                      className="w-full input py-3 appearance-none capitalize"
+                    >
+                      {COURSE_STATUS_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {/* Hardcoded arrow for custom select style if needed, or rely on browser default */}
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-6">

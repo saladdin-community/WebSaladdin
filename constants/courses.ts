@@ -61,6 +61,30 @@ export const courseLevels = [
   { id: "advanced", label: "Advanced", color: "bg-rose-500/10 text-rose-400" },
 ];
 
+export const COURSE_STATUS = {
+  DRAFT: "draft",
+  PUBLISHED: "published",
+  ARCHIVED: "archived",
+} as const;
+
+export const COURSE_STATUS_OPTIONS = [
+  {
+    value: COURSE_STATUS.DRAFT,
+    label: "Draft",
+    color: "bg-gray-500/10 text-gray-400",
+  },
+  {
+    value: COURSE_STATUS.PUBLISHED,
+    label: "Published",
+    color: "bg-emerald-500/10 text-emerald-400",
+  },
+  {
+    value: COURSE_STATUS.ARCHIVED,
+    label: "Takedown",
+    color: "bg-red-500/10 text-red-400",
+  },
+];
+
 export const mockCourses: Course[] = [
   {
     id: 1,
