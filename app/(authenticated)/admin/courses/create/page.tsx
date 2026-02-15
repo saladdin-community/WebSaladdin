@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Save, Upload, Plus, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -18,6 +18,7 @@ import LessonModal from "@/app/components/courses/LessonModal";
 
 export default function CreateCoursePage() {
   const router = useRouter();
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
 
   // Basic Info State
   const [title, setTitle] = useState("");
@@ -132,6 +133,7 @@ export default function CreateCoursePage() {
               evaluationDesc: lessonData.evaluationDesc,
               videoFile: lessonData.videoFile,
               articleFile: lessonData.articleFile,
+              duration: lessonData.duration,
             };
             return { ...section, lessons: [...section.lessons, newLesson] };
           } else {
@@ -204,6 +206,8 @@ export default function CreateCoursePage() {
               "evaluation_description",
               lesson.evaluationDesc,
             );
+          if (lesson.duration)
+            lessonPayload.append("duration", lesson.duration.toString());
 
           let type = lesson.type || "text";
           let contentSource = lesson.content_source || "external";
@@ -341,9 +345,7 @@ export default function CreateCoursePage() {
                 </label>
                 <div
                   className="border-2 border-dashed border-[rgba(212,175,53,0.3)] rounded-lg p-8 text-center cursor-pointer hover:border-[#d4af35] transition-colors bg-[#1a1a1a]"
-                  onClick={() =>
-                    document.getElementById("thumbnail-upload")?.click()
-                  }
+                  onClick={() => thumbnailInputRef.current?.click()}
                 >
                   {previewThumbnail ? (
                     <img
@@ -363,7 +365,7 @@ export default function CreateCoursePage() {
                     SVG, PNG, JPG or GIF (max. 800x400px)
                   </p>
                   <input
-                    id="thumbnail-upload"
+                    ref={thumbnailInputRef}
                     type="file"
                     accept="image/*"
                     onChange={handleThumbnailChange}

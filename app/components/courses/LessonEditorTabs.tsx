@@ -10,6 +10,7 @@ import {
   Info,
 } from "lucide-react";
 import UploadArea from "../form/UploadArea";
+import RichTextEditor from "../form/RichTextEditor";
 import { Lesson } from "@/types/types";
 
 interface LessonEditorTabsProps {
@@ -217,14 +218,12 @@ export default function LessonEditorTabs({
               <label className="text-sm font-medium text-[#d4d4d4]">
                 Lesson Overview
               </label>
-              <textarea
+              <RichTextEditor
+                key={`editor-overview-${lessonData.id || "new"}`}
                 value={lessonData.content_text || ""} // Mapped from overview/content_text
-                onChange={(e) =>
-                  onUpdateLesson({ content_text: e.target.value })
-                }
+                onChange={(val) => onUpdateLesson({ content_text: val })}
                 placeholder="Type lesson summary here..."
-                rows={4}
-                className="w-full input py-3 bg-[#262626] border-[rgba(255,255,255,0.1)] resize-none"
+                className="bg-[#262626] border-[rgba(255,255,255,0.1)] rounded-lg"
               />
             </div>
           </div>
@@ -236,14 +235,12 @@ export default function LessonEditorTabs({
               <label className="text-sm font-medium text-[#d4d4d4]">
                 Lesson Content
               </label>
-              <textarea
+              <RichTextEditor
+                key={`editor-content-${lessonData.id || "new"}`}
                 value={lessonData.content_text || ""}
-                onChange={(e) =>
-                  onUpdateLesson({ content_text: e.target.value })
-                }
+                onChange={(val) => onUpdateLesson({ content_text: val })}
                 placeholder="Write your full article content here..."
-                rows={12}
-                className="w-full input py-3 bg-[#262626] border-[rgba(255,255,255,0.1)] resize-none font-mono text-sm"
+                className="bg-[#262626] border-[rgba(255,255,255,0.1)] rounded-lg min-h-[400px]"
               />
             </div>
           </div>

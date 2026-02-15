@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, useRef } from "react";
 import { Save, Upload, Plus, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -37,6 +37,8 @@ export default function EditCoursePage({
   const courseId = parseInt(courseIdRaw);
   const router = useRouter();
   const queryClient = useQueryClient();
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
+  const isDataLoaded = useRef(false);
 
   // Basic Info State
   const [title, setTitle] = useState("");
@@ -72,7 +74,7 @@ export default function EditCoursePage({
   // Populate Basic Info
   useEffect(() => {
     console.log("CourseData raw:", courseData);
-    if (courseData?.data) {
+    if (courseData?.data && !isDataLoaded.current) {
       console.log("Setting course data:", courseData.data);
       const c = courseData.data;
       setTitle(c.title || "");
@@ -84,6 +86,7 @@ export default function EditCoursePage({
       if (c.thumbnail) {
         setPreviewThumbnail(c.thumbnail);
       }
+      isDataLoaded.current = true;
     }
   }, [courseData]);
 
@@ -231,11 +234,12 @@ export default function EditCoursePage({
               type: lessonData.type || "text",
               content_source: lessonData.content_source || "upload",
               content_url: lessonData.content_url,
-              content_text: lessonData.content_text,
+              content_text: lessonData.content_text || "",
               passingGrade: lessonData.passingGrade,
               evaluationDesc: lessonData.evaluationDesc,
               videoFile: lessonData.videoFile,
               articleFile: lessonData.articleFile,
+              duration: lessonData.duration, // Ensure duration is mapped
             };
             return { ...section, lessons: [...section.lessons, newLesson] };
           } else {
@@ -275,9 +279,13 @@ export default function EditCoursePage({
       }
 
       // Use generated hook with POST override for FormData
-      // NOTE: Laravel requires POST with _method=PUT for FormData
+      // NOTE: Laravel requires POST with _method=PUT for FormData to handle files correctly
+      // attempting to use native PUT will cause the file to be empty/ignored
       await putApiAdminCoursesId(courseId, courseFormData, {
         method: "POST",
+        headers: {
+          "Content-Type": undefined, // Let browser set multipart/form-data with boundary
+        },
       });
 
       // 2. Process Deletions
@@ -499,9 +507,7 @@ export default function EditCoursePage({
                 </label>
                 <div
                   className="border-2 border-dashed border-[rgba(212,175,53,0.3)] rounded-lg p-8 text-center cursor-pointer hover:border-[#d4af35] transition-colors bg-[#1a1a1a]"
-                  onClick={() =>
-                    document.getElementById("thumbnail-upload")?.click()
-                  }
+                  onClick={() => thumbnailInputRef.current?.click()}
                 >
                   {previewThumbnail ? (
                     <img
@@ -521,7 +527,7 @@ export default function EditCoursePage({
                     SVG, PNG, JPG or GIF (max. 800x400px)
                   </p>
                   <input
-                    id="thumbnail-upload"
+                    ref={thumbnailInputRef}
                     type="file"
                     accept="image/*"
                     onChange={handleThumbnailChange}
