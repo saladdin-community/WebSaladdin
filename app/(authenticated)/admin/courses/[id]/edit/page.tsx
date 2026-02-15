@@ -78,7 +78,9 @@ export default function EditCoursePage({
       setTitle(c.title || "");
       setInstructorName(c.instructor_name || "");
       setDescription(c.description || "");
-      setPrice(c.price?.toString() || "");
+      // Handle price formatting: ensure it's an integer string to avoid "10000.00" -> "1000000" issue
+      const priceVal = parseFloat(c.price?.toString() || "0");
+      setPrice(priceVal ? Math.floor(priceVal).toString() : "");
       if (c.thumbnail) {
         setPreviewThumbnail(c.thumbnail);
       }
