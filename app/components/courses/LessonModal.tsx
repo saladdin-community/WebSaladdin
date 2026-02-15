@@ -62,12 +62,13 @@ export default function LessonModal({
         </div>
 
         {/* Modal Content - Delegated to LessonEditorTabs */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden flex flex-col">
           <LessonEditorTabs
             lessonData={localLessonData}
             onUpdateLesson={handleUpdateLesson}
             onSave={handleSave}
             onCancel={onClose}
+            mode={mode} // Pass mode to handle checking if it's "add" or "edit" for title/type locking if needed
           />
         </div>
       </div>

@@ -27,6 +27,7 @@ export interface Lesson {
   articleFile?: File;
 
   // Evaluation
+  duration?: number; // Duration in minutes
   passingGrade?: number;
   evaluationDesc?: string;
   questions?: any[];
