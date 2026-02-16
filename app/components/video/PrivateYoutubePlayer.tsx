@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Play, Pause, Volume2, Maximize, Minimize } from "lucide-react";
+import {
+  Play,
+  Pause,
+  Volume2,
+  Maximize,
+  Minimize,
+  SkipBack,
+  ChevronRight,
+} from "lucide-react";
 import YouTube, { YouTubeProps } from "react-youtube";
 
 interface PrivateYouTubePlayerProps {
@@ -39,6 +47,7 @@ export default function PrivateYouTubePlayer({
   const [player, setPlayer] = useState<any>(null);
   const [videoId, setVideoId] = useState<string | undefined>(propVideoId);
   const [isRestricted, setIsRestricted] = useState(false);
+  const [isEnded, setIsEnded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Extract video ID
@@ -88,48 +97,65 @@ export default function PrivateYouTubePlayer({
     player.setVolume(volume);
     player.setPlaybackRate(playbackRate);
 
-    // Disable right-click on video
-    const iframe = document.querySelector("iframe");
-    if (iframe) {
-      iframe.addEventListener("contextmenu", (e) => e.preventDefault());
+    // Disable right-click on video (SAFER METHOD)
+    try {
+      const iframe = player.getIframe();
+      if (iframe) {
+        iframe.addEventListener("contextmenu", (e: Event) =>
+          e.preventDefault(),
+        );
+      }
+    } catch (err) {
+      console.warn("Could not attach contextmenu listener to iframe", err);
     }
 
-    // Track progress
-    const interval = setInterval(() => {
-      if (player && player.getCurrentTime) {
+    return () => {};
+  };
+
+  // Timer logic to fix duration bug
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (isPlaying && player) {
+      interval = setInterval(() => {
         try {
           const current = player.getCurrentTime();
           setCurrentTime(current);
 
-          const progressPercent = dur > 0 ? (current / dur) * 100 : 0;
-          setProgress(progressPercent);
-          onProgressChange?.(progressPercent);
+          const dur = player.getDuration();
+          if (dur > 0) {
+            setDuration(dur);
+            const progressPercent = (current / dur) * 100;
+            setProgress(progressPercent);
+            onProgressChange?.(progressPercent);
+          }
         } catch (error) {
-          console.error("Error tracking progress:", error);
+          console.error("Error updating time:", error);
         }
-      }
-    }, 1000);
+      }, 1000);
+    }
 
-    return () => clearInterval(interval);
-  };
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isPlaying, player, onProgressChange]);
 
   const onPlayerStateChange: YouTubeProps["onStateChange"] = (event) => {
     const playerState = event.data;
 
-    // switch (playerState) {
-    //   case window.Yt.PlayerState.PLAYING:
-    //     setIsPlaying(true);
-    //     onPlayPause?.(true);
-    //     break;
-    //   case window.YT.PlayerState.PAUSED:
-    //   case window.YT.PlayerState.ENDED:
-    //     setIsPlaying(false);
-    //     onPlayPause?.(false);
-    //     break;
-    //   case window.YT.PlayerState.UNSTARTED:
-    //     // Video might be restricted
-    //     break;
-    // }
+    // 0 = ENDED, 1 = PLAYING, 2 = PAUSED
+    if (playerState === 0) {
+      setIsEnded(true);
+      setIsPlaying(false);
+      onPlayPause?.(false);
+    } else if (playerState === 1) {
+      setIsEnded(false);
+      setIsPlaying(true);
+      onPlayPause?.(true);
+    } else if (playerState === 2) {
+      setIsPlaying(false);
+      onPlayPause?.(false);
+    }
   };
 
   const onPlayerError: YouTubeProps["onError"] = (event) => {
@@ -146,6 +172,10 @@ export default function PrivateYouTubePlayer({
         if (isPlaying) {
           player.pauseVideo();
         } else {
+          if (isEnded) {
+            player.seekTo(0);
+            setIsEnded(false);
+          }
           player.playVideo();
         }
         setIsPlaying(!isPlaying);
@@ -423,6 +453,35 @@ export default function PrivateYouTubePlayer({
           <div className="text-center">
             <div className="h-12 w-12 border-4 border-[#d4af35] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-[#d4d4d4]">Loading video...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Custom End Screen Overlay */}
+      {isEnded && (
+        <div className="absolute inset-0 bg-black/90 z-20 flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-300">
+          <h3 className="text-xl font-bold text-white mb-2">
+            Lesson Completed!
+          </h3>
+          <p className="text-[#a3a3a3] mb-8 max-w-md">
+            You have finished "{title}".
+          </p>
+
+          <div className="flex gap-4">
+            <button
+              onClick={() => {
+                if (player) {
+                  player.seekTo(0);
+                  player.playVideo();
+                  setIsEnded(false);
+                }
+              }}
+              className="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all duration-300 font-medium"
+            >
+              <SkipBack className="h-5 w-5" />
+              Replay Lesson
+            </button>
+            {/* Private player usually has no next button props, but we keep the structure consistent if needed */}
           </div>
         </div>
       )}

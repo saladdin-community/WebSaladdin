@@ -5,7 +5,6 @@ import { Save, Upload, Plus, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import apiClient from "@/app/lib/api-client";
 import {
   useGetApiAdminCoursesId,
   getApiAdminCoursesIdQueryKey,
