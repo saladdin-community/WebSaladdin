@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, useMemo } from "react";
 import {
   BookOpen,
   Clock,
@@ -20,6 +20,7 @@ import {
   useGetApiCoursesSlug,
   useGetApiLessonsLessonid,
   usePostApiLessonsLessonidComplete,
+  getApiCoursesSlugQueryKey,
 } from "@/app/lib/generated/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -104,6 +105,25 @@ export default function CourseDetailPage({
     }
   }, [lessonData]);
 
+  // Calculate locked lessons
+  const lockedLessonIds = useMemo(() => {
+    const lockedIds = new Set<string>();
+    let foundFirstIncomplete = false;
+
+    if (courseData?.data?.sections) {
+      courseData.data.sections.forEach((section: CourseSection) => {
+        section.lessons.forEach((lesson: CourseLessonItem) => {
+          if (foundFirstIncomplete) {
+            lockedIds.add(lesson.id.toString());
+          } else if (!lesson.is_completed) {
+            foundFirstIncomplete = true;
+          }
+        });
+      });
+    }
+    return lockedIds;
+  }, [courseData]);
+
   // Handler functions
   const handlePlayPause = (isPlaying: boolean) => {
     // console.log("Video is playing:", isPlaying);
@@ -117,9 +137,7 @@ export default function CourseDetailPage({
       await completeLessonMutation.mutateAsync({ lessonId });
       // Invalidate course data to update sidebar progress/status
       await queryClient.invalidateQueries({
-        queryKey: [{ url: `/api/courses/${slugIdRaw}` }], // Invalidate using the slug
-        // Or generic: queryKey: [{ url: '/api/courses/:slug', params: { slug: params.slug } }]
-        // Ideally use the exported queryKey factory if possible, but manual string works for now with invalidateQueries matching
+        queryKey: getApiCoursesSlugQueryKey(slugIdRaw),
       });
       // Also potentially invalidate lesson detail if it carries status
 
@@ -237,7 +255,12 @@ export default function CourseDetailPage({
     return undefined;
   };
 
-  const getLessonIcon = (type: string, isCompleted: boolean) => {
+  const getLessonIcon = (
+    type: string,
+    isCompleted: boolean,
+    isLocked: boolean,
+  ) => {
+    if (isLocked) return <Lock className="h-4 w-4 text-[#525252]" />;
     if (isCompleted) return <CheckCircle className="h-5 w-5 text-[#22c55e]" />;
 
     switch (type) {
@@ -377,6 +400,11 @@ export default function CourseDetailPage({
                       // onVolumeChange={handleVolumeChange}
                       maxPlaybackRate={2}
                       showControls={true}
+                      onEnded={() => {
+                        if (activeLessonConfig) {
+                          handleLessonComplete(activeLessonConfig.id);
+                        }
+                      }}
                     />
                   </div>
                 )}
@@ -479,15 +507,21 @@ export default function CourseDetailPage({
                 <ChevronLeft className="h-5 w-5" />
                 Previous
               </button>
-              <button
-                onClick={handleNextButtonClick}
-                // Logic to disable if last
-                className="flex items-center justify-center gap-2 px-6 py-3 btn-primary font-bold disabled:opacity-50 disabled:cursor-not-allowed text-black"
-                // Added text-black if btn-primary is gold/yellow to ensure contrast, assume btn-primary handles it though
-              >
-                Next
-                <ChevronRight className="h-5 w-5" />
-              </button>
+              {/* Only show Next button if NOT a video OR if it IS a video and IS completed */}
+              {!(
+                activeLessonDetail?.type === "video" &&
+                !activeLessonConfig?.is_completed
+              ) && (
+                <button
+                  onClick={handleNextButtonClick}
+                  // Logic to disable if last
+                  className="flex items-center justify-center gap-2 px-6 py-3 btn-primary font-bold disabled:opacity-50 disabled:cursor-not-allowed text-black"
+                  // Added text-black if btn-primary is gold/yellow to ensure contrast, assume btn-primary handles it though
+                >
+                  Next
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              )}
             </div>
           </div>
 
@@ -539,39 +573,49 @@ export default function CourseDetailPage({
                       {activeSection === section.id.toString() && (
                         <div className="p-4 pt-2 border-t border-[rgba(255,255,255,0.1)]">
                           <div className="space-y-2">
-                            {section.lessons.map((lesson: CourseLessonItem) => (
-                              <button
-                                key={lesson.id}
-                                onClick={() =>
-                                  // lesson.status !== "Locked" && // If lock logic exists
-                                  setActiveLesson(lesson.id.toString())
-                                }
-                                className={`w-full p-3 rounded-md flex items-center justify-between transition-all duration-300 ${
-                                  activeLesson === lesson.id.toString()
-                                    ? "bg-gradient-to-r from-[rgba(212,175,53,0.2)] to-[rgba(253,224,71,0.1)] border border-[rgba(212,175,53,0.3)]"
-                                    : "hover:bg-[#262626] border border-transparent"
-                                }`}
-                              >
-                                <div className="flex items-center gap-3">
-                                  {getLessonIcon(
-                                    lesson.type,
-                                    lesson.is_completed,
-                                  )}
-                                  <span
-                                    className={`text-sm truncate ${
-                                      activeLesson === lesson.id.toString()
-                                        ? "text-[#d4af35] font-semibold"
-                                        : "text-[#d4d4d4]"
-                                    }`}
-                                  >
-                                    {lesson.title}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  {/* Duration if available */}
-                                </div>
-                              </button>
-                            ))}
+                            {section.lessons.map((lesson: CourseLessonItem) => {
+                              const isLocked = lockedLessonIds.has(
+                                lesson.id.toString(),
+                              );
+                              return (
+                                <button
+                                  key={lesson.id}
+                                  disabled={isLocked}
+                                  onClick={() =>
+                                    setActiveLesson(lesson.id.toString())
+                                  }
+                                  className={`w-full p-3 rounded-md flex items-center justify-between transition-all duration-300 ${
+                                    activeLesson === lesson.id.toString()
+                                      ? "bg-gradient-to-r from-[rgba(212,175,53,0.2)] to-[rgba(253,224,71,0.1)] border border-[rgba(212,175,53,0.3)]"
+                                      : isLocked
+                                        ? "opacity-50 cursor-not-allowed border border-transparent"
+                                        : "hover:bg-[#262626] border border-transparent"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    {getLessonIcon(
+                                      lesson.type,
+                                      lesson.is_completed,
+                                      isLocked,
+                                    )}
+                                    <span
+                                      className={`text-sm truncate ${
+                                        activeLesson === lesson.id.toString()
+                                          ? "text-[#d4af35] font-semibold"
+                                          : isLocked
+                                            ? "text-[#525252]"
+                                            : "text-[#d4d4d4]"
+                                      }`}
+                                    >
+                                      {lesson.title}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    {/* Duration if available */}
+                                  </div>
+                                </button>
+                              );
+                            })}
                           </div>
                         </div>
                       )}

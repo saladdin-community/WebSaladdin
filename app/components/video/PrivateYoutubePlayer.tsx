@@ -23,6 +23,7 @@ interface PrivateYouTubePlayerProps {
   maxPlaybackRate?: number;
   showControls?: boolean;
   startTime?: number;
+  onEnded?: () => void;
 }
 
 export default function PrivateYouTubePlayer({
@@ -36,6 +37,7 @@ export default function PrivateYouTubePlayer({
   maxPlaybackRate = 2,
   showControls = true,
   startTime = 0,
+  onEnded,
 }: PrivateYouTubePlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -132,7 +134,7 @@ export default function PrivateYouTubePlayer({
         } catch (error) {
           console.error("Error updating time:", error);
         }
-      }, 1000);
+      }, 100); // Update every 100ms for smoother progress
     }
 
     return () => {
@@ -148,6 +150,7 @@ export default function PrivateYouTubePlayer({
       setIsEnded(true);
       setIsPlaying(false);
       onPlayPause?.(false);
+      onEnded?.();
     } else if (playerState === 1) {
       setIsEnded(false);
       setIsPlaying(true);
@@ -343,7 +346,11 @@ export default function PrivateYouTubePlayer({
                 max="100"
                 value={progress}
                 onChange={handleProgressChange}
-                className="w-full h-1.5 bg-[#404040] rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-gold"
+                style={{
+                  background: `linear-gradient(to right, #d4af37 0%, #d4af37 ${progress}%, #404040 ${progress}%, #404040 100%)`,
+                  transition: "background 0.1s linear", // Smooth transition for background
+                }}
+                className="w-full h-1.5 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-gold"
               />
               <div className="flex justify-between text-sm text-[#a3a3a3] mt-1.5">
                 <span>{formatTime(currentTime)}</span>
