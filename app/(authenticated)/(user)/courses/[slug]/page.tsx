@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, use, useMemo } from "react";
+import FeedbackModal from "@/app/components/modal/FeedbackModal";
+import { useFeedbackModal } from "@/hooks/useFeedbackModal";
 import {
   BookOpen,
   Clock,
@@ -65,6 +67,10 @@ export default function CourseDetailPage({
   const [activeSection, setActiveSection] = useState<string>("");
   const [activeLesson, setActiveLesson] = useState<string>("");
   const [currentVideoUrl, setCurrentVideoUrl] = useState<string>("");
+  // true once the currently-playing video has ended and been marked complete
+  const [isVideoCompleted, setIsVideoCompleted] = useState(false);
+
+  const { modal: feedbackModal, success: showSuccess } = useFeedbackModal();
 
   const queryClient = useQueryClient();
 
@@ -97,6 +103,11 @@ export default function CourseDetailPage({
       }
     }
   }, [courseData?.data?.sections, activeLesson]);
+
+  // Reset video-completed flag whenever the user switches lesson
+  useEffect(() => {
+    setIsVideoCompleted(false);
+  }, [activeLesson]);
 
   // Update video URL when lesson detail is loaded
   useEffect(() => {
@@ -319,6 +330,24 @@ export default function CourseDetailPage({
 
   return (
     <div className="min-h-screen bg-[#121212] text-white">
+      {/* Video-completion feedback modal */}
+      <FeedbackModal
+        {...feedbackModal}
+        actions={[
+          {
+            label: "Next Lesson →",
+            variant: "primary",
+            onClick: () => {
+              navigateToNextLesson();
+            },
+          },
+          {
+            label: "Stay Here",
+            variant: "ghost",
+            onClick: () => {},
+          },
+        ]}
+      />
       {/* Header - Simplified */}
       <header className="border-b border-[rgba(255,255,255,0.1)] bg-[#121212]/90 backdrop-blur-sm sticky top-0 z-50">
         <div className="container-custom py-4">
@@ -400,10 +429,19 @@ export default function CourseDetailPage({
                       // onVolumeChange={handleVolumeChange}
                       maxPlaybackRate={2}
                       showControls={true}
-                      onEnded={() => {
+                      onEnded={async () => {
                         if (activeLessonConfig) {
-                          handleLessonComplete(activeLessonConfig.id);
+                          // 1. Mark lesson complete on the backend
+                          await handleLessonComplete(activeLessonConfig.id);
                         }
+                        // 2. Show the celebration modal
+                        showSuccess(
+                          "Video Completed! 🎉",
+                          'Great job finishing this lesson. Click "Next Lesson" below to continue.',
+                          { autoClose: 0 }, // user must dismiss manually
+                        );
+                        // 3. Unlock the Next button
+                        setIsVideoCompleted(true);
                       }}
                     />
                   </div>
@@ -507,16 +545,11 @@ export default function CourseDetailPage({
                 <ChevronLeft className="h-5 w-5" />
                 Previous
               </button>
-              {/* Only show Next button if NOT a video OR if it IS a video and IS completed */}
-              {!(
-                activeLessonDetail?.type === "video" &&
-                !activeLessonConfig?.is_completed
-              ) && (
+              {/* Next button: visible for non-video lessons, OR when video is completed */}
+              {(activeLessonDetail?.type !== "video" || isVideoCompleted) && (
                 <button
                   onClick={handleNextButtonClick}
-                  // Logic to disable if last
                   className="flex items-center justify-center gap-2 px-6 py-3 btn-primary font-bold disabled:opacity-50 disabled:cursor-not-allowed text-black"
-                  // Added text-black if btn-primary is gold/yellow to ensure contrast, assume btn-primary handles it though
                 >
                   Next
                   <ChevronRight className="h-5 w-5" />
