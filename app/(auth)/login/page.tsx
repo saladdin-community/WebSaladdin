@@ -164,13 +164,15 @@ export default function LoginPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <button className="btn btn-outline flex-1 justify-center items-center gap-3 py-3">
+            <button
+              type="button"
+              onClick={() => {
+                window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/google`;
+              }}
+              className="btn btn-outline flex-1 justify-center items-center gap-3 py-3 hover:border-[#4285F4]/60 hover:text-[#4285F4] transition-all duration-300"
+            >
               <FaGoogle className="text-xl" />
               <span>Google</span>
-            </button>
-            <button className="btn btn-outline flex-1 justify-center items-center gap-3 py-3">
-              <FaFacebook className="text-xl" />
-              <span>Facebook</span>
             </button>
           </div>
 
