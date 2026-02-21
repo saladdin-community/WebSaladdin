@@ -1,307 +1,494 @@
-// app/courses/page.tsx
+// app/(authenticated)/(user)/courses/page.tsx
 "use client";
 
-import { Search, Filter, BookOpen, Bookmark } from "lucide-react";
+import {
+  Search,
+  BookOpen,
+  GraduationCap,
+  Loader2,
+  ChevronRight,
+  Play,
+} from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
-import { useGetApiCourses } from "@/app/lib/generated";
+import {
+  useGetApiCourses,
+  useGetApiMyCourses,
+  usePostApiCoursesCourseidEnroll,
+} from "@/app/lib/generated";
+import { useQueryClient } from "@tanstack/react-query";
+import FeedbackModal from "@/app/components/modal/FeedbackModal";
+import { useFeedbackModal } from "@/hooks/useFeedbackModal";
+
+type Tab = "explore" | "my-learning";
 
 interface Course {
   id: number;
   title: string;
   slug: string;
   thumbnail: string;
-  instructor: string;
-  price: number;
-  price_formatted: string;
-  description?: string;
-  rating?: number;
-  students?: number;
-  duration?: string;
-  level?: string;
-  category?: string;
-  isFree?: boolean;
-  progress?: number;
-  isBookmarked?: boolean;
+  instructor_name: string;
+  progress: number;
+  is_enrolled: boolean;
+  status: string;
 }
 
-export default function CoursesPage() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+// ─── Skeleton ────────────────────────────────────────────────────────────────
+function CourseCardSkeleton() {
+  return (
+    <div className="rounded-xl overflow-hidden border border-[rgba(255,255,255,0.08)] bg-[#1a1a1a] animate-pulse">
+      <div className="h-48 bg-[#242424]" />
+      <div className="p-5 space-y-3">
+        <div className="h-4 w-3/4 bg-[#2a2a2a] rounded" />
+        <div className="h-3 w-1/2 bg-[#2a2a2a] rounded" />
+        <div className="h-10 bg-[#2a2a2a] rounded-lg mt-4" />
+      </div>
+    </div>
+  );
+}
 
-  const {
-    data: coursesData,
-    isLoading,
-    error,
-    refetch,
-  } = useGetApiCourses({
-    query: {
-      enabled: true,
-      retry: 2,
-      staleTime: 5 * 60 * 1000,
-    },
-    client: {
-      headers: {
-        "Custom-Header": "value",
-      },
-    },
-  });
+// ─── Explore Card ─────────────────────────────────────────────────────────────
+// Shows ALL courses. If not enrolled → Enroll Now. If already enrolled → Resume Course.
+function ExploreCard({
+  course,
+  onEnroll,
+  isEnrolling,
+}: {
+  course: Course;
+  onEnroll: (id: number) => void;
+  isEnrolling: boolean;
+}) {
+  const cardContent = (
+    <div
+      className={`group rounded-xl overflow-hidden border border-[rgba(255,255,255,0.08)] bg-[#1a1a1a] hover:border-[rgba(212,175,53,0.4)] hover:shadow-[0_0_24px_rgba(212,175,53,0.12)] transition-all duration-300 flex flex-col h-full ${
+        course.is_enrolled ? "cursor-pointer" : ""
+      }`}
+    >
+      {/* Thumbnail */}
+      <div className="relative h-48 overflow-hidden flex-shrink-0">
+        <img
+          src={course.thumbnail}
+          alt={course.title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          onError={(e) => {
+            e.currentTarget.src =
+              "https://placehold.co/600x400/1e1e1e/d4af37?text=Course";
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
-  const categories = [
-    { id: "all", label: "All Courses" },
-    { id: "history", label: "Islamic History" },
-    { id: "quran", label: "Quran Studies" },
-    { id: "arabic", label: "Arabic Language" },
-    { id: "fiqh", label: "Fiqh" },
-    { id: "leadership", label: "Leadership" },
-  ];
-
-  const courses: Course[] =
-    coursesData?.data?.map((course: any) => ({
-      id: course.id,
-      title: course.title,
-      slug: course.slug,
-      thumbnail: course.thumbnail || "/images/default-course.jpg",
-      instructor: course.instructor || "Instructor",
-      price: course.price || 0,
-      price_formatted: course.price_formatted || "Rp 0",
-      description: course.description || "No description available",
-      rating: course.rating || 4.5,
-      students: course.students || 0,
-      duration: course.duration || "10 hours",
-      level: course.level || "All Levels",
-      category: course.category || "history",
-      isFree: course.price === 0,
-      progress: course.progress || 0,
-      isBookmarked: course.isBookmarked || false,
-    })) || [];
-
-  const filteredCourses = courses.filter((course) => {
-    const matchesSearch =
-      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.instructor.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "all" || course.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-[#121212] to-black text-white">
-        <div className="container-custom py-8">
-          <div className="flex flex-wrap gap-2 mb-8">
-            {categories.map((category) => (
-              <div
-                key={category.id}
-                className="px-4 py-2 rounded-md bg-[#1f1f1f] animate-pulse"
-              >
-                <div className="h-4 w-20 bg-[#2a2a2a] rounded"></div>
-              </div>
-            ))}
+        {/* Play overlay – only for enrolled */}
+        {course.is_enrolled && (
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="w-12 h-12 rounded-full bg-[rgba(212,175,53,0.9)] flex items-center justify-center shadow-lg">
+              <Play className="h-5 w-5 text-black fill-black ml-0.5" />
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="card h-full animate-pulse">
-                <div className="h-48 bg-[#1f1f1f] rounded-t-xl"></div>
-                <div className="p-6">
-                  <div className="h-4 w-20 bg-[#2a2a2a] rounded mb-3"></div>
-                  <div className="h-6 bg-[#2a2a2a] rounded mb-2"></div>
-                  <div className="h-4 bg-[#2a2a2a] rounded mb-1"></div>
-                  <div className="h-4 bg-[#2a2a2a] rounded w-3/4"></div>
-                  <div className="pt-4 border-t border-[rgba(255,255,255,0.1)]">
-                    <div className="h-8 bg-[#2a2a2a] rounded w-24"></div>
-                  </div>
-                </div>
+        )}
+
+        {/* Enrolled badge */}
+        {course.is_enrolled && (
+          <div className="absolute top-3 left-3">
+            <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[rgba(212,175,53,0.2)] border border-[rgba(212,175,53,0.5)] text-[#d4af35] uppercase tracking-wide">
+              Enrolled
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Body */}
+      <div className="p-5 flex flex-col flex-1">
+        <h3 className="text-base font-bold text-white mb-1 line-clamp-2 group-hover:text-[#d4af35] transition-colors duration-300 leading-snug">
+          {course.title}
+        </h3>
+        <p className="text-xs text-[#737373] mb-4">
+          By {course.instructor_name}
+        </p>
+
+        <div className="mt-auto">
+          {course.is_enrolled ? (
+            /* Resume Course – acts as visual button; navigation handled by Link wrapper */
+            <div className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-gradient-to-r from-[#d4af35] to-[#fde047] text-black font-semibold text-sm group-hover:opacity-90 transition-opacity">
+              Resume Course
+              <ChevronRight className="h-4 w-4" />
+            </div>
+          ) : (
+            /* Enroll Now – stops propagation so the outer div isn't navigated */
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                onEnroll(course.id);
+              }}
+              disabled={isEnrolling}
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg border border-[#d4af35] text-[#d4af35] font-semibold text-sm hover:bg-[rgba(212,175,53,0.15)] active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              {isEnrolling ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Enrolling…
+                </>
+              ) : (
+                "ENROLL NOW"
+              )}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  // If enrolled, wrap in Link so the whole card navigates to detail
+  if (course.is_enrolled) {
+    return (
+      <Link href={`/courses/${course.slug}`} className="block h-full">
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return <div className="h-full">{cardContent}</div>;
+}
+
+// ─── My Learning Card ─────────────────────────────────────────────────────────
+function MyLearningCard({ course }: { course: Course }) {
+  return (
+    <Link href={`/courses/${course.slug}`} className="group block h-full">
+      <div className="rounded-xl overflow-hidden border border-[rgba(255,255,255,0.08)] bg-[#1a1a1a] hover:border-[rgba(212,175,53,0.4)] hover:shadow-[0_0_24px_rgba(212,175,53,0.12)] transition-all duration-300 flex flex-col h-full">
+        {/* Thumbnail */}
+        <div className="relative h-48 overflow-hidden flex-shrink-0">
+          <img
+            src={course.thumbnail}
+            alt={course.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={(e) => {
+              e.currentTarget.src =
+                "https://placehold.co/600x400/1e1e1e/d4af37?text=Course";
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+
+          {/* Progress bar */}
+          {course.progress > 0 && (
+            <div className="absolute bottom-0 left-0 right-0 px-4 pb-3">
+              <div className="h-1.5 bg-[#333] rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[#d4af35] to-[#fde047] transition-all duration-500"
+                  style={{ width: `${course.progress}%` }}
+                />
               </div>
-            ))}
+              <p className="text-[10px] text-[#d4d4d4] mt-1">
+                {course.progress}% completed
+              </p>
+            </div>
+          )}
+
+          {/* Play icon overlay */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="w-12 h-12 rounded-full bg-[rgba(212,175,53,0.9)] flex items-center justify-center shadow-lg">
+              <Play className="h-5 w-5 text-black fill-black ml-0.5" />
+            </div>
           </div>
         </div>
+
+        {/* Body */}
+        <div className="p-5 flex flex-col flex-1">
+          <h3 className="text-base font-bold text-white mb-1 line-clamp-2 group-hover:text-[#d4af35] transition-colors duration-300 leading-snug">
+            {course.title}
+          </h3>
+          <p className="text-xs text-[#737373] mb-4">
+            By {course.instructor_name}
+          </p>
+
+          <div className="mt-auto">
+            <div className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-gradient-to-r from-[#d4af35] to-[#fde047] text-black font-semibold text-sm group-hover:opacity-90 transition-opacity">
+              Resume Course
+              <ChevronRight className="h-4 w-4" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+// ─── Empty State ──────────────────────────────────────────────────────────────
+function EmptyState({ tab, onSwitch }: { tab: Tab; onSwitch?: () => void }) {
+  return (
+    <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
+      {tab === "explore" ? (
+        <>
+          <BookOpen className="h-16 w-16 text-[#333] mb-4" />
+          <h3 className="text-lg font-semibold text-white mb-1">
+            No courses found
+          </h3>
+          <p className="text-[#737373] text-sm">Try adjusting your search.</p>
+        </>
+      ) : (
+        <>
+          <GraduationCap className="h-16 w-16 text-[#333] mb-4" />
+          <h3 className="text-lg font-semibold text-white mb-1">
+            No enrolled courses yet
+          </h3>
+          <p className="text-[#737373] text-sm">
+            Go to{" "}
+            <button
+              onClick={onSwitch}
+              className="text-[#d4af35] underline underline-offset-2"
+            >
+              Explore All
+            </button>{" "}
+            and enroll in a course to get started.
+          </p>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+export default function CoursesPage() {
+  const [activeTab, setActiveTab] = useState<Tab>("explore");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [enrollingId, setEnrollingId] = useState<number | null>(null);
+
+  const queryClient = useQueryClient();
+  const {
+    modal: feedbackModal,
+    success: showSuccess,
+    error: showError,
+  } = useFeedbackModal();
+
+  // ── Data: all courses (Explore All tab) ──
+  const {
+    data: allCoursesData,
+    isLoading: loadingAll,
+    error: errorAll,
+    refetch: refetchAll,
+  } = useGetApiCourses();
+
+  // ── Data: enrolled courses (My Learning tab) ──
+  const {
+    data: myCoursesData,
+    isLoading: loadingMy,
+    error: errorMy,
+    refetch: refetchMy,
+  } = useGetApiMyCourses();
+
+  // ── Enroll mutation ──
+  const { mutate: enroll } = usePostApiCoursesCourseidEnroll({
+    mutation: {
+      onMutate: ({ courseId }) => setEnrollingId(courseId as number),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [{ url: "/api/courses" }] });
+        queryClient.invalidateQueries({
+          queryKey: [{ url: "/api/my-courses" }],
+        });
+        refetchAll();
+        refetchMy();
+        showSuccess(
+          "Enrollment Successful!",
+          "You have successfully enrolled. Head to My Learning to start.",
+          { autoClose: 3500 },
+        );
+      },
+      onError: (err: any) => {
+        showError(
+          "Enrollment Failed",
+          err?.message ?? "Something went wrong. Please try again.",
+        );
+      },
+      onSettled: () => setEnrollingId(null),
+    },
+  });
+
+  // ── Derived data ──
+  const allCourses: Course[] = allCoursesData?.data ?? [];
+  const myCourses: Course[] = myCoursesData?.data ?? [];
+
+  const filteredAllCourses = allCourses
+    .filter((c) => {
+      if (!searchQuery.trim()) return true;
+      const q = searchQuery.toLowerCase();
+      return (
+        c.title.toLowerCase().includes(q) ||
+        c.instructor_name.toLowerCase().includes(q)
+      );
+    })
+    // unenrolled first, enrolled last
+    .sort((a, b) => Number(a.is_enrolled) - Number(b.is_enrolled));
+
+  const isLoading = activeTab === "explore" ? loadingAll : loadingMy;
+  const hasError = activeTab === "explore" ? errorAll : errorMy;
+
+  // ── Loading ──
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#121212] text-white">
+        <PageHeader
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+        <main className="container-custom py-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <CourseCardSkeleton key={i} />
+            ))}
+          </div>
+        </main>
       </div>
     );
   }
 
-  if (error) {
+  // ── Error ──
+  if (hasError) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#121212] to-black text-white">
-        <div className="container-custom py-8">
-          <div className="text-center py-16">
-            <div className="text-red-500 mb-4">
-              <BookOpen className="h-16 w-16 mx-auto" />
-            </div>
-            <h3 className="text-xl font-semibold text-white mb-2">
-              Failed to load courses
-            </h3>
-            <p className="text-[#737373] mb-4">
-              {error.message || "An error occurred while fetching courses"}
-            </p>
-            <button
-              onClick={() => refetch()}
-              className="px-6 py-2 bg-gradient-gold text-black font-semibold rounded-md hover:opacity-90 transition-opacity"
-            >
-              Retry
-            </button>
-          </div>
+      <div className="min-h-screen bg-[#121212] text-white flex items-center justify-center">
+        <div className="text-center">
+          <BookOpen className="h-14 w-14 text-red-500 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Failed to load courses</h3>
+          <p className="text-[#737373] text-sm mb-4">
+            {(hasError as any)?.message}
+          </p>
+          <button
+            onClick={() =>
+              activeTab === "explore" ? refetchAll() : refetchMy()
+            }
+            className="btn btn-primary px-6 py-2.5"
+          >
+            Retry
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#121212] to-black text-white">
-      <header className="bg-[#121212]/80 backdrop-blur-sm">
-        <div className="container-custom py-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-white">Course Library</h1>
-              <p className="text-[#737373]">
-                Explore all available courses and manage your learning
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-              <button className="btn btn-primary px-6 py-2.5 font-bold">
-                My Learning
-              </button>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#737373]" />
-                <input
-                  type="text"
-                  placeholder="Search courses..."
-                  className="input pl-10 pr-4 py-2.5 w-full sm:w-64 bg-[#1f1f1f] border border-[rgba(255,255,255,0.1)] rounded-md focus:border-[#d4af35] focus:ring-1 focus:ring-[rgba(212,175,53,0.3)]"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#121212] text-white">
+      <FeedbackModal {...feedbackModal} />
+
+      <PageHeader
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+      />
 
       <main className="container-custom py-8">
-        <div className="flex flex-wrap gap-2 mb-8">
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              className={`px-4 py-2 rounded-md transition-all duration-300 text-sm font-semibold ${
-                selectedCategory === category.id
-                  ? "bg-gradient-gold text-black"
-                  : "bg-[#1f1f1f] text-[#d4d4d4] hover:bg-[#262626] border border-[rgba(255,255,255,0.1)]"
-              }`}
-              onClick={() => setSelectedCategory(category.id)}
-            >
-              {category.label}
-            </button>
-          ))}
-          <button className="px-4 py-2 rounded-md bg-[#1f1f1f] text-[#d4d4d4] hover:bg-[#262626] border border-[rgba(255,255,255,0.1)] transition-all duration-300 flex items-center gap-2 text-sm font-semibold">
-            <Filter className="h-4 w-4" />
-            Filter
-          </button>
-        </div>
+        {/* ── Explore All Tab ── */}
+        {activeTab === "explore" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredAllCourses.length === 0 ? (
+              <EmptyState tab="explore" />
+            ) : (
+              filteredAllCourses.map((course) => (
+                <ExploreCard
+                  key={course.id}
+                  course={course}
+                  onEnroll={(id) => enroll({ courseId: id })}
+                  isEnrolling={enrollingId === course.id}
+                />
+              ))
+            )}
+          </div>
+        )}
 
-        {/* Course Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCourses.map((course) => (
-            <Link href={`/courses/${course.slug || course.id}`} key={course.id}>
-              <div className="card card-hover group cursor-pointer h-full">
-                {/* Course Thumbnail */}
-                <div className="relative h-48 overflow-hidden rounded-t-xl">
-                  <img
-                    src={course.thumbnail}
-                    alt={course.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    onError={(e) => {
-                      e.currentTarget.src = "/images/default-course.jpg";
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                  <div className="absolute top-4 right-4">
-                    <button
-                      className="p-2 bg-black/50 rounded-full hover:bg-[rgba(212,175,53,0.2)] transition-colors duration-300"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        // Toggle bookmark logic here
-                      }}
-                    >
-                      <Bookmark
-                        className={`h-5 w-5 ${
-                          course.isBookmarked
-                            ? "fill-[#d4af35] text-[#d4af35]"
-                            : "text-white"
-                        }`}
-                      />
-                    </button>
-                  </div>
-                  {course.progress && course.progress > 0 && (
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <div className="h-1.5 bg-[#404040] rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-[#d4af35] to-[#fde047] rounded-full transition-all duration-500"
-                          style={{ width: `${course.progress}%` }}
-                        ></div>
-                      </div>
-                      <p className="text-xs mt-1.5 text-[#d4d4d4]">
-                        {course.progress}% Complete
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Course Content */}
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-3 min-h-28 max-h-28">
-                    <div>
-                      <span className="inline-block px-3 py-1 text-xs rounded-full bg-[#262626] text-[#d4d4d4] mb-2 font-medium">
-                        {course.level}
-                      </span>
-                      <h3 className="text-xl font-bold mb-2 text-white group-hover:text-[#d4af35] transition-colors duration-300 line-clamp-2">
-                        {course.title}
-                      </h3>
-                    </div>
-                  </div>
-
-                  <p className="text-[#a3a3a3] mb-4 text-sm line-clamp-2 leading-relaxed">
-                    {course.description}
-                  </p>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-[rgba(255,255,255,0.1)]">
-                    <div className="text-sm text-[#737373]">
-                      By {course.instructor}
-                    </div>
-                    {course.isFree ? (
-                      <span className="px-3 py-1 bg-[rgba(34,197,94,0.2)] text-[#22c55e] rounded-full text-sm font-semibold border border-[rgba(34,197,94,0.3)]">
-                        FREE
-                      </span>
-                    ) : (
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-gradient-gold">
-                          {course.price_formatted}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {filteredCourses.length === 0 && (
-          <div className="text-center py-16">
-            <BookOpen className="h-16 w-16 text-[#404040] mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">
-              {courses.length === 0
-                ? "No courses available"
-                : "No courses found"}
-            </h3>
-            <p className="text-[#737373]">
-              {courses.length === 0
-                ? "Check back later for new courses"
-                : "Try adjusting your search or filter criteria"}
-            </p>
+        {/* ── My Learning Tab ── */}
+        {activeTab === "my-learning" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {myCourses.length === 0 ? (
+              <EmptyState
+                tab="my-learning"
+                onSwitch={() => setActiveTab("explore")}
+              />
+            ) : (
+              myCourses.map((course) => (
+                <MyLearningCard key={course.id} course={course} />
+              ))
+            )}
           </div>
         )}
       </main>
     </div>
+  );
+}
+
+// ─── Page Header ──────────────────────────────────────────────────────────────
+function PageHeader({
+  activeTab,
+  setActiveTab,
+  searchQuery,
+  setSearchQuery,
+}: {
+  activeTab: Tab;
+  setActiveTab: (t: Tab) => void;
+  searchQuery: string;
+  setSearchQuery: (v: string) => void;
+}) {
+  return (
+    <header className="bg-[#121212]/80 backdrop-blur-sm border-b border-[rgba(255,255,255,0.06)] sticky top-0 z-10">
+      <div className="container-custom py-5">
+        {/* Title + Search */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+          <div>
+            <h1 className="text-2xl font-bold text-white">Explore Courses</h1>
+            <p className="text-[#737373] text-sm mt-0.5">
+              Discover new knowledge and expand your horizons.
+            </p>
+          </div>
+
+          {activeTab === "explore" && (
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#737373]" />
+              <input
+                type="text"
+                placeholder="Search for courses..."
+                className="input pl-9 pr-4 py-2 text-sm w-full"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Tabs */}
+        <div className="flex items-center gap-1">
+          <TabButton
+            label="Explore All"
+            active={activeTab === "explore"}
+            onClick={() => setActiveTab("explore")}
+          />
+          <TabButton
+            label="My Learning"
+            active={activeTab === "my-learning"}
+            onClick={() => setActiveTab("my-learning")}
+          />
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function TabButton({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-5 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
+        active
+          ? "bg-gradient-to-r from-[#d4af35] to-[#fde047] text-black shadow-[0_2px_12px_rgba(212,175,53,0.35)]"
+          : "bg-[#1f1f1f] text-[#a3a3a3] hover:bg-[#262626] border border-[rgba(255,255,255,0.08)]"
+      }`}
+    >
+      {label}
+    </button>
   );
 }
