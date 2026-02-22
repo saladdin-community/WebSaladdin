@@ -15,6 +15,8 @@ import {
   ChevronRight,
   PlayCircle,
   File,
+  Download,
+  Eye,
 } from "lucide-react";
 import Link from "next/link";
 import PrivateYouTubePlayer from "@/app/components/video/PrivateYoutubePlayer";
@@ -69,6 +71,8 @@ export default function CourseDetailPage({
   const [currentVideoUrl, setCurrentVideoUrl] = useState<string>("");
   // true once the currently-playing video has ended and been marked complete
   const [isVideoCompleted, setIsVideoCompleted] = useState(false);
+  // true once the user has viewed or downloaded a document lesson
+  const [isDocumentRead, setIsDocumentRead] = useState(false);
 
   const { modal: feedbackModal, success: showSuccess } = useFeedbackModal();
 
@@ -104,9 +108,10 @@ export default function CourseDetailPage({
     }
   }, [courseData?.data?.sections, activeLesson]);
 
-  // Reset video-completed flag whenever the user switches lesson
+  // Reset video/document-completed flags whenever the user switches lesson
   useEffect(() => {
     setIsVideoCompleted(false);
+    setIsDocumentRead(false);
   }, [activeLesson]);
 
   // Update video URL when lesson detail is loaded
@@ -457,27 +462,64 @@ export default function CourseDetailPage({
 
                 {/* Document/PDF Lesson */}
                 {activeLessonDetail.type === "document" && (
-                  <div className="card mb-6 p-8 flex flex-col items-center justify-center min-h-[300px] text-center">
-                    <FileText className="h-16 w-16 text-[#d4af35] mb-4" />
-                    <h3 className="text-xl font-bold mb-2">
-                      {activeLessonDetail.title}
-                    </h3>
-                    <p className="text-[#a3a3a3] mb-6">
-                      This lesson contains a document resource.
-                    </p>
+                  <div className="card mb-6 overflow-hidden">
+                    {/* PDF Header Bar */}
+                    <div className="flex items-center justify-between px-5 py-3 bg-[#1a1a1a] border-b border-[rgba(255,255,255,0.08)]">
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-5 w-5 text-[#d4af35]" />
+                        <span className="text-sm font-semibold text-white truncate max-w-[300px]">
+                          {activeLessonDetail.title}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {isDocumentRead && (
+                          <span className="flex items-center gap-1.5 text-xs text-green-400 bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-full">
+                            <CheckCircle className="h-3.5 w-3.5" />
+                            Read
+                          </span>
+                        )}
+                        {activeLessonDetail.content?.url ? (
+                          <a
+                            href={activeLessonDetail.content.url}
+                            download
+                            onClick={() => setIsDocumentRead(true)}
+                            className="flex items-center gap-1.5 text-sm font-medium text-[#d4af35] hover:text-[#fde047] bg-[rgba(212,175,53,0.1)] hover:bg-[rgba(212,175,53,0.2)] border border-[rgba(212,175,53,0.25)] px-3 py-1.5 rounded-md transition-all duration-200"
+                          >
+                            <Download className="h-4 w-4" />
+                            Download
+                          </a>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    {/* Inline PDF Viewer */}
                     {activeLessonDetail.content?.url ? (
-                      <a
-                        href={activeLessonDetail.content.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn btn-primary px-6 py-3 flex items-center gap-2"
-                      >
-                        <BookOpen className="h-5 w-5" />
-                        View/Download Document
-                      </a>
+                      <div className="relative bg-[#0d0d0d]">
+                        <iframe
+                          src={`${activeLessonDetail.content.url}#toolbar=1&navpanes=1&scrollbar=1&view=FitH`}
+                          className="w-full border-0"
+                          style={{ height: "75vh", minHeight: "500px" }}
+                          title={activeLessonDetail.title}
+                          onLoad={() => setIsDocumentRead(true)}
+                        />
+                      </div>
                     ) : (
-                      <div className="text-red-400">
-                        Document URL not available
+                      <div className="p-10 flex flex-col items-center justify-center text-center">
+                        <FileText className="h-14 w-14 text-[#404040] mb-4" />
+                        <p className="text-[#737373] text-sm">
+                          Document URL not available
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Bottom hint when not yet read */}
+                    {!isDocumentRead && activeLessonDetail.content?.url && (
+                      <div className="px-5 py-3 bg-[rgba(212,175,53,0.06)] border-t border-[rgba(212,175,53,0.15)] flex items-center gap-2 text-sm text-[#d4af35]">
+                        <Eye className="h-4 w-4 shrink-0" />
+                        <span>
+                          Read the document or download it to unlock the next
+                          lesson.
+                        </span>
                       </div>
                     )}
                   </div>
@@ -544,8 +586,12 @@ export default function CourseDetailPage({
                 <ChevronLeft className="h-5 w-5" />
                 Previous
               </button>
-              {/* Next button: visible for non-video lessons, OR when video is completed */}
-              {(activeLessonDetail?.type !== "video" || isVideoCompleted) && (
+              {/* Next button: visible for video (after completed) or document (after read) or other types */}
+              {(activeLessonDetail?.type === "video"
+                ? isVideoCompleted
+                : activeLessonDetail?.type === "document"
+                  ? isDocumentRead
+                  : true) && (
                 <button
                   onClick={handleNextButtonClick}
                   className="flex items-center justify-center gap-2 px-6 py-3 btn-primary font-bold disabled:opacity-50 disabled:cursor-not-allowed text-black"
