@@ -24,6 +24,7 @@ import {
 import { Section, Lesson } from "@/types/types";
 import CourseSectionList from "@/app/components/courses/CourseSectionList";
 import LessonModal from "@/app/components/courses/LessonModal";
+import QuizManagerModal from "@/app/components/courses/QuizManagerModal";
 
 import { getApiAdminSectionsSectionidLessons } from "@/app/lib/generated/hooks/useGetApiAdminSectionsSectionidLessons";
 import { COURSE_STATUS, COURSE_STATUS_OPTIONS } from "@/constants/courses";
@@ -66,6 +67,11 @@ export default function EditCoursePage({
 
   const [isSaving, setIsSaving] = useState(false);
   const [curriculumVersion, setCurriculumVersion] = useState(0); // Force refresh trigger
+
+  // Quiz Modal State
+  const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
+  const [quizLessonId, setQuizLessonId] = useState<number>(0);
+  const [quizLessonTitle, setQuizLessonTitle] = useState<string>("");
 
   // Fetch Data
   const { data: courseData } = useGetApiAdminCoursesId(courseId);
@@ -257,6 +263,12 @@ export default function EditCoursePage({
       }),
     );
     setIsLessonModalOpen(false);
+  };
+
+  const handleManageQuiz = (lessonId: number, lessonTitle: string) => {
+    setQuizLessonId(lessonId);
+    setQuizLessonTitle(lessonTitle);
+    setIsQuizModalOpen(true);
   };
 
   // Batch Save Process
@@ -579,6 +591,7 @@ export default function EditCoursePage({
                 onDeleteSection={handleDeleteSection}
                 onDeleteLesson={handleDeleteLesson}
                 onEditLesson={handleEditLesson}
+                onManageQuiz={handleManageQuiz}
               />
 
               <button
@@ -605,6 +618,13 @@ export default function EditCoursePage({
         mode={lessonModalMode}
         lessonData={activeLessonData}
         onSave={handleSaveLesson}
+      />
+
+      <QuizManagerModal
+        isOpen={isQuizModalOpen}
+        onClose={() => setIsQuizModalOpen(false)}
+        lessonId={quizLessonId}
+        lessonTitle={quizLessonTitle}
       />
     </div>
   );
