@@ -438,7 +438,6 @@ export default function CourseDetailPage({
                         showSuccess(
                           "Video Completed! 🎉",
                           'Great job finishing this lesson. Click "Next Lesson" below to continue.',
-                          { autoClose: 0 }, // user must dismiss manually
                         );
                         // 3. Unlock the Next button
                         setIsVideoCompleted(true);

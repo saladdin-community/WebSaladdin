@@ -21,8 +21,6 @@ export interface FeedbackModalProps {
   message?: string;
   /** Optional primary / secondary action buttons */
   actions?: FeedbackAction[];
-  /** Auto-close after N milliseconds (0 = never) */
-  autoClose?: number;
 }
 
 // ─── Config per type ──────────────────────────────────────────────────────────
@@ -93,16 +91,8 @@ export default function FeedbackModal({
   title,
   message,
   actions,
-  autoClose = 0,
 }: FeedbackModalProps) {
   const cfg = CONFIG[type];
-
-  // Auto-close timer
-  useEffect(() => {
-    if (!isOpen || autoClose <= 0) return;
-    const id = setTimeout(onClose, autoClose);
-    return () => clearTimeout(id);
-  }, [isOpen, autoClose, onClose]);
 
   // Close on Escape
   useEffect(() => {
@@ -184,18 +174,6 @@ export default function FeedbackModal({
             </p>
           )}
 
-          {/* Auto-close progress bar */}
-          {autoClose > 0 && (
-            <div className="w-full h-0.5 bg-[#262626] rounded-full overflow-hidden mb-6">
-              <div
-                className={`h-full rounded-full ${cfg.iconClass.replace("text-", "bg-")}`}
-                style={{
-                  animation: `shrink ${autoClose}ms linear forwards`,
-                }}
-              />
-            </div>
-          )}
-
           {/* Actions */}
           {actions && actions.length > 0 ? (
             <div className="flex flex-col sm:flex-row gap-2 w-full">
@@ -225,14 +203,6 @@ export default function FeedbackModal({
           )}
         </div>
       </div>
-
-      {/* Keyframe for auto-close bar */}
-      <style>{`
-        @keyframes shrink {
-          from { width: 100%; }
-          to   { width: 0%; }
-        }
-      `}</style>
     </div>
   );
 }

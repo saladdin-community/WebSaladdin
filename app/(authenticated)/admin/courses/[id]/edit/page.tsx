@@ -25,6 +25,10 @@ import { Section, Lesson } from "@/types/types";
 import CourseSectionList from "@/app/components/courses/CourseSectionList";
 import LessonModal from "@/app/components/courses/LessonModal";
 import QuizManagerModal from "@/app/components/courses/QuizManagerModal";
+import PromptModal from "@/app/components/modal/PromptModal";
+import ConfirmModal from "@/app/components/modal/ConfirmModal";
+import FeedbackModal from "@/app/components/modal/FeedbackModal";
+import { useFeedbackModal } from "@/hooks/useFeedbackModal";
 
 import { getApiAdminSectionsSectionidLessons } from "@/app/lib/generated/hooks/useGetApiAdminSectionsSectionidLessons";
 import { COURSE_STATUS, COURSE_STATUS_OPTIONS } from "@/constants/courses";
@@ -72,6 +76,26 @@ export default function EditCoursePage({
   const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
   const [quizLessonId, setQuizLessonId] = useState<number>(0);
   const [quizLessonTitle, setQuizLessonTitle] = useState<string>("");
+
+  // Prompt modal — Add Section
+  const [isPromptOpen, setIsPromptOpen] = useState(false);
+
+  // Confirm modals — Delete Section / Lesson
+  const [confirmDelete, setConfirmDelete] = useState<{
+    open: boolean;
+    type: "section" | "lesson";
+    sectionId?: number;
+    lessonId?: number;
+    label: string;
+  }>({ open: false, type: "section", label: "" });
+
+  // Feedback modal — validation / save success / save error
+  const {
+    modal: feedbackModal,
+    success: showSuccess,
+    error: showError,
+    warning: showWarning,
+  } = useFeedbackModal();
 
   // Fetch Data
   const { data: courseData } = useGetApiAdminCoursesId(courseId);
@@ -160,15 +184,15 @@ export default function EditCoursePage({
 
   // Handlers - Curriculum
   const handleAddSection = () => {
-    const title = window.prompt("Enter section title:");
-    if (!title) return;
+    setIsPromptOpen(true);
+  };
 
+  const doAddSection = (title: string) => {
     const newSection: Section = {
-      id: -Date.now(), // Temporary ID
+      id: -Date.now(),
       title,
       lessons: [],
     };
-
     setSections((prev) => [...prev, newSection]);
     setExpandedSections((prev) => [...prev, newSection.id]);
   };
@@ -182,12 +206,12 @@ export default function EditCoursePage({
   };
 
   const handleDeleteSection = (sectionId: number) => {
-    if (confirm("Are you sure you want to delete this section?")) {
-      setSections((prev) => prev.filter((s) => s.id !== sectionId));
-      if (sectionId > 0) {
-        setDeletedSectionIds((prev) => [...prev, sectionId]);
-      }
-    }
+    setConfirmDelete({
+      open: true,
+      type: "section",
+      sectionId,
+      label: "Delete this section and all its lessons?",
+    });
   };
 
   const handleAddLesson = (sectionId: number) => {
@@ -211,7 +235,26 @@ export default function EditCoursePage({
   };
 
   const handleDeleteLesson = (sectionId: number, lessonId: number) => {
-    if (confirm("Are you sure you want to delete this lesson?")) {
+    setConfirmDelete({
+      open: true,
+      type: "lesson",
+      sectionId,
+      lessonId,
+      label: "Delete this lesson? This action cannot be undone.",
+    });
+  };
+
+  const doConfirmDelete = () => {
+    if (confirmDelete.type === "section" && confirmDelete.sectionId != null) {
+      const id = confirmDelete.sectionId;
+      setSections((prev) => prev.filter((s) => s.id !== id));
+      if (id > 0) setDeletedSectionIds((prev) => [...prev, id]);
+    } else if (
+      confirmDelete.type === "lesson" &&
+      confirmDelete.sectionId != null &&
+      confirmDelete.lessonId != null
+    ) {
+      const { sectionId, lessonId } = confirmDelete;
       setSections((prev) =>
         prev.map((section) => {
           if (section.id === sectionId) {
@@ -223,9 +266,7 @@ export default function EditCoursePage({
           return section;
         }),
       );
-      if (lessonId > 0) {
-        setDeletedLessonIds((prev) => [...prev, lessonId]);
-      }
+      if (lessonId > 0) setDeletedLessonIds((prev) => [...prev, lessonId]);
     }
   };
 
@@ -274,7 +315,10 @@ export default function EditCoursePage({
   // Batch Save Process
   const handleSaveCourse = async () => {
     if (!title || !instructor_name || !price || !description) {
-      alert("Please fill in all required fields.");
+      showWarning(
+        "Required Fields Missing",
+        "Please fill in Course Title, Instructor Name, Price, and Description before saving.",
+      );
       return;
     }
 
@@ -410,11 +454,17 @@ export default function EditCoursePage({
       });
 
       setCurriculumVersion((v) => v + 1); // Force curriculum fetch
-      alert("Course updated successfully!");
-      router.push("/admin/courses");
+      showSuccess(
+        "Course Updated!",
+        "All changes have been saved successfully.",
+      );
+      setTimeout(() => router.push("/admin/courses"), 1500);
     } catch (error) {
       console.error("Failed to update course", error);
-      alert("Failed to update course. Please check your inputs.");
+      showError(
+        "Save Failed",
+        "Something went wrong while saving. Please check your inputs and try again.",
+      );
     } finally {
       setIsSaving(false);
     }
@@ -626,6 +676,33 @@ export default function EditCoursePage({
         lessonId={quizLessonId}
         lessonTitle={quizLessonTitle}
       />
+
+      {/* Add Section prompt */}
+      <PromptModal
+        isOpen={isPromptOpen}
+        onClose={() => setIsPromptOpen(false)}
+        onConfirm={doAddSection}
+        title="New Section"
+        message="Give this section a clear, descriptive title."
+        placeholder="e.g., Introduction to Tajweed"
+        confirmLabel="Add Section"
+      />
+
+      {/* Delete confirmation */}
+      <ConfirmModal
+        isOpen={confirmDelete.open}
+        onClose={() => setConfirmDelete((prev) => ({ ...prev, open: false }))}
+        onConfirm={doConfirmDelete}
+        title={
+          confirmDelete.type === "section" ? "Delete Section" : "Delete Lesson"
+        }
+        message={confirmDelete.label}
+        confirmLabel="Yes, Delete"
+        variant="danger"
+      />
+
+      {/* Feedback — validation / success / error */}
+      <FeedbackModal {...feedbackModal} />
     </div>
   );
 }

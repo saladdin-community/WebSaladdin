@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import AdminTable from "@/app/components/table/AdminTable";
 import StatsCard from "@/app/components/card/StatCard";
+import ConfirmModal from "@/app/components/modal/ConfirmModal";
+import FeedbackModal from "@/app/components/modal/FeedbackModal";
+import { useFeedbackModal } from "@/hooks/useFeedbackModal";
 
 interface Student {
   id: number;
@@ -26,6 +29,8 @@ interface Student {
 export default function AdminStudentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  const { modal: feedbackModal, success: showSuccess } = useFeedbackModal();
 
   // Mock data
   const mockStudents: Student[] = [
@@ -205,9 +210,14 @@ export default function AdminStudentsPage() {
   };
 
   const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this student?")) {
-      console.log("Delete student:", id);
-    }
+    setConfirmDeleteId(id);
+  };
+
+  const handleDeleteConfirmed = () => {
+    if (confirmDeleteId == null) return;
+    console.log("Delete student:", confirmDeleteId);
+    showSuccess("Student Removed", "The student record has been deleted.");
+    setConfirmDeleteId(null);
   };
 
   const handleExport = () => {
@@ -271,6 +281,20 @@ export default function AdminStudentsPage() {
         <span className="text-[#d4af35]">Signed in as:</span> Admin
         Administrator
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmDeleteId !== null}
+        onClose={() => setConfirmDeleteId(null)}
+        onConfirm={handleDeleteConfirmed}
+        title="Delete Student"
+        message="This will permanently remove the student record. This action cannot be undone."
+        confirmLabel="Yes, Delete"
+        variant="danger"
+      />
+
+      {/* Feedback Modal */}
+      <FeedbackModal {...feedbackModal} />
     </div>
   );
 }

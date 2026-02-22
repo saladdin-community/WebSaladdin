@@ -12,7 +12,6 @@ interface FeedbackState {
   title: string;
   message?: string;
   actions?: FeedbackAction[];
-  autoClose?: number;
 }
 
 // ─── Options passed to open() ─────────────────────────────────────────────────
@@ -22,8 +21,6 @@ interface OpenOptions {
   title: string;
   message?: string;
   actions?: FeedbackAction[];
-  /** Auto-close delay in ms. Omit or pass 0 to disable. */
-  autoClose?: number;
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -39,14 +36,7 @@ interface OpenOptions {
  *   info(title, message?, options?)    — shorthand for type "info"
  *   close()                            — hide the modal
  *
- * Usage:
- *   const { modal, success, error } = useFeedbackModal();
- *
- *   // trigger
- *   success("Enrolled!", "You can start learning now.", { autoClose: 3000 });
- *
- *   // render
- *   <FeedbackModal {...modal} />
+ * Modal never auto-closes — user must manually dismiss it.
  */
 export function useFeedbackModal() {
   const [state, setState] = useState<FeedbackState>({

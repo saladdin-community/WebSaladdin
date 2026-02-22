@@ -14,12 +14,25 @@ import { AdminCoursesResponse } from "@/app/lib/api/admin-courses";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePutApiAdminCoursesId } from "@/app/lib/generated/hooks/usePutApiAdminCoursesId";
 import { COURSE_STATUS, COURSE_STATUS_OPTIONS } from "@/constants/courses";
+import ConfirmModal from "@/app/components/modal/ConfirmModal";
+import FeedbackModal from "@/app/components/modal/FeedbackModal";
+import { useFeedbackModal } from "@/hooks/useFeedbackModal";
 
 export default function AdminCoursesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
+
+  // Confirm delete modal state
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+
+  // Feedback modal
+  const {
+    modal: feedbackModal,
+    success: showSuccess,
+    error: showError,
+  } = useFeedbackModal();
 
   const {
     data: rawData,
@@ -39,19 +52,28 @@ export default function AdminCoursesPage() {
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: getApiAdminCoursesQueryKey(),
-        }); // Invalidate broad key or specific? generated key factory helps.
-        // Actually, invalidateQueries match by prefix.
+        });
         queryClient.invalidateQueries({
           queryKey: [{ url: "/api/admin/courses" }],
         });
+        showSuccess(
+          "Course Deleted",
+          "The course has been permanently removed.",
+        );
+      },
+      onError: () => {
+        showError(
+          "Delete Failed",
+          "Could not delete the course. Please try again.",
+        );
       },
     },
   });
 
-  const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this course?")) {
-      deleteMutation.mutate({ id });
-    }
+  const handleDeleteConfirmed = () => {
+    if (confirmDeleteId == null) return;
+    deleteMutation.mutate({ id: confirmDeleteId });
+    setConfirmDeleteId(null);
   };
 
   const updateCourseMutation = usePutApiAdminCoursesId();
@@ -65,10 +87,16 @@ export default function AdminCoursesPage() {
       queryClient.invalidateQueries({
         queryKey: [{ url: "/api/admin/courses" }],
       });
-      // Optionally show toast/alert
+      showSuccess(
+        "Status Updated",
+        `Course status has been changed to "${newStatus}".`,
+      );
     } catch (error) {
       console.error("Failed to update status", error);
-      alert("Failed to update status");
+      showError(
+        "Update Failed",
+        "Could not update the course status. Please try again.",
+      );
     }
   };
 
@@ -149,7 +177,6 @@ export default function AdminCoursesPage() {
               {currentOption.label}
             </button>
 
-            {/* Dropdown on hover/focus within group - Simple CSS hover implementation for speed */}
             <div className="absolute left-0 mt-1 w-32 bg-[#262626] border border-[rgba(255,255,255,0.1)] rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
               {COURSE_STATUS_OPTIONS.map((opt) => (
                 <button
@@ -184,7 +211,7 @@ export default function AdminCoursesPage() {
             Edit
           </Link>
           <button
-            onClick={() => handleDelete(row.id)}
+            onClick={() => setConfirmDeleteId(row.id)}
             className="px-3 py-1.5 text-sm btn-dark text-red-500 hover:text-red-400"
             disabled={deleteMutation.isPending}
           >
@@ -216,7 +243,7 @@ export default function AdminCoursesPage() {
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
-                setPage(1); // Reset page on search
+                setPage(1);
               }}
               className="w-full input py-3 pl-10"
             />
@@ -281,6 +308,20 @@ export default function AdminCoursesPage() {
         <span className="text-[#d4af35]">Signed in as:</span> Admin
         Administrator
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmDeleteId !== null}
+        onClose={() => setConfirmDeleteId(null)}
+        onConfirm={handleDeleteConfirmed}
+        title="Delete Course"
+        message="This will permanently delete the course and all its content. This action cannot be undone."
+        confirmLabel="Yes, Delete"
+        variant="danger"
+      />
+
+      {/* Feedback Modal — success / error */}
+      <FeedbackModal {...feedbackModal} />
     </div>
   );
 }

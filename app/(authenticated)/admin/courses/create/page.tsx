@@ -15,6 +15,10 @@ import {
 import { Section, Lesson } from "@/types/types";
 import CourseSectionList from "@/app/components/courses/CourseSectionList";
 import LessonModal from "@/app/components/courses/LessonModal";
+import PromptModal from "@/app/components/modal/PromptModal";
+import ConfirmModal from "@/app/components/modal/ConfirmModal";
+import FeedbackModal from "@/app/components/modal/FeedbackModal";
+import { useFeedbackModal } from "@/hooks/useFeedbackModal";
 
 export default function CreateCoursePage() {
   const router = useRouter();
@@ -32,12 +36,32 @@ export default function CreateCoursePage() {
   const [sections, setSections] = useState<Section[]>([]);
   const [expandedSections, setExpandedSections] = useState<number[]>([]);
 
-  // Modal State
+  // Modal State — Lesson
   const [isLessonModalOpen, setIsLessonModalOpen] = useState(false);
   const [lessonModalMode, setLessonModalMode] = useState<"add" | "edit">("add");
   const [activeSectionId, setActiveSectionId] = useState<number | null>(null);
   const [activeLessonId, setActiveLessonId] = useState<number | null>(null);
   const [activeLessonData, setActiveLessonData] = useState<any>(null);
+
+  // Modal State — Prompt (Add Section)
+  const [isPromptOpen, setIsPromptOpen] = useState(false);
+
+  // Modal State — Confirm (Delete)
+  const [confirmDelete, setConfirmDelete] = useState<{
+    open: boolean;
+    type: "section" | "lesson";
+    sectionId?: number;
+    lessonId?: number;
+    label: string;
+  }>({ open: false, type: "section", label: "" });
+
+  // Feedback modal — validation / success / error
+  const {
+    modal: feedbackModal,
+    success: showSuccess,
+    error: showError,
+    warning: showWarning,
+  } = useFeedbackModal();
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -52,15 +76,15 @@ export default function CreateCoursePage() {
 
   // Handlers - Curriculum (Local State Only)
   const handleAddSection = () => {
-    const title = window.prompt("Enter section title:");
-    if (!title) return;
+    setIsPromptOpen(true);
+  };
 
+  const doAddSection = (sectionTitle: string) => {
     const newSection: Section = {
-      id: -Date.now(), // Temporary ID
-      title,
+      id: -Date.now(),
+      title: sectionTitle,
       lessons: [],
     };
-
     setSections((prev) => [...prev, newSection]);
     setExpandedSections((prev) => [...prev, newSection.id]);
   };
@@ -74,9 +98,12 @@ export default function CreateCoursePage() {
   };
 
   const handleDeleteSection = (sectionId: number) => {
-    if (confirm("Are you sure you want to delete this section?")) {
-      setSections((prev) => prev.filter((s) => s.id !== sectionId));
-    }
+    setConfirmDelete({
+      open: true,
+      type: "section",
+      sectionId,
+      label: "Delete this section and all its lessons?",
+    });
   };
 
   const handleAddLesson = (sectionId: number) => {
@@ -100,7 +127,26 @@ export default function CreateCoursePage() {
   };
 
   const handleDeleteLesson = (sectionId: number, lessonId: number) => {
-    if (confirm("Are you sure you want to delete this lesson?")) {
+    setConfirmDelete({
+      open: true,
+      type: "lesson",
+      sectionId,
+      lessonId,
+      label: "Delete this lesson? This action cannot be undone.",
+    });
+  };
+
+  const doConfirmDelete = () => {
+    if (confirmDelete.type === "section" && confirmDelete.sectionId != null) {
+      setSections((prev) =>
+        prev.filter((s) => s.id !== confirmDelete.sectionId),
+      );
+    } else if (
+      confirmDelete.type === "lesson" &&
+      confirmDelete.sectionId != null &&
+      confirmDelete.lessonId != null
+    ) {
+      const { sectionId, lessonId } = confirmDelete;
       setSections((prev) =>
         prev.map((section) => {
           if (section.id === sectionId) {
@@ -154,7 +200,10 @@ export default function CreateCoursePage() {
   // Sync Save Process
   const handleSaveCourse = async () => {
     if (!title || !instructor_name || !price || !description) {
-      alert("Please fill in all required fields.");
+      showWarning(
+        "Required Fields Missing",
+        "Please fill in Course Title, Instructor Name, Price, and Description before saving.",
+      );
       return;
     }
 
@@ -171,23 +220,20 @@ export default function CreateCoursePage() {
         courseFormData.append("thumbnail", thumbnail);
       }
 
-      // We use the direct API call instead of hook `mutate` to await the result easily in this async flow
       const courseRes = await postApiAdminCourses({
         data: courseFormData,
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      const courseId = courseRes.data.id; // Adjust based on actual API response structure
+      const courseId = courseRes.data.id;
 
       // 2. Create Sections & Lessons
       for (const section of sections) {
-        // Create Section
         const sectionRes = await postApiAdminCoursesCourseIdSections(courseId, {
           title: section.title,
         });
-        const sectionId = sectionRes.data?.id || sectionRes.id; // Adjust based on return
+        const sectionId = sectionRes.data?.id || sectionRes.id;
 
-        // Create Lessons
         for (const lesson of section.lessons) {
           const lessonPayload = new FormData();
           if (lesson.title) lessonPayload.append("title", lesson.title);
@@ -238,12 +284,16 @@ export default function CreateCoursePage() {
         }
       }
 
-      alert("Course and curriculum created successfully!");
-      router.push("/admin/courses");
+      showSuccess(
+        "Course Created!",
+        "Your course and curriculum have been saved successfully.",
+      );
+      setTimeout(() => router.push("/admin/courses"), 1500);
     } catch (error) {
       console.error("Failed to save course", error);
-      alert(
-        "Failed to save course. Please checking your inputs and try again.",
+      showError(
+        "Save Failed",
+        "Something went wrong while saving. Please check your inputs and try again.",
       );
     } finally {
       setIsSaving(false);
@@ -380,7 +430,7 @@ export default function CreateCoursePage() {
           <div className="w-1/2 p-8 overflow-y-auto bg-[#1a1a1a]/30">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-white">
-                Curriculum & Content
+                Curriculum &amp; Content
               </h2>
               <p className="text-sm text-[#737373]">
                 Drag to reorder (Coming soon)
@@ -416,6 +466,7 @@ export default function CreateCoursePage() {
         </div>
       </div>
 
+      {/* Modals */}
       <LessonModal
         isOpen={isLessonModalOpen}
         onClose={() => setIsLessonModalOpen(false)}
@@ -423,6 +474,33 @@ export default function CreateCoursePage() {
         lessonData={activeLessonData}
         onSave={handleSaveLesson}
       />
+
+      {/* Add Section prompt */}
+      <PromptModal
+        isOpen={isPromptOpen}
+        onClose={() => setIsPromptOpen(false)}
+        onConfirm={doAddSection}
+        title="New Section"
+        message="Give this section a clear, descriptive title."
+        placeholder="e.g., Introduction to Tajweed"
+        confirmLabel="Add Section"
+      />
+
+      {/* Delete confirmation */}
+      <ConfirmModal
+        isOpen={confirmDelete.open}
+        onClose={() => setConfirmDelete((prev) => ({ ...prev, open: false }))}
+        onConfirm={doConfirmDelete}
+        title={
+          confirmDelete.type === "section" ? "Delete Section" : "Delete Lesson"
+        }
+        message={confirmDelete.label}
+        confirmLabel="Yes, Delete"
+        variant="danger"
+      />
+
+      {/* Feedback — validation / success / error */}
+      <FeedbackModal {...feedbackModal} />
     </div>
   );
 }

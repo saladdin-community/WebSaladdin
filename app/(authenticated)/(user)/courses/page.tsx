@@ -288,7 +288,6 @@ export default function CoursesPage() {
         showSuccess(
           "Enrollment Successful!",
           "You have successfully enrolled. Head to My Learning to start.",
-          { autoClose: 3500 },
         );
       },
       onError: (err: any) => {
