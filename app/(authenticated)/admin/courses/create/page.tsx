@@ -274,10 +274,10 @@ export default function CreateCoursePage() {
           lessonPayload.append("content_source", contentSource);
 
           if (lesson.videoFile) {
-            lessonPayload.append("content_path", lesson.videoFile);
+            lessonPayload.append("content_file", lesson.videoFile);
           }
           if (lesson.articleFile) {
-            lessonPayload.append("content_path", lesson.articleFile);
+            lessonPayload.append("content_file", lesson.articleFile);
           }
 
           await postApiAdminSectionsSectionIdLessons(sectionId, lessonPayload);

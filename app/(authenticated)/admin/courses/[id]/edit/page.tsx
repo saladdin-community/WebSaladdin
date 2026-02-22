@@ -419,10 +419,10 @@ export default function EditCoursePage({
           lessonPayload.append("content_source", contentSource);
 
           if (lesson.videoFile) {
-            lessonPayload.append("content_path", lesson.videoFile);
+            lessonPayload.append("content_file", lesson.videoFile);
           }
           if (lesson.articleFile) {
-            lessonPayload.append("content_path", lesson.articleFile);
+            lessonPayload.append("content_file", lesson.articleFile);
           }
 
           if (lesson.id < 0) {
@@ -435,6 +435,7 @@ export default function EditCoursePage({
             // Update Existing Lesson
             await putApiAdminLessonsLessonid(lesson.id, lessonPayload, {
               method: "POST", // Override to POST for FormData
+              headers: { "Content-Type": undefined }, // Let axios set multipart boundary
             });
           }
         }

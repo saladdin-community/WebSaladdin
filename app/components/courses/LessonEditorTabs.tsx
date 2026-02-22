@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Video,
   FileText,
@@ -8,6 +8,8 @@ import {
   Upload,
   Link as LinkIcon,
   Info,
+  CheckCircle2,
+  X,
 } from "lucide-react";
 import UploadArea from "../form/UploadArea";
 import RichTextEditor from "../form/RichTextEditor";
@@ -62,12 +64,29 @@ export default function LessonEditorTabs({
     onUpdateLesson({ type: newType });
   };
 
-  const handleFileUpload = (type: "video" | "article", file: File) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // Reset selected file when modal reopens or mode changes
+  useEffect(() => {
+    if (!lessonData.articleFile) setSelectedFile(null);
+  }, [lessonData.articleFile]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setSelectedFile(file);
     onUpdateLesson({
       content_source: "upload",
-      [type === "video" ? "videoFile" : "articleFile"]: file,
-      type: type === "video" ? "video" : "document",
+      articleFile: file,
+      type: "document",
     });
+  };
+
+  const clearFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    onUpdateLesson({ articleFile: undefined, type: "video" });
   };
 
   return (
@@ -163,38 +182,65 @@ export default function LessonEditorTabs({
 
             {contentSourceType === "upload" ? (
               <div className="border border-dashed border-[rgba(255,255,255,0.1)] rounded-xl p-8 bg-[#262626]/50">
-                <div className="space-y-6">
-                  {/* Reuse UploadArea or simplified version */}
+                {/* Hidden native file input */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+
+                {selectedFile ? (
+                  /* ── File selected state ── */
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                      <CheckCircle2 className="h-7 w-7 text-emerald-400" />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-white font-medium">
+                        {selectedFile.name}
+                      </p>
+                      <p className="text-xs text-[#737373] mt-0.5">
+                        {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="px-4 py-2 text-sm btn-dark rounded-lg"
+                      >
+                        Replace
+                      </button>
+                      <button
+                        type="button"
+                        onClick={clearFile}
+                        className="px-3 py-2 text-sm btn-dark rounded-lg text-red-400 hover:text-red-300"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  /* ── Empty state ── */
                   <div className="text-center">
                     <Upload className="h-10 w-10 text-[#737373] mx-auto mb-3" />
                     <p className="text-white font-medium mb-1">
-                      Drag & Drop Video (MP4) or Document (PDF) here
+                      Upload Document (PDF)
                     </p>
                     <p className="text-sm text-[#737373] mb-4">
-                      Max file size: 500MB
+                      PDF, DOC, DOCX — max 500MB
                     </p>
-                    <div className="flex gap-3 justify-center">
-                      <UploadArea
-                        type="video"
-                        label="Upload Video"
-                        hint=""
-                        onFileSelect={(file) => handleFileUpload("video", file)}
-                        accept="video/*"
-                        compact
-                      />
-                      <UploadArea
-                        type="document"
-                        label="Upload PDF"
-                        hint=""
-                        onFileSelect={(file) =>
-                          handleFileUpload("article", file)
-                        }
-                        accept=".pdf,.doc,.docx"
-                        compact
-                      />
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-5 py-2.5 text-sm font-semibold rounded-lg bg-[#d4af35] text-black hover:bg-[#c4a030] transition-colors"
+                    >
+                      Browse File
+                    </button>
                   </div>
-                </div>
+                )}
               </div>
             ) : (
               <div>

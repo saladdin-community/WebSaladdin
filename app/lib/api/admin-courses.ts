@@ -103,6 +103,10 @@ export const postApiAdminSectionsSectionIdLessons = async (
   sectionId: number,
   data: FormData | CreateLessonPayload,
 ) => {
-  // Use the generated function (lowercase id)
-  return postApiAdminSectionsSectionidLessons(sectionId, data as any);
+  const isFormData = data instanceof FormData;
+  return postApiAdminSectionsSectionidLessons(sectionId, data as any, {
+    headers: isFormData
+      ? { "Content-Type": undefined } // Let browser set multipart boundary
+      : { "Content-Type": "application/json" },
+  });
 };
