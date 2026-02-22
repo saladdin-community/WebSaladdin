@@ -93,17 +93,32 @@ export default function CourseDetailPage({
   // Mutation for completing lesson
   const completeLessonMutation = usePostApiLessonsLessonidComplete();
 
-  // Initialize Active Section/Lesson on Load
+  // Initialize Active Section/Lesson on Load — resume from last checkpoint
   useEffect(() => {
     if (
       courseData?.data?.sections &&
       courseData.data.sections.length > 0 &&
       !activeLesson
     ) {
-      const firstSection = courseData.data.sections[0];
-      setActiveSection(firstSection.id.toString());
-      if (firstSection.lessons && firstSection.lessons.length > 0) {
-        setActiveLesson(firstSection.lessons[0].id.toString());
+      const sections: CourseSection[] = courseData.data.sections;
+
+      // Flatten all lessons in order, keeping a reference to their section
+      type LessonRef = { section: CourseSection; lesson: CourseLessonItem };
+      const allLessons: LessonRef[] = [];
+      sections.forEach((section) => {
+        section.lessons.forEach((lesson) => {
+          allLessons.push({ section, lesson });
+        });
+      });
+
+      // Find the first incomplete lesson (resume point)
+      const resumeRef =
+        allLessons.find((ref) => !ref.lesson.is_completed) ??
+        allLessons[allLessons.length - 1]; // fallback: last lesson if all complete
+
+      if (resumeRef) {
+        setActiveSection(resumeRef.section.id.toString());
+        setActiveLesson(resumeRef.lesson.id.toString());
       }
     }
   }, [courseData?.data?.sections, activeLesson]);
