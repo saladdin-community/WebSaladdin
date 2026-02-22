@@ -5,6 +5,7 @@ import {
   Play,
   Pause,
   Volume2,
+  VolumeX,
   Maximize,
   Minimize,
   SkipBack,
@@ -41,6 +42,7 @@ export default function PrivateYouTubePlayer({
 }: PrivateYouTubePlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(100);
   const [progress, setProgress] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1);
@@ -198,6 +200,18 @@ export default function PrivateYouTubePlayer({
     onVolumeChange?.(newVolume / 100);
   };
 
+  const handleToggleMute = () => {
+    if (!player) return;
+    if (isMuted) {
+      player.unMute();
+      player.setVolume(volume);
+      setIsMuted(false);
+    } else {
+      player.mute();
+      setIsMuted(true);
+    }
+  };
+
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newProgress = parseInt(e.target.value);
 
@@ -335,9 +349,14 @@ export default function PrivateYouTubePlayer({
           />
         </div>
 
+        {/* Transparent click-blocker: permanently intercepts clicks to YouTube iframe,
+            preventing end-screen recommendation cards from being clickable.
+            Custom controls sit above this at z-20. */}
+        <div className="absolute inset-0 z-10 cursor-pointer" />
+
         {/* SIMPLIFIED Custom Controls - Only essential controls */}
         {showControls && (
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4">
+          <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/90 to-transparent p-4">
             {/* Progress Bar */}
             <div className="mb-4">
               <input
@@ -394,18 +413,18 @@ export default function PrivateYouTubePlayer({
                   </svg>
                 </button>
 
-                {/* Volume */}
-                <div className="flex items-center gap-2">
-                  <Volume2 className="h-5 w-5 text-[#d4d4d4]" />
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={volume}
-                    onChange={handleVolumeChange}
-                    className="w-24 h-1.5 bg-[#404040] rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-gold"
-                  />
-                </div>
+                {/* Mute / Unmute Toggle */}
+                <button
+                  onClick={handleToggleMute}
+                  className="p-2 hover:bg-white/10 rounded-full transition-colors duration-300"
+                  title={isMuted ? "Unmute" : "Mute"}
+                >
+                  {isMuted ? (
+                    <VolumeX className="h-5 w-5 text-[#d4d4d4]" />
+                  ) : (
+                    <Volume2 className="h-5 w-5 text-[#d4d4d4]" />
+                  )}
+                </button>
 
                 {/* Playback Speed */}
                 <button
@@ -433,7 +452,7 @@ export default function PrivateYouTubePlayer({
         )}
 
         {/* Title Overlay - Minimal */}
-        <div className="absolute top-4 left-4 max-w-md">
+        <div className="absolute top-4 left-4 max-w-md z-20">
           <div className="bg-black/60 backdrop-blur-sm rounded-lg p-3">
             <h3 className="text-white font-semibold text-sm truncate">
               {title}
@@ -445,7 +464,7 @@ export default function PrivateYouTubePlayer({
         {!isPlaying && (
           <button
             onClick={handlePlayPause}
-            className="absolute inset-0 flex items-center justify-center"
+            className="absolute inset-0 flex items-center justify-center z-20"
           >
             <div className="w-24 h-24 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition-all duration-300 group-hover:scale-110">
               <Play className="h-12 w-12 text-white ml-2" />
