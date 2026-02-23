@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import Cookies from "js-cookie";
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api",
@@ -11,7 +12,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem("access_token");
+      const token = Cookies.get("access_token");
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -25,9 +26,11 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (typeof window !== "undefined" && error.response?.status === 401) {
+      Cookies.remove("access_token");
+      Cookies.remove("user_role");
       localStorage.removeItem("access_token");
       localStorage.removeItem("user");
-      window.location.href = "/auth/login";
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   },

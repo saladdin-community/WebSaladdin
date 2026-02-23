@@ -66,6 +66,7 @@ export default function YouTubeVideoPlayer({
   const [isReady, setIsReady] = useState(false);
   const [player, setPlayer] = useState<YouTubePlayer | null>(null);
   const [videoId, setVideoId] = useState<string | undefined>(propVideoId);
+  const [isEnded, setIsEnded] = useState(false);
   const playerRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -122,42 +123,61 @@ export default function YouTubeVideoPlayer({
     player.setVolume(volume);
 
     // Set playback rate
+    // Set playback rate
     player.setPlaybackRate(playbackRate);
-
-    // Start progress tracking
-    setInterval(() => {
-      if (player && player.getCurrentTime) {
-        const current = player.getCurrentTime();
-        setCurrentTime(current);
-
-        const progressPercent = (current / dur) * 100;
-        setProgress(progressPercent);
-        onProgressChange?.(progressPercent);
-
-        // Check if reached end time
-        if (endTime && current >= endTime) {
-          player.pauseVideo();
-          setIsPlaying(false);
-          onPlayPause?.(false);
-        }
-      }
-    }, 1000);
   };
+
+  // Timer logic to fix duration bug
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (isPlaying && player) {
+      interval = setInterval(() => {
+        try {
+          const current = player.getCurrentTime();
+          setCurrentTime(current);
+
+          const dur = player.getDuration();
+          if (dur > 0) {
+            setDuration(dur); // Ensure duration is always up to date
+            const progressPercent = (current / dur) * 100;
+            setProgress(progressPercent);
+            onProgressChange?.(progressPercent);
+          }
+
+          // Check if reached end time (custom prop)
+          if (endTime && current >= endTime) {
+            player.pauseVideo();
+            setIsPlaying(false);
+            onPlayPause?.(false);
+          }
+        } catch (error) {
+          console.error("Error updating time:", error);
+        }
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isPlaying, player, endTime, onProgressChange, onPlayPause]);
 
   const onPlayerStateChange: YouTubeProps["onStateChange"] = (event) => {
     const playerState = event.data;
 
-    // switch (playerState) {
-    //   case window.YT.PlayerState.PLAYING:
-    //     setIsPlaying(true);
-    //     onPlayPause?.(true);
-    //     break;
-    //   case window.YT.PlayerState.PAUSED:
-    //   case window.YT.PlayerState.ENDED:
-    //     setIsPlaying(false);
-    //     onPlayPause?.(false);
-    //     break;
-    // }
+    // 0 = ENDED, 1 = PLAYING, 2 = PAUSED
+    if (playerState === 0) {
+      setIsEnded(true);
+      setIsPlaying(false);
+      onPlayPause?.(false);
+    } else if (playerState === 1) {
+      setIsEnded(false);
+      setIsPlaying(true);
+      onPlayPause?.(true);
+    } else if (playerState === 2) {
+      setIsPlaying(false);
+      onPlayPause?.(false);
+    }
   };
 
   // Control functions
@@ -166,6 +186,10 @@ export default function YouTubeVideoPlayer({
       if (isPlaying) {
         player.pauseVideo();
       } else {
+        if (isEnded) {
+          player.seekTo(0);
+          setIsEnded(false);
+        }
         player.playVideo();
       }
       setIsPlaying(!isPlaying);
@@ -477,6 +501,44 @@ export default function YouTubeVideoPlayer({
           <div className="text-center">
             <div className="h-12 w-12 border-4 border-[#d4af35] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-[#d4d4d4]">Loading YouTube video...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Custom End Screen Overlay */}
+      {isEnded && (
+        <div className="absolute inset-0 bg-black/90 z-20 flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-300">
+          <h3 className="text-xl font-bold text-white mb-2">
+            Lesson Completed!
+          </h3>
+          <p className="text-[#a3a3a3] mb-8 max-w-md">
+            You have finished "{title}".
+          </p>
+
+          <div className="flex gap-4">
+            <button
+              onClick={() => {
+                if (player) {
+                  player.seekTo(0);
+                  player.playVideo();
+                  setIsEnded(false);
+                }
+              }}
+              className="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all duration-300 font-medium"
+            >
+              <SkipBack className="h-5 w-5" />
+              Replay Lesson
+            </button>
+
+            {onNext && (
+              <button
+                onClick={onNext}
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-gold text-black rounded-lg transition-all duration-300 font-bold hover:scale-105"
+              >
+                Next Lesson
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            )}
           </div>
         </div>
       )}

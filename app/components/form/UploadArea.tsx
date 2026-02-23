@@ -8,6 +8,7 @@ interface UploadAreaProps {
   hint: string;
   onFileSelect: (file: File) => void;
   accept?: string;
+  compact?: boolean;
 }
 
 export default function UploadArea({
@@ -16,17 +17,34 @@ export default function UploadArea({
   hint,
   onFileSelect,
   accept,
+  compact,
 }: UploadAreaProps) {
   const getIcon = () => {
     switch (type) {
       case "image":
-        return <Image className="h-8 w-8 text-[#d4af35]" />;
+        return (
+          <Image
+            className={`${compact ? "h-6 w-6" : "h-8 w-8"} text-[#d4af35] mx-auto`}
+          />
+        );
       case "video":
-        return <Video className="h-8 w-8 text-[#d4af35]" />;
+        return (
+          <Video
+            className={`${compact ? "h-6 w-6" : "h-8 w-8"} text-[#d4af35] mx-auto`}
+          />
+        );
       case "document":
-        return <FileText className="h-8 w-8 text-[#d4af35]" />;
+        return (
+          <FileText
+            className={`${compact ? "h-6 w-6" : "h-8 w-8"} text-[#d4af35] mx-auto`}
+          />
+        );
       default:
-        return <Upload className="h-8 w-8 text-[#d4af35]" />;
+        return (
+          <Upload
+            className={`${compact ? "h-6 w-6" : "h-8 w-8"} text-[#d4af35] mx-auto`}
+          />
+        );
     }
   };
 
@@ -45,12 +63,20 @@ export default function UploadArea({
 
   return (
     <div
-      className="border-2 border-dashed border-[rgba(212,175,53,0.3)] rounded-lg p-8 text-center cursor-pointer hover:border-[#d4af35] transition-colors bg-[#1a1a1a]"
       onClick={handleClick}
+      className={`border-2 border-dashed border-[rgba(255,255,255,0.1)] rounded-xl cursor-pointer hover:border-[#d4af37] hover:bg-[#262626] transition-all bg-[#1a1a1a]/50 text-center flex flex-col items-center justify-center ${
+        compact ? "p-4 min-w-[140px]" : "p-8 w-full"
+      }`}
     >
-      {getIcon()}
-      <p className="text-white mt-3 mb-1 font-medium">{label}</p>
-      <p className="text-sm text-[#737373]">{hint}</p>
+      <div className="mb-2">{getIcon()}</div>
+      <p
+        className={`text-white font-medium ${compact ? "text-xs" : "text-base"}`}
+      >
+        {label}
+      </p>
+      {hint && !compact && (
+        <p className="text-sm text-[#737373] mt-1">{hint}</p>
+      )}
     </div>
   );
 }

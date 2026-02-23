@@ -1,0 +1,423 @@
+[14/02/2026, 13.43.51]
+ℹ Config loaded kubb.config.mjs
+
+[14/02/2026, 13.43.51]
+✓ Config loaded successfully kubb.config.mjs
+
+[14/02/2026, 13.43.51]
+ℹ Setup generation ./collection-endpoint/open-api/versi1.yaml
+
+[14/02/2026, 13.43.51]
+Configuration:
+  • Name: unnamed
+  • Root: C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin
+  • Output: ./app/lib/generated
+  • Plugins: 3
+Output Settings:
+  • Write: enabled
+  • Formater: prettier
+  • Linter: none
+Environment:
+  • nodeVersion: v22.15.1
+  • KubbVersion: 4.15.0
+  • platform: win32
+  • arch: x64
+  • cwd: C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin
+
+[14/02/2026, 13.43.51]
+✓ Input file validated: ./collection-endpoint/open-api/versi1.yaml
+
+[14/02/2026, 13.43.51]
+Cleaning output directories
+  • Output: ./app/lib/generated
+
+[14/02/2026, 13.43.51]
+✓ Fabric initialized
+  • File writing: enabled
+  • Barrel type: named
+
+[14/02/2026, 13.43.51]
+ℹ Build generation ./collection-endpoint/open-api/versi1.yaml
+
+[14/02/2026, 13.43.51]
+Generating plugin-oas
+
+[14/02/2026, 13.43.51]
+Installing plugin...
+  • Plugin Key: [plugin-oas, 1]
+
+[14/02/2026, 13.43.53]
+ℹ OpenAPI schema validation failed.
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  281 |       "get": {
+  282 |         "summary": "Initiate Google Login/Register",
+> 283 |         "responses": {},
+      |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  284 |         "tags": [
+  285 |           "Auth"
+  286 |         ],
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  291 |       "get": {
+  292 |         "summary": "Handle Callback (Saat user balik dari Google)",
+> 293 |         "responses": {},
+      |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  294 |         "tags": [
+  295 |           "Auth"
+  296 |         ]
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  960 |       "get": {
+  961 |         "summary": "Verify Certificate (Public)",
+> 962 |         "responses": {},
+      |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  963 |         "tags": [
+  964 |           "Student",
+  965 |           "Certificate"
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  980 |       "get": {
+  981 |         "summary": "Get My Certificates",
+> 982 |         "responses": {},
+      |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  983 |         "tags": [
+  984 |           "Student",
+  985 |           "Certificate"
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  990 |       "get": {
+  991 |         "summary": "Get Certificate Detail",
+> 992 |         "responses": {},
+      |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  993 |         "tags": [
+  994 |           "Student",
+  995 |           "Certificate"
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  1010 |       "get": {
+  1011 |         "summary": "Download Certificate PDF",
+> 1012 |         "responses": {},
+       |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  1013 |         "tags": [
+  1014 |           "Student",
+  1015 |           "Certificate"
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  2781 |       "get": {
+  2782 |         "summary": "Get Certificate Preview",
+> 2783 |         "responses": {},
+       |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  2784 |         "tags": [
+  2785 |           "Admin",
+  2786 |           "Certificate Management"
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  2657 |       "post": {
+  2658 |         "summary": "Reorder Signatures",
+> 2659 |         "responses": {},
+       |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  2660 |         "tags": [
+  2661 |           "Admin",
+  2662 |           "Certificate Management", undefined
+
+[14/02/2026, 13.43.53]
+✗ OAS Validation failed
+OpenAPI schema validation failed.
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  281 |       "get": {
+  282 |         "summary": "Initiate Google Login/Register",
+> 283 |         "responses": {},
+      |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  284 |         "tags": [
+  285 |           "Auth"
+  286 |         ],
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  291 |       "get": {
+  292 |         "summary": "Handle Callback (Saat user balik dari Google)",
+> 293 |         "responses": {},
+      |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  294 |         "tags": [
+  295 |           "Auth"
+  296 |         ]
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  960 |       "get": {
+  961 |         "summary": "Verify Certificate (Public)",
+> 962 |         "responses": {},
+      |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  963 |         "tags": [
+  964 |           "Student",
+  965 |           "Certificate"
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  980 |       "get": {
+  981 |         "summary": "Get My Certificates",
+> 982 |         "responses": {},
+      |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  983 |         "tags": [
+  984 |           "Student",
+  985 |           "Certificate"
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  990 |       "get": {
+  991 |         "summary": "Get Certificate Detail",
+> 992 |         "responses": {},
+      |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  993 |         "tags": [
+  994 |           "Student",
+  995 |           "Certificate"
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  1010 |       "get": {
+  1011 |         "summary": "Download Certificate PDF",
+> 1012 |         "responses": {},
+       |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  1013 |         "tags": [
+  1014 |           "Student",
+  1015 |           "Certificate"
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  2781 |       "get": {
+  2782 |         "summary": "Get Certificate Preview",
+> 2783 |         "responses": {},
+       |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  2784 |         "tags": [
+  2785 |           "Admin",
+  2786 |           "Certificate Management"
+
+[31m[1mMINPROPERTIES[22m must NOT have fewer than 1 properties[39m
+
+  2657 |       "post": {
+  2658 |         "summary": "Reorder Signatures",
+> 2659 |         "responses": {},
+       |                      ^ [95mminProperties[39m must NOT have fewer than 1 properties
+  2660 |         "tags": [
+  2661 |           "Admin",
+  2662 |           "Certificate Management",
+
+[14/02/2026, 13.43.53]
+Building 0 schemas
+  • Content Type: application/json
+  • Generators: 1
+
+[14/02/2026, 13.43.53]
+Building 49 operations
+  • Generators: 1
+
+[14/02/2026, 13.43.53]
+plugin-oas completed in 2.38s
+
+[14/02/2026, 13.43.53]
+✓ Plugin installed successfully (2.38s)
+
+[14/02/2026, 13.43.53]
+Generating plugin-ts
+
+[14/02/2026, 13.43.53]
+Installing plugin...
+  • Plugin Key: [plugin-ts, 1]
+
+[14/02/2026, 13.43.53]
+Building 0 schemas
+  • Content Type: application/json
+  • Generators: 1
+
+[14/02/2026, 13.43.53]
+Building 49 operations
+  • Generators: 1
+
+[14/02/2026, 13.43.53]
+plugin-ts completed in 370ms
+
+[14/02/2026, 13.43.53]
+✓ Plugin installed successfully (370ms)
+
+[14/02/2026, 13.43.53]
+Generating plugin-react-query
+
+[14/02/2026, 13.43.53]
+Installing plugin...
+  • Plugin Key: [plugin-react-query, 1]
+
+[14/02/2026, 13.43.53]
+Building 49 operations
+  • Generators: 7
+
+[14/02/2026, 13.43.54]
+plugin-react-query completed in 809ms
+
+[14/02/2026, 13.43.54]
+✓ Plugin installed successfully (809ms)
+
+[14/02/2026, 13.43.54]
+Generating barrel file
+  • Type: named
+  • Path: C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\index.ts
+
+[14/02/2026, 13.43.54]
+Found 122 indexable files for barrel export
+
+[14/02/2026, 13.43.54]
+✓ Generated barrel file (549 exports)
+
+[14/02/2026, 13.43.54]
+ℹ Writing 126 files undefined
+
+[14/02/2026, 13.43.54]
+Start 126 writing:
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\index.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\index.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\index.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\.kubb\config.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiMe.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiMe.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiLogout.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiCourses.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiMyCourses.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiAuthLogin.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiAuthGoogle.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiCourses.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiLogout.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiCoursesSlug.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiAdminCourses.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiMyCourses.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiAuthRegister.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiAdminCourses.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAuthGoogle.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiMeSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiAuthLogin.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiMyCertificates.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiCertificatesId.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiDashboardStats.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiAdminCoursesId.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PutApiAdminCoursesId.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiCoursesSlug.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiLessonsLessonid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAdminCourses.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiAuthRegister.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiAdminCourses.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\DeleteApiAdminCoursesId.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiMyCertificates.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiCertificatesId.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiDashboardStats.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAdminCoursesId.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePutApiAdminCoursesId.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiAuthGoogleCallback.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiLessonsLessonid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiCoursesSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiQuizAttempts1Review.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PutAdminSectionsSectionid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiCertificatePreview1.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiAdminLessonsLessonid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PutApiAdminLessonsLessonid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiMyCoursesSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useDeleteApiAdminCoursesId.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAuthGoogleCallback.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAuthGoogleSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiCoursesCourseidEnroll.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiCertificatesIdDownload.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiAdminCourses1Sections.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiQuizAttempts1Review.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiCertificatePreview1.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiCoursesSlugSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePutAdminSectionsSectionid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\DeleteApiAdminLessonsLessonid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAdminLessonsLessonid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAdminCoursesSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePutApiAdminLessonsLessonid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiLessonsLessonidComplete.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiAdminLessonsLessonidQuiz.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PutApiAdminQuestionsQuestionid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiDashboardContinueLearning.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\DeleteApiAdminSectionsSectionid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiCertificatesIdDownload.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiMyCertificatesSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiCertificatesIdSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiDashboardStatsSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAdminCoursesIdSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiCoursesCourseidEnroll.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiAdminCourses1Sections.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiLessonsLessonidSubmitQuiz.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiLessonsLessonidSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useDeleteApiAdminLessonsLessonid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiLessonsLessonidQuestionsSeq.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\DeleteApiAdminQuestionsQuestionid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAdminLessonsLessonidQuiz.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiLessonsLessonidComplete.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePutApiAdminQuestionsQuestionid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiAdminCoursesCourseidSections.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiDashboardContinueLearning.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useDeleteApiAdminSectionsSectionid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiAdminSectionsSectionidLessons.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAuthGoogleCallbackSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiLessonsLessonidSubmitQuiz.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiAdminSectionsSectionidLessons.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiAdminLessonsLessonidQuestions.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiAdminCoursesCourseidSignatures.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiLessonsLessonidQuestionsSeq.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiQuizAttempts1ReviewSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiCertificatePreview1Suspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useDeleteApiAdminQuestionsQuestionid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiAdminCoursesCourseidSignatures.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiAdminCoursesCourseidCertificate.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAdminCoursesCourseidSections.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAdminLessonsLessonidSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAdminSectionsSectionidLessons.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAdminCoursesCourseidSignatures.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiCertificatesIdDownloadSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiAdminSectionsSectionidLessons.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiAdminLessonsLessonidQuestions.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAdminCoursesCourseidCertificate.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiAdminCoursesCourseidSignatures.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\GetApiCertificatesVerifyCertificatenumber.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAdminLessonsLessonidQuizSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiDashboardContinueLearningSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiAdminLessonsLessonidQuestionsReorder.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiAdminCoursesCourseidSignaturesReorder.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PostApiAdminCoursesCourseidCertificateConfig.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiCertificatesVerifyCertificatenumber.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiLessonsLessonidQuestionsSeqSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAdminCoursesCourseidSectionsSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\PutApiAdminCoursesCourseidSignaturesSignatueid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\DeleteApiAdminCoursesCourseidCertificateConfig.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAdminSectionsSectionidLessonsSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiAdminLessonsLessonidQuestionsReorder.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAdminCoursesCourseidSignaturesSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiAdminCoursesCourseidSignaturesReorder.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePostApiAdminCoursesCourseidCertificateConfig.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiAdminCoursesCourseidCertificateSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\types\DeleteApiAdminCoursesCourseidSignaturesSignatueid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\usePutApiAdminCoursesCourseidSignaturesSignatueid.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useDeleteApiAdminCoursesCourseidCertificateConfig.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useGetApiCertificatesVerifyCertificatenumberSuspense.ts
+C:\Rafi\Coding\Others\Saladdin\FE\WebSaladdin\app\lib\generated\hooks\useDeleteApiAdminCoursesCourseidSignaturesSignatueid.ts
+
+[14/02/2026, 13.43.54]
+Writing 126 files...
+
+[14/02/2026, 13.43.55]
+✓ File write process completed for 126 files
+
+[14/02/2026, 13.43.55]
+ℹ Load summary undefined
+
+[14/02/2026, 13.43.55]
+✓ Generation successfully ./collection-endpoint/open-api/versi1.yaml

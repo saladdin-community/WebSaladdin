@@ -5,11 +5,11 @@
 
 
 export type GetApiCoursesSlugPathParams = {
-    ":slug": any;
+    slug: any;
 };
 
 /**
- * @description Success Get Course Detail By Slug
+ * @description Success Get Course Detail By Slug (Public)
 */
 export type GetApiCoursesSlug200 = any;
 
