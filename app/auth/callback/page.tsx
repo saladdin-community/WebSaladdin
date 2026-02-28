@@ -14,19 +14,20 @@ function CallbackContent() {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    const token = searchParams.get("token");
-    const userRaw = searchParams.get("user");
-    const error = searchParams.get("error");
+    let isMounted = true;
 
-    if (error) {
-      setErrorMessage(
-        error === "unauthorized"
-          ? "Login gagal. Silakan coba lagi."
-          : "Terjadi kesalahan saat login.",
-      );
-      setStatus("error");
-      return;
-    }
+    const handleCallback = async () => {
+      try {
+        const error = searchParams.get("error");
+        if (error) {
+          setErrorMessage(
+            error === "unauthorized"
+              ? "Login gagal. Silakan coba lagi."
+              : "Terjadi kesalahan saat login."
+          );
+          setStatus("error");
+          return;
+        }
 
     if (!token) {
       setErrorMessage("Data login tidak lengkap. Silakan coba lagi.");
