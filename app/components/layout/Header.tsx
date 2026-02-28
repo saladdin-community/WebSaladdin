@@ -58,7 +58,7 @@ export default function Header() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-white">Saladdin</h1>
-              <p className="text-sm text-neutral-400">LMS Platform</p>
+              <p className="text-sm text-neutral-400">Ma'rifi Learning</p>
             </div>
           </Link>
 

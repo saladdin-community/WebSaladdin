@@ -30,7 +30,14 @@ apiClient.interceptors.response.use(
       Cookies.remove("user_role");
       localStorage.removeItem("access_token");
       localStorage.removeItem("user");
-      window.location.href = "/login";
+
+      // Prevent redirect loop/refresh if already on login or signup page
+      const isAuthPage =
+        window.location.pathname === "/login" ||
+        window.location.pathname === "/signup";
+      if (!isAuthPage) {
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   },

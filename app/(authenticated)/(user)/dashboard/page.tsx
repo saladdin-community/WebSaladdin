@@ -51,7 +51,6 @@ export default function DashboardPage() {
         instructor: course.instructor || "Instructor",
         price: course.price || 0,
         price_formatted: course.price_formatted || "Rp 0",
-        description: course.description || "No description available",
         progress: course.progress || 0,
         isBookmarked: bookmarkedCourses.includes(course.id),
         isFree: course.price === 0,
@@ -74,7 +73,6 @@ export default function DashboardPage() {
     ? {
         id: continueLearningCourse.id,
         title: continueLearningCourse.title,
-        subtitle: continueLearningCourse.description.substring(0, 50) + "...", // Fallback subtitle
         instructor: continueLearningCourse.instructor,
         thumbnail: continueLearningCourse.thumbnail,
         progress: continueLearningCourse.progress || 0,

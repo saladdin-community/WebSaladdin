@@ -7,6 +7,8 @@ import { FaGoogle, FaFacebook } from "react-icons/fa";
 import RegisterBackground from "@/public/images/register.png";
 import Image from "next/image";
 import { usePostApiAuthRegister } from "@/app/lib/generated";
+import FeedbackModal from "@/app/components/modal/FeedbackModal";
+import { useFeedbackModal } from "@/hooks/useFeedbackModal";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -16,6 +18,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const { modal, error: showError } = useFeedbackModal();
 
   // ================= MUTATION =================
   const registerMutation = usePostApiAuthRegister({
@@ -28,7 +31,10 @@ export default function RegisterPage() {
       },
       onError: (error) => {
         console.error("Register failed:", error);
-        alert("Gagal mendaftar. Silakan cek data Anda.");
+        showError(
+          "Registrasi Gagal",
+          "Gagal mendaftar. Silakan cek data Anda dan coba lagi.",
+        );
       },
     },
   });
@@ -203,6 +209,7 @@ export default function RegisterPage() {
           </p>
         </div>
       </div>
+      <FeedbackModal {...modal} />
     </div>
   );
 }
