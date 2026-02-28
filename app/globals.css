@@ -125,7 +125,7 @@
 
   @media (width >= 1024px) {
     h1 {
-      font-size: 3.75rem; /* 6xl */
+      font-size: 2.5rem; /* Reduced from 3.75rem (6xl) to 2.5rem (4xl) for scaling */
     }
   }
 
@@ -136,7 +136,7 @@
 
   @media (width >= 768px) {
     h2 {
-      font-size: 2.25rem; /* 4xl */
+      font-size: 1.875rem; /* Reduced from 2.25rem (4xl) to 1.875rem (3xl) */
     }
   }
 
@@ -179,28 +179,28 @@
 
   @media (width >= 1024px) {
     .container-custom {
-      max-width: 1024px;
-      padding-left: 2rem;
-      padding-right: 2rem;
+      max-width: 800px; /* Reduced from 1024 */
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
     }
   }
 
   @media (width >= 1280px) {
     .container-custom {
-      max-width: 1280px;
+      max-width: 1000px; /* Reduced from 1280 */
     }
   }
 
   /* Section */
   .section {
-    padding-top: 4rem;
-    padding-bottom: 4rem;
+    padding-top: 2.5rem; /* Reduced from 4rem */
+    padding-bottom: 2.5rem;
   }
 
   @media (width >= 768px) {
     .section {
-      padding-top: 6rem;
-      padding-bottom: 6rem;
+      padding-top: 3.5rem; /* Reduced from 6rem */
+      padding-bottom: 3.5rem;
     }
   }
 

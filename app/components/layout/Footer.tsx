@@ -2,6 +2,7 @@
 
 import { motion, Variants } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Mail,
   Facebook,
@@ -121,12 +122,18 @@ export default function Footer() {
             <motion.div variants={itemVariants} className="lg:col-span-2">
               <div className="mb-6">
                 <Link href="/" className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-gold">
-                    <BookOpen className="h-6 w-6 text-black" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg">
+                    <Image
+                      src="/images/icon.png"
+                      alt="Saladdin LMS Logo"
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-white">
-                      Salahuddin Heritage
+                      Saladdin LMS
                     </h2>
                     <p className="text-sm text-gold">
                       Timeless Wisdom, Modern Skills
@@ -280,7 +287,7 @@ export default function Footer() {
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="text-center md:text-left">
               <p className="text-sm text-neutral-500">
-                © 2023 Salahuddin Heritage Learning. All rights reserved.
+                © 2023 Saladdin LMS. All rights reserved.
               </p>
               <p className="mt-1 text-xs text-neutral-600">
                 Empowering individuals through knowledge that connects the past

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, X, BookOpen, Moon, Sun, LogOut, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
@@ -46,12 +47,18 @@ export default function Header() {
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-gold">
-              <BookOpen className="h-6 w-6 text-secondary-900" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg">
+              <Image
+                src="/images/icon.png"
+                alt="Saladdin LMS Logo"
+                width={48}
+                height={48}
+                className="object-contain"
+              />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">Salahuddin</h1>
-              <p className="text-sm text-neutral-400">Heritage Learning</p>
+              <h1 className="text-xl font-bold text-white">Saladdin</h1>
+              <p className="text-sm text-neutral-400">LMS Platform</p>
             </div>
           </Link>
 

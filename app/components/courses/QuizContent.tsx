@@ -374,21 +374,6 @@ export default function QuizContent({
                       {item.user_answer?.text || "Not answered"}
                     </p>
                   </div>
-                  {!item.is_correct && (
-                    <div className="p-3 rounded-lg bg-green-500/5 border border-green-500/10">
-                      <p className="text-xs text-green-500/50 mb-1">
-                        Correct Answer
-                      </p>
-                      <p className="text-sm text-green-400">
-                        {item.correct_answer?.text}
-                      </p>
-                    </div>
-                  )}
-                  {item.explanation && (
-                    <div className="mt-4 p-4 bg-[#d4af35]/5 border-l-2 border-[#d4af35] rounded-r-lg text-sm text-[#d4d4d4] italic">
-                      {item.explanation}
-                    </div>
-                  )}
                 </div>
               </div>
             ))}

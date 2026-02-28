@@ -18,7 +18,7 @@ interface HeroSectionProps {
 
 export default function HeroSection({
   backgroundImage = "/images/masjidil-aqsa-background.png",
-  title = "Rediscover the Legacy of Salahuddin",
+  title = "Rediscover the Legacy of Saladdin",
   description = "Explore Palestine through history, knowledge, and conscience. Join a learning community dedicated to Baiful Moqdis, ethics, and responsible leadership.",
   stats = [
     { icon: Users, value: "50+", label: "Expert Mentors" },
@@ -85,7 +85,7 @@ export default function HeroSection({
           <div className="mb-16 text-center animate-fade-in">
             <h1 className="mb-6 text-4xl leading-tight md:text-6xl lg:text-7xl">
               {title.split(" ").map((word, index, array) =>
-                word === "Salahuddin" ? (
+                word === "Saladdin" ? (
                   <span key={index} className="text-gradient-gold">
                     {word}{" "}
                   </span>
@@ -93,7 +93,7 @@ export default function HeroSection({
                   <span key={index} className="text-white">
                     {word}{" "}
                   </span>
-                )
+                ),
               )}
             </h1>
 

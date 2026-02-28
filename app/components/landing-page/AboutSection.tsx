@@ -90,9 +90,9 @@ export default function AboutPage() {
                   variants={itemVariants}
                   className="text-xl text-neutral-300 leading-relaxed"
                 >
-                  Saladin Na'rifi Learning connects the Golden Age of Liberation
-                  with the rich intellectual tradition of Islamic civilization,
-                  aligning timeless principles with contemporary realities.
+                  Saladdin LMS connects the Golden Age of Liberation with the
+                  rich intellectual tradition of Islamic civilization, aligning
+                  timeless principles with contemporary realities.
                 </motion.p>
                 <motion.p
                   variants={itemVariants}

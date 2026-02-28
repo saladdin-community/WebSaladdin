@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight, LogOut, Home } from "lucide-react";
 import { adminNavItems, settingsNavItems, NavItem } from "@/constants/sidebar";
 import { useRouter } from "next/navigation";
@@ -80,16 +81,22 @@ export default function AdminLayout({
                 isCollapsed ? "w-10 justify-center" : "w-full"
               }`}
             >
-              <div className="h-10 w-10 flex-shrink-0 rounded-lg bg-gradient-gold flex items-center justify-center">
-                <span className="text-black font-bold text-lg">SH</span>
+              <div className="h-10 w-10 flex-shrink-0 rounded-lg flex items-center justify-center">
+                <Image
+                  src="/images/icon.png"
+                  alt="Salahuddin Logo"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
               </div>
               <div
                 className={`transition-opacity duration-300 whitespace-nowrap overflow-hidden ${
                   isCollapsed ? "opacity-0 w-0" : "opacity-100 w-auto"
                 }`}
               >
-                <h2 className="font-bold text-white">Salahuddin</h2>
-                <p className="text-xs text-[#737373]">Heritage Learning</p>
+                <h2 className="font-bold text-white">Saladdin</h2>
+                <p className="text-xs text-[#737373]">LMS Platform</p>
               </div>
             </div>
           </div>
