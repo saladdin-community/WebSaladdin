@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { loginLocal } from "@/app/lib/auth";
+import { getApiMe } from "@/app/lib/generated";
 
 function CallbackContent() {
   const router = useRouter();
@@ -27,31 +28,52 @@ function CallbackContent() {
       return;
     }
 
-    if (!token || !userRaw) {
+    if (!token) {
       setErrorMessage("Data login tidak lengkap. Silakan coba lagi.");
       setStatus("error");
       return;
     }
 
-    try {
-      const user = JSON.parse(decodeURIComponent(userRaw));
-      loginLocal(token, user);
+    const processLogin = async () => {
+      try {
+        let user;
 
-      setStatus("success");
-
-      // Redirect based on role
-      setTimeout(() => {
-        if (user.role === "admin") {
-          router.replace("/admin/overview");
+        if (userRaw) {
+          // Parse user if provided in URL
+          user = JSON.parse(decodeURIComponent(userRaw));
         } else {
-          router.replace("/dashboard");
+          // Fetch user profile from API if only token is present
+          const response = await getApiMe({
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          user = response.data;
         }
-      }, 1500);
-    } catch (err) {
-      console.error("Error during OAuth callback:", err);
-      setErrorMessage("Gagal memproses data user.");
-      setStatus("error");
-    }
+
+        if (!user) {
+          throw new Error("User data not found");
+        }
+
+        loginLocal(token, user);
+        setStatus("success");
+
+        // Redirect based on role
+        setTimeout(() => {
+          if (user.role === "admin") {
+            router.replace("/admin/overview");
+          } else {
+            router.replace("/dashboard");
+          }
+        }, 1500);
+      } catch (err) {
+        console.error("Error during OAuth callback:", err);
+        setErrorMessage("Gagal memproses profil pengguna.");
+        setStatus("error");
+      }
+    };
+
+    processLogin();
   }, [searchParams, router]);
 
   return (
