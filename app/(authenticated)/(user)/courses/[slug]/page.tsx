@@ -473,9 +473,12 @@ export default function CourseDetailPage({
                 {/* Text/Article Lesson */}
                 {activeLessonDetail.type === "text" && (
                   <div className="card mb-6">
-                    <div className="prose prose-invert max-w-none text-[#d4d4d4] leading-relaxed">
-                      {activeLessonDetail.content_text}
-                    </div>
+                    <div
+                      className="prose prose-invert max-w-none text-[#d4d4d4] leading-relaxed"
+                      dangerouslySetInnerHTML={{
+                        __html: activeLessonDetail.content_text || "",
+                      }}
+                    />
                   </div>
                 )}
 
@@ -585,12 +588,12 @@ export default function CourseDetailPage({
                     </div>
                   </div>
 
-                  <div className="space-y-4 text-[#d4d4d4] leading-relaxed">
-                    <p>
-                      {/* Description might not be in the detail payload directly, check response */}
-                      {/* {activeLessonDetail.description} */}
-                    </p>
-                  </div>
+                  <div
+                    className="prose prose-invert max-w-none text-sm text-[#d4d4d4] leading-relaxed"
+                    dangerouslySetInnerHTML={{
+                      __html: activeLessonDetail.content_text || "",
+                    }}
+                  />
                 </div>
               </>
             ) : (
