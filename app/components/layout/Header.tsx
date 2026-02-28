@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { usePostApiLogout } from "@/app/lib/generated";
 import { getAuthUser, logoutLocal } from "@/app/lib/auth";
 
-export default function Header() {
+export function Header({ hideLogout = false }: { hideLogout?: boolean }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const router = useRouter();
@@ -92,7 +92,7 @@ export default function Header() {
                   <button className="btn btn-primary">Sign Up</button>
                 </Link>
               </div>
-            ) : (
+            ) : !hideLogout ? (
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 text-neutral-200 max-w-[160px]">
                   <User size={18} className="shrink-0" />
@@ -113,7 +113,7 @@ export default function Header() {
                   Logout
                 </button>
               </div>
-            )}
+            ) : null}
           </nav>
 
           {/* Mobile */}

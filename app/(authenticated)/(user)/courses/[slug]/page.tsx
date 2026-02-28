@@ -5,18 +5,17 @@ import FeedbackModal from "@/app/components/modal/FeedbackModal";
 import { useFeedbackModal } from "@/hooks/useFeedbackModal";
 import {
   BookOpen,
-  Clock,
-  MessageSquare,
-  FileText,
   CheckCircle,
   Circle,
   Lock,
   ChevronLeft,
   ChevronRight,
   PlayCircle,
-  File,
+  FileText,
   Download,
+  Loader2,
   Eye,
+  File,
 } from "lucide-react";
 import Link from "next/link";
 import PrivateYouTubePlayer from "@/app/components/video/PrivateYoutubePlayer";
@@ -42,7 +41,7 @@ interface LessonDetail {
   type: "video" | "document" | "text" | "quiz";
   content?: LessonContent;
   content_text?: string;
-  is_completed?: boolean; // Might come from course list or detail
+  is_completed?: boolean;
 }
 
 interface CourseLessonItem {
@@ -51,7 +50,7 @@ interface CourseLessonItem {
   slug: string;
   type: "video" | "document" | "text" | "quiz";
   is_completed: boolean;
-  duration?: number; // Not in provided example, but kept for UI if available later
+  duration?: number;
 }
 
 interface CourseSection {
@@ -70,22 +69,18 @@ export default function CourseDetailPage({
   const [activeSection, setActiveSection] = useState<string>("");
   const [activeLesson, setActiveLesson] = useState<string>("");
   const [currentVideoUrl, setCurrentVideoUrl] = useState<string>("");
-  // true once the currently-playing video has ended and been marked complete
   const [isVideoCompleted, setIsVideoCompleted] = useState(false);
-  // true once the user has viewed or downloaded a document lesson
   const [isDocumentRead, setIsDocumentRead] = useState(false);
-  // true once the user has passed the quiz
   const [isQuizPassed, setIsQuizPassed] = useState(false);
 
   const { modal: feedbackModal, success: showSuccess } = useFeedbackModal();
-
   const queryClient = useQueryClient();
 
-  // Fetch course structure (Sections & Lesson List)
+  // Fetch course structure
   const { data: courseData, isLoading: isCourseLoading } =
     useGetApiCoursesSlug(slugIdRaw);
 
-  // Fetch specific lesson details when activeLesson changes
+  // Fetch specific lesson details
   const { data: lessonData, isLoading: isLessonLoading } =
     useGetApiLessonsLessonid(activeLesson ? parseFloat(activeLesson) : 0, {
       query: {
@@ -93,10 +88,9 @@ export default function CourseDetailPage({
       },
     });
 
-  // Mutation for completing lesson
   const completeLessonMutation = usePostApiLessonsLessonidComplete();
 
-  // Initialize Active Section/Lesson on Load — resume from last checkpoint
+  // Resume logic
   useEffect(() => {
     if (
       courseData?.data?.sections &&
@@ -104,20 +98,17 @@ export default function CourseDetailPage({
       !activeLesson
     ) {
       const sections: CourseSection[] = courseData.data.sections;
-
-      // Flatten all lessons in order, keeping a reference to their section
-      type LessonRef = { section: CourseSection; lesson: CourseLessonItem };
-      const allLessons: LessonRef[] = [];
+      const allLessons: { section: CourseSection; lesson: CourseLessonItem }[] =
+        [];
       sections.forEach((section) => {
         section.lessons.forEach((lesson) => {
           allLessons.push({ section, lesson });
         });
       });
 
-      // Find the first incomplete lesson (resume point)
       const resumeRef =
         allLessons.find((ref) => !ref.lesson.is_completed) ??
-        allLessons[allLessons.length - 1]; // fallback: last lesson if all complete
+        allLessons[allLessons.length - 1];
 
       if (resumeRef) {
         setActiveSection(resumeRef.section.id.toString());
@@ -126,21 +117,21 @@ export default function CourseDetailPage({
     }
   }, [courseData?.data?.sections, activeLesson]);
 
-  // Reset video/document-completed flags whenever the user switches lesson
+  // Reset flags
   useEffect(() => {
     setIsVideoCompleted(false);
     setIsDocumentRead(false);
     setIsQuizPassed(false);
   }, [activeLesson]);
 
-  // Update video URL when lesson detail is loaded
+  // Update video URL
   useEffect(() => {
     if (lessonData?.data?.type === "video" && lessonData.data.content?.url) {
       setCurrentVideoUrl(lessonData.data.content.url);
     }
   }, [lessonData]);
 
-  // Calculate locked lessons
+  // Locked lessons logic
   const lockedLessonIds = useMemo(() => {
     const lockedIds = new Set<string>();
     let foundFirstIncomplete = false;
@@ -159,39 +150,24 @@ export default function CourseDetailPage({
     return lockedIds;
   }, [courseData]);
 
-  // Handler functions
-  const handlePlayPause = (isPlaying: boolean) => {
-    // console.log("Video is playing:", isPlaying);
-  };
-
   const handleLessonComplete = async (
     lessonId: number,
     navigateNext: boolean = false,
   ) => {
     try {
       await completeLessonMutation.mutateAsync({ lessonId });
-      // Invalidate course data to update sidebar progress/status
       await queryClient.invalidateQueries({
         queryKey: getApiCoursesSlugQueryKey(slugIdRaw),
       });
-      // Also potentially invalidate lesson detail if it carries status
-
-      if (navigateNext) {
-        navigateToNextLesson();
-      }
+      if (navigateNext) navigateToNextLesson();
     } catch (error) {
       console.error("Failed to complete lesson:", error);
-      // Still navigate if requested? Maybe yes for UX
-      if (navigateNext) {
-        navigateToNextLesson();
-      }
+      if (navigateNext) navigateToNextLesson();
     }
   };
 
   const navigateToNextLesson = () => {
     if (!courseData?.data?.sections) return;
-
-    // Find current indices
     let currentSectionIndex = -1;
     let currentLessonIndex = -1;
 
@@ -208,16 +184,12 @@ export default function CourseDetailPage({
     );
 
     if (currentSectionIndex === -1) return;
-
     const currentSection = courseData.data.sections[currentSectionIndex];
 
-    // Try next lesson in same section
     if (currentLessonIndex < currentSection.lessons.length - 1) {
       const nextLesson = currentSection.lessons[currentLessonIndex + 1];
       setActiveLesson(nextLesson.id.toString());
-    }
-    // Try first lesson of next section
-    else if (currentSectionIndex < courseData.data.sections.length - 1) {
+    } else if (currentSectionIndex < courseData.data.sections.length - 1) {
       const nextSection = courseData.data.sections[currentSectionIndex + 1];
       setActiveSection(nextSection.id.toString());
       if (nextSection.lessons.length > 0) {
@@ -227,21 +199,16 @@ export default function CourseDetailPage({
   };
 
   const handleNextButtonClick = () => {
-    const currentLessonConfig = getCurrentLessonConfig();
-
-    // If current lesson is NOT completed, complete it first
-    if (currentLessonConfig && !currentLessonConfig.is_completed) {
-      handleLessonComplete(currentLessonConfig.id, true);
+    const currentConfig = getCurrentLessonConfig();
+    if (currentConfig && !currentConfig.is_completed) {
+      handleLessonComplete(currentConfig.id, true);
     } else {
-      // Just navigate
       navigateToNextLesson();
     }
   };
 
   const handlePreviousLesson = () => {
     if (!courseData?.data?.sections) return;
-
-    // Find current indices
     let currentSectionIndex = -1;
     let currentLessonIndex = -1;
 
@@ -258,16 +225,12 @@ export default function CourseDetailPage({
     );
 
     if (currentSectionIndex === -1) return;
-
     const currentSection = courseData.data.sections[currentSectionIndex];
 
-    // Try prev lesson in same section
     if (currentLessonIndex > 0) {
       const prevLesson = currentSection.lessons[currentLessonIndex - 1];
       setActiveLesson(prevLesson.id.toString());
-    }
-    // Try last lesson of prev section
-    else if (currentSectionIndex > 0) {
+    } else if (currentSectionIndex > 0) {
       const prevSection = courseData.data.sections[currentSectionIndex - 1];
       setActiveSection(prevSection.id.toString());
       if (prevSection.lessons.length > 0) {
@@ -278,7 +241,6 @@ export default function CourseDetailPage({
     }
   };
 
-  // Helper to get current lesson from COURSE LIST (contains status)
   const getCurrentLessonConfig = (): CourseLessonItem | undefined => {
     if (!courseData?.data?.sections) return undefined;
     for (const section of courseData.data.sections) {
@@ -295,459 +257,327 @@ export default function CourseDetailPage({
     isCompleted: boolean,
     isLocked: boolean,
   ) => {
-    if (isLocked) return <Lock className="h-4 w-4 text-[#525252]" />;
-    if (isCompleted) return <CheckCircle className="h-5 w-5 text-[#22c55e]" />;
-
+    if (isLocked) return <Lock size={16} className="text-[#404040]" />;
+    if (isCompleted)
+      return <CheckCircle size={18} className="text-[#22c55e]" />;
     switch (type) {
       case "video":
-        return <PlayCircle className="h-5 w-5 text-[#d4af35]" />;
+        return <PlayCircle size={18} className="text-[#d4af35]" />;
       case "document":
-        return <File className="h-5 w-5 text-[#3b82f6]" />; // Blue for docs
-      case "text":
-        return <FileText className="h-5 w-5 text-[#a3a3a3]" />;
+        return <FileText size={18} className="text-[#3b82f6]" />;
       case "quiz":
-        return <CheckCircle className="h-5 w-5 text-[#a3a3a3]" />; // Placeholder
+        return <CheckCircle size={18} className="text-[#a3a3a3]" />;
       default:
-        return <Circle className="h-5 w-5 text-[#404040]" />;
+        return <Circle size={18} className="text-[#404040]" />;
     }
-  };
-
-  // Calculate progress override
-  const calculateOverallProgress = () => {
-    if (!courseData?.data?.sections) return 0;
-
-    let totalLessons = 0;
-    let completedLessons = 0;
-
-    courseData.data.sections.forEach((section: CourseSection) => {
-      section.lessons.forEach((lesson: CourseLessonItem) => {
-        totalLessons++;
-        if (lesson.is_completed) {
-          completedLessons++;
-        }
-      });
-    });
-
-    return totalLessons > 0
-      ? Math.round((completedLessons / totalLessons) * 100)
-      : 0;
   };
 
   if (isCourseLoading) {
     return (
-      <div className="min-h-screen bg-[#121212] text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="h-12 w-12 border-4 border-[#d4af35] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-[#d4d4d4]">Loading course...</p>
-        </div>
+      <div className="flex flex-col items-center justify-center py-40">
+        <Loader2 className="h-12 w-12 text-[#d4af35] animate-spin mb-4" />
+        <p className="text-[#737373] font-medium tracking-wide">
+          Loading course structure...
+        </p>
       </div>
     );
   }
 
-  const overallProgress = calculateOverallProgress();
-  // Active lesson detail from API
   const activeLessonDetail = lessonData?.data;
-
-  console.log("this is lesson Data: ", lessonData);
-  // Active lesson status/config from Sidebar list
   const activeLessonConfig = getCurrentLessonConfig();
+  const overallProgress =
+    (courseData?.data?.sections?.reduce(
+      (acc: number, sec: any) =>
+        acc + sec.lessons.filter((l: any) => l.is_completed).length,
+      0,
+    ) /
+      courseData?.data?.sections?.reduce(
+        (acc: number, sec: any) => acc + sec.lessons.length,
+        0,
+      )) *
+      100 || 0;
 
   return (
-    <div className="min-h-screen bg-[#121212] text-white">
-      {/* Video-completion feedback modal */}
+    <div className="pb-12">
       <FeedbackModal
         {...feedbackModal}
         actions={[
           {
-            label: "Next Lesson →",
+            label: "Next Lesson",
             variant: "primary",
-            onClick: () => {
-              navigateToNextLesson();
-            },
+            onClick: navigateToNextLesson,
           },
-          {
-            label: "Stay Here",
-            variant: "ghost",
-            onClick: () => {},
-          },
+          { label: "Stay Here", variant: "ghost", onClick: () => {} },
         ]}
       />
-      {/* Header - Simplified */}
-      <header className="border-b border-[rgba(255,255,255,0.1)] bg-[#121212]/90 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container-custom py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/courses"
-                className="flex items-center gap-2 text-[#a3a3a3] hover:text-white transition-colors duration-300"
-              >
-                <ChevronLeft className="h-5 w-5" />
-                Back to Courses
-              </Link>
-              <div>
-                <h1 className="text-xl font-bold text-white">
-                  {courseData?.data?.title || "Course Title"}
-                </h1>
-              </div>
-            </div>
 
-            <div className="flex items-center gap-6">
-              <div className="text-right hidden md:block">
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 w-32 bg-[#404040] rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-[#d4af35] to-[#fde047] rounded-full transition-all duration-500"
-                      style={{ width: `${overallProgress}%` }}
-                    ></div>
-                  </div>
-                  <span className="text-sm text-[#d4d4d4]">
-                    {overallProgress}%
-                  </span>
-                </div>
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+        <div>
+          <Link
+            href="/courses"
+            className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[#737373] hover:text-[#d4af35] transition-colors mb-4 group"
+          >
+            <ChevronLeft
+              size={16}
+              className="group-hover:-translate-x-1 transition-transform"
+            />
+            Back to Catalog
+          </Link>
+          <h1 className="text-3xl font-black text-white leading-tight">
+            {courseData?.data?.title}
+          </h1>
+          <div className="flex items-center gap-6 mt-4">
+            <div className="flex items-center gap-3">
+              <div className="h-1.5 w-32 bg-white/5 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#d4af35] rounded-full transition-all duration-1000"
+                  style={{ width: `${overallProgress}%` }}
+                ></div>
               </div>
-
-              {/* Mark as Completed Button */}
-              {activeLessonConfig && !activeLessonConfig.is_completed && (
-                <button
-                  onClick={() => handleLessonComplete(activeLessonConfig.id)}
-                  disabled={completeLessonMutation.isPending}
-                  className="btn btn-primary px-6 py-2.5 font-bold flex items-center gap-2 disabled:opacity-50"
-                >
-                  {completeLessonMutation.isPending
-                    ? "Updating..."
-                    : "Mark Complete"}
-                </button>
-              )}
-              {activeLessonConfig && activeLessonConfig.is_completed && (
-                <button className="px-6 py-2.5 font-bold flex items-center gap-2 text-[#22c55e] border border-[#22c55e]/20 bg-[#22c55e]/10 rounded-md cursor-default">
-                  <CheckCircle className="h-5 w-5" />
-                  Completed
-                </button>
-              )}
+              <span className="text-xs font-black text-[#d4af35]">
+                {Math.round(overallProgress)}% Done
+              </span>
             </div>
           </div>
         </div>
-      </header>
 
-      <main className="container-custom py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Left Column - Video Player & Content */}
-          <div className="lg:w-2/3">
-            {isLessonLoading ? (
-              <div className="h-[400px] bg-[#262626] animate-pulse rounded-lg flex items-center justify-center text-[#737373]">
-                Loading content...
+        <div className="flex items-center gap-4">
+          {activeLessonConfig && !activeLessonConfig.is_completed ? (
+            <button
+              onClick={() => handleLessonComplete(activeLessonConfig.id)}
+              disabled={completeLessonMutation.isPending}
+              className="px-8 py-3 bg-[#d4af35] text-black font-black text-xs uppercase tracking-widest rounded-xl hover:bg-[#fde047] transition-all duration-300 shadow-lg shadow-[#d4af35]/10 disabled:opacity-50"
+            >
+              {completeLessonMutation.isPending
+                ? "Updating..."
+                : "Mark Complete"}
+            </button>
+          ) : (
+            activeLessonConfig?.is_completed && (
+              <div className="px-8 py-3 bg-white/5 border border-[#22c55e]/30 text-[#22c55e] font-black text-xs uppercase tracking-widest rounded-xl flex items-center gap-2">
+                <CheckCircle size={16} />
+                Completed
               </div>
-            ) : activeLessonDetail ? (
-              <>
-                {/* Render Content Based on Type */}
+            )
+          )}
+        </div>
+      </div>
 
-                {/* Video Lesson */}
-                {activeLessonDetail.type === "video" && (
-                  <div className="mb-6">
-                    <PrivateYouTubePlayer
-                      youtubeUrl={activeLessonDetail.content?.url || ""} // Fallback needed?
-                      title={activeLessonDetail.title || "Lesson Video"}
-                      onPlayPause={handlePlayPause}
-                      // onFullscreenChange={handleFullscreenChange}
-                      // onProgressChange={handleProgressChange}
-                      // onVolumeChange={handleVolumeChange}
-                      maxPlaybackRate={2}
-                      showControls={true}
-                      onEnded={async () => {
-                        if (activeLessonConfig) {
-                          // 1. Mark lesson complete on the backend
-                          await handleLessonComplete(activeLessonConfig.id);
-                        }
-                        // 2. Show the celebration modal
-                        showSuccess(
-                          "Video Completed! 🎉",
-                          'Great job finishing this lesson. Click "Next Lesson" below to continue.',
-                        );
-                        // 3. Unlock the Next button
-                        setIsVideoCompleted(true);
-                      }}
-                    />
-                  </div>
-                )}
-
-                {/* Text/Article Lesson */}
-                {activeLessonDetail.type === "text" && (
-                  <div className="card mb-6">
-                    <div
-                      className="prose prose-invert max-w-none text-[#d4d4d4] leading-relaxed"
-                      dangerouslySetInnerHTML={{
-                        __html: activeLessonDetail.content_text || "",
-                      }}
-                    />
-                  </div>
-                )}
-
-                {/* Document/PDF Lesson */}
-                {activeLessonDetail.type === "document" && (
-                  <div className="card mb-6 overflow-hidden">
-                    {/* PDF Header Bar */}
-                    <div className="flex items-center justify-between px-5 py-3 bg-[#1a1a1a] border-b border-[rgba(255,255,255,0.08)]">
-                      <div className="flex items-center gap-2">
-                        <FileText className="h-5 w-5 text-[#d4af35]" />
-                        <span className="text-sm font-semibold text-white truncate max-w-[300px]">
-                          {activeLessonDetail.title}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {isDocumentRead && (
-                          <span className="flex items-center gap-1.5 text-xs text-green-400 bg-green-500/10 border border-green-500/20 px-2.5 py-1 rounded-full">
-                            <CheckCircle className="h-3.5 w-3.5" />
-                            Read
-                          </span>
-                        )}
-                        {activeLessonDetail.content?.url ? (
-                          <a
-                            href={activeLessonDetail.content.url}
-                            download
-                            onClick={() => setIsDocumentRead(true)}
-                            className="flex items-center gap-1.5 text-sm font-medium text-[#d4af35] hover:text-[#fde047] bg-[rgba(212,175,53,0.1)] hover:bg-[rgba(212,175,53,0.2)] border border-[rgba(212,175,53,0.25)] px-3 py-1.5 rounded-md transition-all duration-200"
-                          >
-                            <Download className="h-4 w-4" />
-                            Download
-                          </a>
-                        ) : null}
-                      </div>
-                    </div>
-
-                    {/* Inline PDF Viewer */}
-                    {activeLessonDetail.content?.url ? (
-                      <div className="relative bg-[#0d0d0d]">
-                        <iframe
-                          src={`${activeLessonDetail.content.url}#toolbar=1&navpanes=1&scrollbar=1&view=FitH`}
-                          className="w-full border-0"
-                          style={{ height: "75vh", minHeight: "500px" }}
-                          title={activeLessonDetail.title}
-                          onLoad={() => setIsDocumentRead(true)}
-                        />
-                      </div>
-                    ) : (
-                      <div className="p-10 flex flex-col items-center justify-center text-center">
-                        <FileText className="h-14 w-14 text-[#404040] mb-4" />
-                        <p className="text-[#737373] text-sm">
-                          Document URL not available
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Bottom hint when not yet read */}
-                    {!isDocumentRead && activeLessonDetail.content?.url && (
-                      <div className="px-5 py-3 bg-[rgba(212,175,53,0.06)] border-t border-[rgba(212,175,53,0.15)] flex items-center gap-2 text-sm text-[#d4af35]">
-                        <Eye className="h-4 w-4 shrink-0" />
-                        <span>
-                          Read the document or download it to unlock the next
-                          lesson.
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Quiz Lesson */}
-                {activeLessonDetail.type === "quiz" && (
-                  <QuizContent
-                    lessonId={activeLessonDetail.id}
-                    lessonTitle={activeLessonDetail.title}
-                    onPassed={() => {
-                      // 1. Mark lesson complete on the backend
-                      handleLessonComplete(activeLessonDetail.id);
-                      // 2. Unlock the Next button
-                      setIsQuizPassed(true);
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Main Content Area */}
+        <div className="flex-1 space-y-8">
+          {isLessonLoading ? (
+            <div className="aspect-video bg-[#1a1a1a] rounded-3xl animate-pulse flex items-center justify-center">
+              <Loader2 className="h-10 w-10 text-[#262626] animate-spin" />
+            </div>
+          ) : activeLessonDetail ? (
+            <>
+              {activeLessonDetail.type === "video" && (
+                <div className="rounded-3xl overflow-hidden shadow-2xl border border-white/5 bg-black">
+                  <PrivateYouTubePlayer
+                    youtubeUrl={activeLessonDetail.content?.url || ""}
+                    title={activeLessonDetail.title}
+                    onPlayPause={() => {}}
+                    onEnded={async () => {
+                      if (activeLessonConfig)
+                        await handleLessonComplete(activeLessonConfig.id);
+                      showSuccess(
+                        "Lesson Completed!",
+                        "You have finished the video. Ready for the next one?",
+                      );
+                      setIsVideoCompleted(true);
                     }}
                   />
-                )}
+                </div>
+              )}
 
-                {/* Lesson Info */}
-                <div className="card mb-6">
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-white mb-3">
-                      {activeLessonDetail.title}
-                    </h2>
-                    <div className="flex items-center gap-4 text-sm text-[#737373]">
-                      <span className="flex items-center gap-1.5">
-                        <BookOpen className="h-4 w-4" />
-                        <span className="capitalize">
-                          {activeLessonDetail.type}
-                        </span>
-                      </span>
-                      <span
-                        className={`px-2 py-1 rounded text-xs ${
-                          activeLessonConfig?.is_completed
-                            ? "bg-green-500/20 text-green-400"
-                            : "bg-gray-500/20 text-gray-400"
-                        }`}
-                      >
-                        {activeLessonConfig?.is_completed
-                          ? "Completed"
-                          : "On Progress"}
-                      </span>
-                    </div>
-                  </div>
-
+              {activeLessonDetail.type === "text" && (
+                <div className="bg-[#1a1a1a] rounded-3xl p-8 lg:p-10 border border-white/5">
                   <div
-                    className="prose prose-invert max-w-none text-sm text-[#d4d4d4] leading-relaxed"
+                    className="prose prose-invert max-w-none text-[#a3a3a3] leading-relaxed prose-headings:text-white prose-strong:text-white"
                     dangerouslySetInnerHTML={{
                       __html: activeLessonDetail.content_text || "",
                     }}
                   />
                 </div>
-              </>
-            ) : (
-              <div className="text-center py-10 text-[#737373]">
-                Select a lesson to view content
-              </div>
-            )}
-
-            {/* Navigation */}
-            <div className="flex justify-between gap-4">
-              <button
-                onClick={handlePreviousLesson}
-                // Logic to disable if first
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-[#1f1f1f] hover:bg-[#262626] text-[#d4d4d4] hover:text-white rounded-md transition-all duration-300 border border-[rgba(255,255,255,0.1)] font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft className="h-5 w-5" />
-                Previous
-              </button>
-              {/* Next button: visible for video (after completed) or document (after read) or quiz (after passed) or other types */}
-              {(activeLessonDetail?.type === "video"
-                ? isVideoCompleted
-                : activeLessonDetail?.type === "document"
-                  ? isDocumentRead
-                  : activeLessonDetail?.type === "quiz"
-                    ? isQuizPassed || activeLessonConfig?.is_completed
-                    : true) && (
-                <button
-                  onClick={handleNextButtonClick}
-                  className="flex items-center justify-center gap-2 px-6 py-3 btn-primary font-bold disabled:opacity-50 disabled:cursor-not-allowed text-black"
-                >
-                  Next
-                  <ChevronRight className="h-5 w-5" />
-                </button>
               )}
-            </div>
-          </div>
 
-          {/* Right Column - Course Navigation */}
-          <div className="lg:w-1/3">
-            <div className="card">
-              {/* Course Sections */}
-              <div>
-                <h3 className="text-xl font-bold text-white mb-4">
-                  Course Modules
-                </h3>
-                <div className="space-y-4">
-                  {courseData?.data?.sections?.map((section: CourseSection) => (
-                    <div
-                      key={section.id}
-                      className="border border-[rgba(255,255,255,0.1)] rounded-lg overflow-hidden bg-[#1a1a1a]"
-                    >
-                      <button
-                        onClick={() =>
-                          setActiveSection(
-                            activeSection === section.id.toString()
-                              ? ""
-                              : section.id.toString(),
-                          )
-                        }
-                        className={`w-full p-4 text-left transition-colors duration-300 ${
-                          activeSection === section.id.toString()
-                            ? "bg-[rgba(212,175,53,0.1)]"
-                            : "hover:bg-[#262626]"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold text-white">
-                            {section.title}
-                          </h4>
-                          <ChevronRight
-                            className={`h-5 w-5 text-[#737373] transition-transform duration-300 ${
-                              activeSection === section.id.toString()
-                                ? "rotate-90"
-                                : ""
-                            }`}
-                          />
-                        </div>
-                        <p className="text-xs text-[#737373] text-left">
-                          {section.lessons.length} lessons
-                        </p>
-                      </button>
-
-                      {activeSection === section.id.toString() && (
-                        <div className="p-4 pt-2 border-t border-[rgba(255,255,255,0.1)]">
-                          <div className="space-y-2">
-                            {section.lessons.map((lesson: CourseLessonItem) => {
-                              const isLocked = lockedLessonIds.has(
-                                lesson.id.toString(),
-                              );
-                              return (
-                                <button
-                                  key={lesson.id}
-                                  disabled={isLocked}
-                                  onClick={() =>
-                                    setActiveLesson(lesson.id.toString())
-                                  }
-                                  className={`w-full p-3 rounded-md flex items-center justify-between transition-all duration-300 ${
-                                    activeLesson === lesson.id.toString()
-                                      ? "bg-gradient-to-r from-[rgba(212,175,53,0.2)] to-[rgba(253,224,71,0.1)] border border-[rgba(212,175,53,0.3)]"
-                                      : isLocked
-                                        ? "opacity-50 cursor-not-allowed border border-transparent"
-                                        : "hover:bg-[#262626] border border-transparent"
-                                  }`}
-                                >
-                                  <div className="flex items-center gap-3">
-                                    {getLessonIcon(
-                                      lesson.type,
-                                      lesson.is_completed,
-                                      isLocked,
-                                    )}
-                                    <span
-                                      className={`text-sm truncate ${
-                                        activeLesson === lesson.id.toString()
-                                          ? "text-[#d4af35] font-semibold"
-                                          : isLocked
-                                            ? "text-[#525252]"
-                                            : "text-[#d4d4d4]"
-                                      }`}
-                                    >
-                                      {lesson.title}
-                                    </span>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    {/* Duration if available */}
-                                  </div>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
+              {activeLessonDetail.type === "document" && (
+                <div className="bg-[#1a1a1a] rounded-3xl overflow-hidden border border-white/5">
+                  <div className="p-6 bg-white/5 border-b border-white/5 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <FileText size={20} className="text-[#d4af35]" />
+                      <span className="text-sm font-bold text-white uppercase tracking-wider">
+                        {activeLessonDetail.title}
+                      </span>
                     </div>
-                  ))}
+                    {activeLessonDetail.content?.url && (
+                      <a
+                        href={activeLessonDetail.content.url}
+                        download
+                        onClick={() => setIsDocumentRead(true)}
+                        className="p-2.5 bg-[#d4af35]/10 text-[#d4af35] rounded-xl hover:bg-[#d4af35]/20 transition-colors"
+                      >
+                        <Download size={18} />
+                      </a>
+                    )}
+                  </div>
+                  {activeLessonDetail.content?.url ? (
+                    <iframe
+                      src={`${activeLessonDetail.content.url}#toolbar=0`}
+                      className="w-full h-[70vh] border-0"
+                      onLoad={() => setIsDocumentRead(true)}
+                    />
+                  ) : (
+                    <div className="h-96 flex items-center justify-center text-[#404040]">
+                      Document not available
+                    </div>
+                  )}
                 </div>
-              </div>
+              )}
 
-              {/* Resources - Simplified */}
-              <div className="pt-6 mt-6 border-t border-[rgba(255,255,255,0.1)]">
-                <h3 className="text-lg font-bold text-white mb-4">Resources</h3>
-                <div className="space-y-3">
-                  <button className="w-full flex items-center gap-3 p-3 bg-[#1f1f1f] hover:bg-[#262626] rounded-md transition-all duration-300 border border-[rgba(255,255,255,0.1)]">
-                    <FileText className="h-5 w-5 text-[#d4d4d4]" />
-                    <span className="text-[#d4d4d4]">Lesson Notes</span>
-                  </button>
-                  <button className="w-full flex items-center gap-3 p-3 bg-[#1f1f1f] hover:bg-[#262626] rounded-md transition-all duration-300 border border-[rgba(255,255,255,0.1)]">
-                    <MessageSquare className="h-5 w-5 text-[#d4d4d4]" />
-                    <span className="text-[#d4d4d4]">Discussion Forum</span>
-                  </button>
+              {activeLessonDetail.type === "quiz" && (
+                <QuizContent
+                  lessonId={activeLessonDetail.id}
+                  lessonTitle={activeLessonDetail.title}
+                  onPassed={() => {
+                    handleLessonComplete(activeLessonDetail.id);
+                    setIsQuizPassed(true);
+                  }}
+                />
+              )}
+
+              {/* Lesson Description (Lower Section) */}
+              <div className="bg-[#1a1a1a] rounded-3xl p-8 border border-white/5">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-1 w-12 bg-[#d4af35] rounded-full"></div>
+                  <h2 className="text-xl font-bold text-white">
+                    Lesson Overview
+                  </h2>
                 </div>
+                <div
+                  className="prose prose-invert max-w-none text-sm text-[#737373] leading-relaxed"
+                  dangerouslySetInnerHTML={{
+                    __html: activeLessonDetail.content_text || "",
+                  }}
+                />
               </div>
+            </>
+          ) : (
+            <div className="py-20 text-center text-[#404040]">
+              Select a lesson to begin.
+            </div>
+          )}
+
+          {/* Navigation Controls */}
+          <div className="flex justify-between items-center bg-[#1a1a1a] p-4 rounded-2xl border border-white/5">
+            <button
+              onClick={handlePreviousLesson}
+              className="flex items-center gap-2 px-6 py-2.5 text-xs font-bold uppercase tracking-widest text-[#737373] hover:text-white transition-colors"
+            >
+              <ChevronLeft size={16} />
+              Previous
+            </button>
+
+            {(activeLessonDetail?.type === "video"
+              ? isVideoCompleted
+              : activeLessonDetail?.type === "document"
+                ? isDocumentRead
+                : activeLessonDetail?.type === "quiz"
+                  ? isQuizPassed || activeLessonConfig?.is_completed
+                  : true) && (
+              <button
+                onClick={handleNextButtonClick}
+                className="flex items-center gap-2 px-8 py-3 bg-white text-black font-black text-xs uppercase tracking-widest rounded-xl hover:bg-neutral-200 transition-all duration-300"
+              >
+                Next Lesson
+                <ChevronRight size={16} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Sidebar - Navigation Index */}
+        <div className="lg:w-96 space-y-6">
+          <div className="bg-[#1a1a1a] rounded-3xl p-6 border border-white/5 h-fit sticky top-8">
+            <h3 className="text-sm font-black text-white uppercase tracking-[0.2em] mb-6">
+              Module Index
+            </h3>
+            <div className="space-y-4">
+              {courseData?.data?.sections?.map((section: CourseSection) => (
+                <div key={section.id} className="space-y-2">
+                  <button
+                    onClick={() =>
+                      setActiveSection(
+                        activeSection === section.id.toString()
+                          ? ""
+                          : section.id.toString(),
+                      )
+                    }
+                    className={`w-full text-left p-4 rounded-2xl transition-all duration-300 flex items-center justify-between ${
+                      activeSection === section.id.toString()
+                        ? "bg-white/5"
+                        : "hover:bg-white/[0.02]"
+                    }`}
+                  >
+                    <div>
+                      <h4 className="text-xs font-black text-white uppercase tracking-wider">
+                        {section.title}
+                      </h4>
+                      <p className="text-[10px] text-[#404040] mt-1 uppercase font-bold">
+                        {section.lessons.length} Lessons
+                      </p>
+                    </div>
+                    <ChevronRight
+                      size={16}
+                      className={`text-[#404040] transition-transform duration-300 ${activeSection === section.id.toString() ? "rotate-90" : ""}`}
+                    />
+                  </button>
+
+                  <div
+                    className={`space-y-1 overflow-hidden transition-all duration-500 ${activeSection === section.id.toString() ? "max-h-[1000px] opacity-100 mt-2" : "max-h-0 opacity-0"}`}
+                  >
+                    {section.lessons.map((lesson: CourseLessonItem) => {
+                      const isLocked = lockedLessonIds.has(
+                        lesson.id.toString(),
+                      );
+                      const isActive = activeLesson === lesson.id.toString();
+                      return (
+                        <button
+                          key={lesson.id}
+                          disabled={isLocked}
+                          onClick={() => setActiveLesson(lesson.id.toString())}
+                          className={`w-full group flex items-center gap-4 p-3.5 rounded-xl transition-all duration-300 ${
+                            isActive
+                              ? "bg-[#d4af35]/10 border border-[#d4af35]/20"
+                              : isLocked
+                                ? "opacity-30 grayscale"
+                                : "hover:bg-white/[0.03]"
+                          }`}
+                        >
+                          <div className="shrink-0">
+                            {getLessonIcon(
+                              lesson.type,
+                              lesson.is_completed,
+                              isLocked,
+                            )}
+                          </div>
+                          <span
+                            className={`text-xs font-bold truncate text-left ${isActive ? "text-[#d4af35]" : isLocked ? "text-[#404040]" : "text-[#737373] group-hover:text-white"}`}
+                          >
+                            {lesson.title}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
