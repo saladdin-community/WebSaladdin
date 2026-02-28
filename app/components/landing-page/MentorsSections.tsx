@@ -94,17 +94,17 @@ export default function MentorsSection() {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
           variants={containerVariants}
-          className="mx-auto max-w-4xl text-center mb-16"
+          className="mx-auto max-w-4xl text-center mb-10"
         >
           <motion.h2
             variants={itemVariants}
-            className="mb-4 text-3xl font-bold md:text-4xl"
+            className="mb-3 text-2xl font-bold md:text-3xl"
           >
             Meet Our <span className="text-gradient-gold">Teacher</span>
           </motion.h2>
           <motion.p
             variants={itemVariants}
-            className="text-lg text-neutral-300"
+            className="text-base text-neutral-300"
           >
             Learn directly from scholars and industry experts who have dedicated
             their lives to mastering their craft.
@@ -145,7 +145,7 @@ export default function MentorsSection() {
 
                   {/* Name & Title */}
                   <div className="text-center mb-4">
-                    <h3 className="text-xl font-bold text-white">
+                    <h3 className="text-lg font-bold text-white">
                       {mentor.name}
                     </h3>
                     <p className="text-gold">{mentor.title}</p>
@@ -162,7 +162,7 @@ export default function MentorsSection() {
                       {mentor.expertise.map((skill, idx) => (
                         <span
                           key={idx}
-                          className="rounded-full bg-secondary-800 px-3 py-1 text-xs text-gold border border-gold/30"
+                          className="rounded-full bg-secondary-800 px-3 py-0.5 text-[10px] text-gold border border-gold/30"
                         >
                           {skill}
                         </span>
@@ -175,19 +175,19 @@ export default function MentorsSection() {
                 <div className="mb-6 border-t border-border pt-6">
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
-                      <div className="text-2xl font-bold text-gold">
+                      <div className="text-xl font-bold text-gold">
                         {mentor.courses}
                       </div>
                       <div className="text-xs text-neutral-500">Courses</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-gold">
+                      <div className="text-xl font-bold text-gold">
                         {mentor.students.toLocaleString()}
                       </div>
                       <div className="text-xs text-neutral-500">Students</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-gold">
+                      <div className="text-xl font-bold text-gold">
                         {mentor.rating}
                       </div>
                       <div className="text-xs text-neutral-500">Rating</div>

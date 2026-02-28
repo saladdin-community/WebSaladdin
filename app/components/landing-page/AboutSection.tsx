@@ -54,9 +54,9 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <section className="relative overflow-hidden pt-32 pb-32 px-4">
+      <section id="about" className="relative overflow-hidden py-12 px-4">
         <div className="container-custom">
-          <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-14">
             {/* Left Content - Text & Mission */}
             <motion.div
               initial="hidden"
@@ -78,7 +78,7 @@ export default function AboutPage() {
               {/* Main Title */}
               <motion.h1
                 variants={itemVariants}
-                className="text-5xl md:text-6xl lg:text-7xl text-gradient-gold mb-8 leading-tight text-white"
+                className="text-3xl md:text-4xl lg:text-5xl text-gradient-gold mb-4 leading-tight text-white"
               >
                 Reviving the{" "}
                 <span className="text-gradient-gold">Golden Age</span> of Islam
@@ -88,7 +88,7 @@ export default function AboutPage() {
               <div className="space-y-6 mb-10">
                 <motion.p
                   variants={itemVariants}
-                  className="text-xl text-neutral-300 leading-relaxed"
+                  className="text-base text-neutral-300 leading-relaxed"
                 >
                   Saladdin LMS connects the Golden Age of Liberation with the
                   rich intellectual tradition of Islamic civilization, aligning
@@ -96,7 +96,7 @@ export default function AboutPage() {
                 </motion.p>
                 <motion.p
                   variants={itemVariants}
-                  className="text-xl text-neutral-300 leading-relaxed"
+                  className="text-base text-neutral-300 leading-relaxed"
                 >
                   Our mission is to develop leaders defined by wisdom,
                   integrity, and excellence.
@@ -106,8 +106,8 @@ export default function AboutPage() {
               {/* CTA Button */}
               <motion.div variants={itemVariants}>
                 <Link
-                  href="/story"
-                  className="btn btn-primary inline-flex items-center gap-3 text-lg px-8 py-4 group"
+                  href="/"
+                  className="btn btn-primary inline-flex items-center gap-3 text-base px-6 py-2.5 group"
                 >
                   Read our full story
                   <FaArrowRight className="group-hover:translate-x-2 transition-transform" />
@@ -144,10 +144,10 @@ export default function AboutPage() {
                         delay: 0.2,
                         ease: "backOut",
                       }}
-                      className="mx-auto mb-6 w-28 h-28 rounded-full bg-gradient-gold flex items-center justify-center shadow-2xl shadow-gold/30"
+                      className="mx-auto mb-4 w-20 h-20 rounded-full bg-gradient-gold flex items-center justify-center shadow-2xl shadow-gold/30"
                     >
-                      <div className="w-24 h-24 rounded-full bg-secondary-900 flex items-center justify-center">
-                        <span className="text-3xl font-serif text-gold">
+                      <div className="w-16 h-16 rounded-full bg-secondary-900 flex items-center justify-center">
+                        <span className="text-2xl font-serif text-gold">
                           ٨٠٠
                         </span>
                       </div>
@@ -159,15 +159,15 @@ export default function AboutPage() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.6, delay: 0.4 }}
-                      className="text-center mb-8"
+                      className="text-center mb-6"
                     >
-                      <div className="text-5xl md:text-6xl font-serif text-gradient-gold mb-4 leading-none">
+                      <div className="text-3xl md:text-4xl font-serif text-gradient-gold mb-2 leading-none">
                         800+
                       </div>
-                      <div className="text-xl font-semibold text-neutral-100 mb-2">
+                      <div className="text-lg font-semibold text-neutral-100 mb-1">
                         YEARS LEGACY
                       </div>
-                      <div className="w-24 h-1 bg-gradient-gold mx-auto mb-4"></div>
+                      <div className="w-16 h-1 bg-gradient-gold mx-auto mb-4"></div>
                     </motion.div>
 
                     {/* Quote Section */}

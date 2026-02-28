@@ -35,16 +35,16 @@ export default function Header() {
   };
 
   const navItems = [
-    { label: "Home", href: "/" },
-    { label: "About", href: "/" },
-    { label: "Course", href: "/" },
-    { label: "Mentor", href: "/" },
+    { label: "Home", href: "/#home" },
+    { label: "About", href: "/#about" },
+    { label: "Course", href: "/#courses" },
+    { label: "Mentor", href: "/#mentors" },
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-secondary-900/90 backdrop-blur-xl">
       <div className="container-custom">
-        <div className="flex h-20 items-center justify-between">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg">
@@ -63,7 +63,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop */}
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav className="hidden items-center gap-6 md:flex">
             {navItems.map((item) => (
               <Link
                 key={item.label}
