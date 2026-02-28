@@ -1,45 +1,16 @@
 "use client";
 
 import { motion, Variants } from "framer-motion";
-import { useState } from "react";
-import { Users, Star, BookOpen, ChevronRight } from "lucide-react";
+import { ChevronRight, BookOpen } from "lucide-react";
 import Link from "next/link";
-
-const courses = [
-  {
-    id: 1,
-    title: "Islamic History 101",
-    description:
-      "A comprehensive introduction to the golden age of Islamic civilization and its global impact.",
-    category: "History",
-    instructor: "Dr. A. Malik",
-    price: null,
-    originalPrice: null,
-    students: 125,
-    rating: 4.9,
-    featured: true,
-    badge: "Popular",
-    tags: ["History", "Featured"],
-  },
-  {
-    id: 2,
-    title: "Leadership of Saladin",
-    description:
-      "Study the strategic mind and ethical leadership principles of Salahuddin Ayyubi.",
-    category: "Leadership",
-    instructor: "Sh. Yusuf",
-    price: 150000,
-    originalPrice: "Rp 200.000",
-    students: 89,
-    rating: 4.8,
-    featured: true,
-    badge: "Bestseller",
-    tags: ["Leadership", "Featured"],
-  },
-];
+import CourseCard from "@/app/components/card/CourseCard";
+import { useGetApiCourses } from "@/app/lib/generated";
 
 export default function CoursesSection() {
-  const [activeCategory] = useState("All");
+  const { data: coursesData, isLoading, error } = useGetApiCourses();
+
+  // Get top 4 courses from API
+  const displayedCourses = coursesData?.data?.slice(0, 4) || [];
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -84,17 +55,17 @@ export default function CoursesSection() {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
           variants={containerVariants}
-          className="mb-12 text-center"
+          className="mb-8 text-center"
         >
           <motion.h2
             variants={itemVariants}
-            className="mb-4 text-3xl font-bold md:text-4xl"
+            className="mb-3 text-2xl font-bold md:text-3xl"
           >
             Available <span className="text-gradient-gold">Courses</span>
           </motion.h2>
           <motion.p
             variants={itemVariants}
-            className="mx-auto max-w-2xl text-lg text-neutral-300"
+            className="mx-auto max-w-2xl text-base text-neutral-300"
           >
             Explore our curated curriculum designed to empower the next
             generation of leaders.
@@ -102,108 +73,78 @@ export default function CoursesSection() {
         </motion.div>
 
         {/* Courses Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {courses.map((course, index) => (
-            <motion.div
-              key={course.id}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-              variants={cardVariants}
-              whileHover="hover"
-              custom={index}
-              transition={{ delay: index * 0.1 }}
-              className="card card-hover"
-            >
-              {/* Course Header */}
-              <div className="relative mb-6">
-                <div className="h-40 rounded-xl bg-gradient-to-br from-primary-500/10 to-primary-400/5">
-                  <div className="flex h-full items-center justify-center">
-                    <BookOpen className="h-16 w-16 text-primary-500/20" />
-                  </div>
-                </div>
-
-                {/* Badges */}
-                <div className="absolute -bottom-3 left-4 right-4 flex justify-between">
-                  <div className="flex gap-2">
-                    {course.badge && (
-                      <span className="badge badge-primary">
-                        {course.badge}
-                      </span>
-                    )}
-                    {course.featured && (
-                      <span className="badge badge-secondary">Featured</span>
-                    )}
-                  </div>
-                  <span className="rounded-full bg-card px-3 py-1 text-xs font-medium text-gold border border-border">
-                    {course.category}
-                  </span>
+        {isLoading ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                className="rounded-xl overflow-hidden border border-[rgba(255,255,255,0.08)] bg-[#1a1a1a] animate-pulse"
+              >
+                <div className="w-full aspect-[16/9] bg-[#242424]" />
+                <div className="p-5 space-y-3">
+                  <div className="h-4 w-3/4 bg-[#2a2a2a] rounded" />
+                  <div className="h-3 w-1/2 bg-[#2a2a2a] rounded" />
+                  <div className="h-10 bg-[#2a2a2a] rounded-lg mt-4" />
                 </div>
               </div>
-
-              {/* Course Content */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-bold text-white">{course.title}</h3>
-
-                <p className="text-neutral-400 line-clamp-2">
-                  {course.description}
-                </p>
-
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-neutral-500">By</span>
-                  <span className="text-sm font-medium text-gold">
-                    {course.instructor}
-                  </span>
-                </div>
-
-                {/* Stats */}
-                <div className="flex items-center justify-between border-t border-border pt-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1.5">
-                      <Users className="h-4 w-4 text-neutral-500" />
-                      <span className="text-sm text-neutral-400">
-                        {course.students}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Star className="h-4 w-4 fill-gold text-gold" />
-                      <span className="text-sm font-medium text-white">
-                        {course.rating}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Price & Button */}
-                <div className="flex items-center justify-between border-t border-border pt-4">
-                  <div className="flex flex-col mr-2">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-sm font-medium">Rp</span>
-                      <span className="text-2xl font-bold text-gold">
-                        {course.price != null ? course.price : "Free"}
-                      </span>
-                    </div>
-                    {course.originalPrice && (
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-xs text-neutral-500">Rp</span>
-                        <span className="text-sm text-neutral-500 line-through">
-                          {course.originalPrice.replace("Rp ", "")}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <button className="btn btn-primary text-sm min-w-[120px] max-w-[140px] whitespace-nowrap px-4">
-                    Enroll Now
-                    <ChevronRight className="ml-1 h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-10 bg-[#1f1f1f] rounded-xl border border-[rgba(255,255,255,0.1)]">
+            <BookOpen className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h3 className="text-xl text-[#d4d4d4] mb-2">
+              Failed to load courses
+            </h3>
+            <p className="text-neutral-500 text-sm">
+              {(error as any)?.message || "Please try again later."}
+            </p>
+          </div>
+        ) : displayedCourses.length > 0 ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {displayedCourses.map((course: any, index: number) => (
+              <motion.div
+                key={course.id}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+                variants={cardVariants}
+                whileHover="hover"
+                custom={index}
+                transition={{ delay: index * 0.1 }}
+                className="h-full"
+              >
+                <CourseCard
+                  id={course.id}
+                  title={course.title}
+                  slug={course.slug}
+                  thumbnail={course.thumbnail}
+                  instructor={course.instructor_name || "Instructor"}
+                  price={course.price || 0}
+                  price_formatted={course.price_formatted || "Free"}
+                  description={course.description}
+                  level={course.level || "All Levels"}
+                  isFree={course.price === 0}
+                />
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-10 bg-[#1f1f1f] rounded-xl border border-[rgba(255,255,255,0.1)]">
+            <BookOpen className="h-12 w-12 text-[#333] mx-auto mb-4" />
+            <h3 className="text-xl text-[#d4d4d4] mb-2">
+              No courses available right now
+            </h3>
+            <p className="text-neutral-500 text-sm">
+              Check back later for new content.
+            </p>
+          </div>
+        )}
 
         {/* View All Button */}
-        <Link href="/courses" className="flex items-center gap-3">
+        <Link
+          href="/courses"
+          className="flex items-center gap-3 justify-center"
+        >
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -211,7 +152,7 @@ export default function CoursesSection() {
             transition={{ duration: 0.6, delay: 0.5 }}
             className="mt-12 text-center"
           >
-            <button className="btn btn-outline px-8 py-3">
+            <button className="btn btn-outline px-8 py-3 flex items-center">
               View All Courses
               <ChevronRight className="ml-2 h-5 w-5" />
             </button>

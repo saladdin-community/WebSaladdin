@@ -66,6 +66,7 @@ export default function HeroSection({
 
   return (
     <section
+      id="home"
       className="relative min-h-screen overflow-hidden"
       style={backgroundStyle}
     >
@@ -79,11 +80,11 @@ export default function HeroSection({
       </div>
 
       {/* Main Content */}
-      <div className="container-custom relative z-10 py-20">
+      <div className="container-custom relative z-10 py-12">
         <div className="mx-auto max-w-5xl">
           {/* Title & Description */}
-          <div className="mb-16 text-center animate-fade-in">
-            <h1 className="mb-6 text-4xl leading-tight md:text-6xl lg:text-7xl">
+          <div className="mb-8 text-center animate-fade-in">
+            <h1 className="mb-3 text-3xl leading-tight md:text-4xl lg:text-5xl">
               {title.split(" ").map((word, index, array) =>
                 word === "Saladdin" ? (
                   <span key={index} className="text-gradient-gold">
@@ -97,22 +98,18 @@ export default function HeroSection({
               )}
             </h1>
 
-            <p className="mx-auto mb-8 max-w-3xl text-lg md:text-xl text-neutral-300">
+            <p className="mx-auto mb-4 max-w-3xl text-sm md:text-base text-neutral-300">
               {description}
             </p>
 
             {/* Action Buttons */}
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link href={`/courses`} key={`course`}>
-                <button className="btn btn-primary flex items-center gap-2 px-8 py-3 text-lg animate-glow">
+                <button className="btn btn-primary flex items-center gap-2 px-6 py-2.5 text-base animate-glow">
                   Browse Courses
-                  <ChevronRight className="h-5 w-5" />
+                  <ChevronRight className="h-4 w-4" />
                 </button>
               </Link>
-              <button className="btn btn-outline flex items-center gap-2 px-8 py-3 text-lg">
-                <Play className="h-5 w-5" />
-                Watch Trailer
-              </button>
             </div>
           </div>
 
@@ -126,11 +123,11 @@ export default function HeroSection({
                     key={index}
                     className="card text-center transition-all duration-500 hover:scale-105"
                   >
-                    <Icon className="mx-auto mb-3 h-8 w-8 text-gold" />
-                    <div className="text-3xl font-bold text-gold">
+                    <Icon className="mx-auto mb-2 h-6 w-6 text-gold" />
+                    <div className="text-2xl font-bold text-gold">
                       {stat.value}
                     </div>
-                    <div className="mt-1 text-sm text-neutral-400">
+                    <div className="mt-0.5 text-xs text-neutral-400">
                       {stat.label}
                     </div>
                   </div>

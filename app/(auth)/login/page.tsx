@@ -12,11 +12,14 @@ import { FaGoogle, FaFacebook, FaLock, FaEnvelope } from "react-icons/fa";
 import { MdArrowBack } from "react-icons/md";
 import LoginBackground from "@/public/images/login-background.jpg";
 import { usePostApiAuthLogin } from "@/app/lib/generated";
+import FeedbackModal from "@/app/components/modal/FeedbackModal";
+import { useFeedbackModal } from "@/hooks/useFeedbackModal";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { modal, error: showError } = useFeedbackModal();
 
   const loginMutation = usePostApiAuthLogin({
     mutation: {
@@ -26,7 +29,10 @@ export default function LoginPage() {
       },
       onError: (error) => {
         console.error("Login failed:", error);
-        alert("Email atau password salah");
+        showError(
+          "Login Gagal",
+          "Email atau password salah. Silakan coba lagi.",
+        );
       },
     },
   });
@@ -190,6 +196,7 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+      <FeedbackModal {...modal} />
     </div>
   );
 }

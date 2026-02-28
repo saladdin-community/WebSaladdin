@@ -1,4 +1,4 @@
-import Header from "@/app/components/layout/Header";
+import { Header } from "@/app/components/layout/Header";
 import { ThemeProvider } from "@/app/providers/ThemeProvider";
 import FloatingAdminButton from "@/app/components/admin/FloatingAdminButton";
 

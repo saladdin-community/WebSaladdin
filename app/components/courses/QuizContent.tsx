@@ -79,17 +79,16 @@ export default function QuizContent({
 
   const handleSubmit = async () => {
     try {
-      // Format answers as required by API: { "1": 5 } where "1" is question number/id?
-      // The example shows "answers": { "1": 5 }. Let's assume keys are question IDs.
+      // Since answers state is now mapped by sequence, we just stringify the keys.
       const formattedAnswers: Record<string, number> = {};
-      Object.entries(answers).forEach(([qId, oId]) => {
-        formattedAnswers[qId] = oId;
+      Object.entries(answers).forEach(([seq, optionId]) => {
+        formattedAnswers[seq] = optionId;
       });
 
       const response = await submitQuizMutation.mutateAsync({
         lessonId,
         data: {
-          answers: formattedAnswers as any, // Type-casting because of generated type mismatch
+          answers: formattedAnswers as any,
         },
       });
 
@@ -131,7 +130,7 @@ export default function QuizContent({
 
   if (step === "start") {
     return (
-      <div className="card p-12 text-center flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="card p-12 text-center flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 mb-2">
         <div className="h-20 w-20 bg-[#d4af35]/10 rounded-full flex items-center justify-center mb-2">
           <Award className="h-10 w-10 text-[#d4af35]" />
         </div>
@@ -158,10 +157,11 @@ export default function QuizContent({
     const currentQuestion = questionData?.data;
     const totalQuestions = questionData?.total_questions || 1;
     const isLastQuestion = currentSeq === totalQuestions;
-    const isAnswered = currentQuestion ? !!answers[currentQuestion.id] : false;
+    // Check if answered using currentSeq instead of question.id
+    const isAnswered = !!answers[currentSeq];
 
     return (
-      <div className="card overflow-hidden animate-in fade-in duration-300">
+      <div className="card overflow-hidden animate-in fade-in duration-300 mb-2">
         {/* Progress Bar */}
         <div className="h-1.5 w-full bg-[#262626]">
           <div
@@ -204,13 +204,12 @@ export default function QuizContent({
 
               <div className="grid gap-4">
                 {currentQuestion?.options?.map((option: any) => {
-                  const isSelected = answers[currentQuestion.id] === option.id;
+                  // Track by sequence, not question ID
+                  const isSelected = answers[currentSeq] === option.id;
                   return (
                     <button
                       key={option.id}
-                      onClick={() =>
-                        handleOptionSelect(currentQuestion.id, option.id)
-                      }
+                      onClick={() => handleOptionSelect(currentSeq, option.id)}
                       className={`w-full p-4 text-left rounded-xl border transition-all duration-200 flex items-center gap-4 ${
                         isSelected
                           ? "bg-[#d4af35]/10 border-[#d4af35] text-white shadow-[0_0_15px_rgba(212,175,53,0.1)]"
@@ -277,7 +276,7 @@ export default function QuizContent({
     const passingGrade = reviewData?.passing_grade || 75;
 
     return (
-      <div className="space-y-6 animate-in fade-in duration-500">
+      <div className="space-y-6 animate-in fade-in duration-500 mb-2">
         {/* Result Header Card */}
         <div
           className={`card p-10 text-center border-t-4 ${passed ? "border-t-green-500" : "border-t-red-500"}`}

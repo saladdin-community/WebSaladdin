@@ -22,64 +22,71 @@ export default function ContinueLearningCard({
   href,
 }: ContinueLearningCardProps) {
   return (
-    <div className="bg-[#1f1f1f] rounded-xl p-6 border border-[rgba(255,255,255,0.1)] hover:border-[rgba(212,175,53,0.3)] transition-colors duration-300">
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* Thumbnail */}
-        <div className="relative md:w-64 md:flex-shrink-0">
-          <div className="aspect-video rounded-lg bg-gradient-to-br from-[#2a2a2a] to-[#1a1a1a] overflow-hidden">
-            {thumbnail ? (
-              <img
-                src={thumbnail}
-                alt={title}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <PlayCircle className="h-12 w-12 text-[#d4af35]" />
-              </div>
-            )}
-            {progress !== undefined && (
-              <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
-                <div className="h-2 bg-[#404040] rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-[#d4af35] to-[#fde047] rounded-full transition-all duration-500"
-                    style={{ width: `${progress}%` }}
-                  ></div>
-                </div>
-              </div>
-            )}
+    <div className="group relative bg-[#1a1a1a] rounded-3xl overflow-hidden border border-white/5 hover:border-white/10 transition-all duration-500 shadow-2xl">
+      <div className="flex flex-col lg:flex-row">
+        {/* Thumbnail Section */}
+        <div className="relative w-full lg:w-96 h-64 lg:h-auto overflow-hidden">
+          {thumbnail ? (
+            <img
+              src={thumbnail}
+              alt={title}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-[#262626] to-[#121212] flex items-center justify-center">
+              <PlayCircle className="h-16 w-16 text-[#d4af35]" />
+            </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+
+          <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+            <PlayCircle className="h-4 w-4 text-[#d4af35]" />
+            <span className="text-[10px] font-bold text-white uppercase tracking-wider">
+              {timeRemaining} remaining
+            </span>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="flex-1">
-          <div className="mb-2">
-            <span className="inline-block px-3 py-1 text-xs rounded-full bg-[#262626] text-[#d4d4d4] font-medium">
-              Continue Learning
+        {/* Content Section */}
+        <div className="flex-1 p-8 lg:p-10 flex flex-col justify-center">
+          <div className="mb-4">
+            <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#d4af35]">
+              {subtitle}
             </span>
           </div>
 
-          <h3 className="text-2xl font-bold text-white mb-1">{title}</h3>
-          <p className="text-[#d4af35] mb-2">{subtitle}</p>
-          <p className="text-[#737373] mb-4">By {instructor}</p>
+          <h3 className="text-3xl font-black text-white mb-2 line-clamp-2 leading-tight">
+            {title}
+          </h3>
+          <p className="text-[#737373] text-sm font-medium mb-8">
+            By <span className="text-[#a3a3a3]">{instructor}</span>
+          </p>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-6">
-            <div className="text-sm text-[#a3a3a3]">
-              <span className="font-semibold text-white">{timeRemaining}</span>{" "}
-              remaining
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider">
+                <span className="text-[#737373]">Course Progress</span>
+                <span className="text-[#d4af35]">{progress}%</span>
+              </div>
+              <div className="h-1.5 w-full bg-[#262626] rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-[#d4af35] to-[#fde047] transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(212,175,53,0.5)]"
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-4 pt-4">
               <Link
                 href={href}
-                className="px-6 py-2.5 bg-gradient-gold text-black font-semibold rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2"
+                className="px-8 py-3.5 bg-[#d4af35] text-black font-black text-xs uppercase tracking-widest rounded-xl hover:bg-[#fde047] transition-all duration-300 flex items-center gap-2 shadow-lg shadow-[#d4af35]/20 hover:scale-105"
               >
-                <PlayCircle className="h-5 w-5" />
+                <PlayCircle className="h-4 w-4" />
                 Resume Learning
               </Link>
               <Link
                 href={`${href}/details`}
-                className="px-6 py-2.5 bg-[#262626] text-white font-semibold rounded-lg hover:bg-[#2d2d2d] transition-colors"
+                className="px-8 py-3.5 bg-[#262626] text-white font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-[#333333] transition-all duration-300 border border-white/5"
               >
                 Course Details
               </Link>

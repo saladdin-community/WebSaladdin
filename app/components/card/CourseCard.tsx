@@ -41,9 +41,9 @@ export default function CourseCard({
   href = `/courses/${slug || id}`,
 }: CourseCardProps) {
   const Content = () => (
-    <div className="card card-hover group cursor-pointer h-full">
+    <div className="card card-hover group cursor-pointer flex flex-col h-full overflow-hidden">
       {/* Course Thumbnail */}
-      <div className="relative h-48 overflow-hidden rounded-t-xl">
+      <div className="relative w-full aspect-[16/9] overflow-hidden shrink-0">
         <img
           src={thumbnail}
           alt={title}
@@ -52,8 +52,8 @@ export default function CourseCard({
             e.currentTarget.src = "/images/default-course.jpg";
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-        <div className="absolute top-4 right-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+        <div className="absolute top-3 right-3">
           <button
             className="p-2 bg-black/50 rounded-full hover:bg-[rgba(212,175,53,0.2)] transition-colors duration-300"
             onClick={(e) => {
@@ -62,57 +62,77 @@ export default function CourseCard({
             }}
           >
             <Bookmark
-              className={`h-5 w-5 ${
+              className={`h-4 w-4 ${
                 isBookmarked ? "fill-[#d4af35] text-[#d4af35]" : "text-white"
               }`}
             />
           </button>
         </div>
-        {progress && progress > 0 && (
-          <div className="absolute bottom-4 left-4 right-4">
-            <div className="h-1.5 bg-[#404040] rounded-full overflow-hidden">
+        {/* Progress Bar (if applicable and strictly in Bottom of Image) */}
+        {progress !== undefined && progress > 0 && (
+          <div className="absolute bottom-0 left-0 right-0 px-4 py-3 bg-gradient-to-t from-black/90 to-transparent">
+            <div className="flex justify-between items-center mb-1.5">
+              <span className="text-[10px] font-medium text-white/90 uppercase tracking-wider">
+                Progress
+              </span>
+              <span className="text-[10px] font-bold text-gradient-gold">
+                {progress}%
+              </span>
+            </div>
+            <div className="h-1 bg-white/20 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-[#d4af35] to-[#fde047] rounded-full transition-all duration-500"
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
-            <p className="text-xs mt-1.5 text-[#d4d4d4]">
-              {progress}% Complete
-            </p>
           </div>
         )}
       </div>
 
-      {/* Course Content */}
-      <div className="p-6">
-        <div className="flex justify-between items-start mb-3 min-h-28 max-h-28">
-          <div>
-            <span className="inline-block px-3 py-1 text-xs rounded-full bg-[#262626] text-[#d4d4d4] mb-2 font-medium">
-              {level}
-            </span>
-            <h3 className="text-xl font-bold mb-2 text-white group-hover:text-[#d4af35] transition-colors duration-300 line-clamp-2">
-              {title}
-            </h3>
-          </div>
+      {/* Course Content - Flex Grow pushes footer down */}
+      <div className="flex flex-col flex-grow p-5 pb-6">
+        <div className="mb-3">
+          <span className="inline-block px-2.5 py-0.5 text-[11px] font-semibold tracking-wide uppercase rounded-md bg-[rgba(212,175,53,0.1)] text-[#d4af35] border border-[rgba(212,175,53,0.2)] mb-2.5">
+            {level}
+          </span>
+          <h3 className="text-[1.125rem] leading-snug font-bold text-white group-hover:text-[#d4af35] transition-colors duration-300 line-clamp-2">
+            {title}
+          </h3>
         </div>
 
-        <p className="text-[#a3a3a3] mb-4 text-sm line-clamp-2 leading-relaxed">
-          {description}
-        </p>
+        {description && (
+          <p className="text-[#a3a3a3] text-sm line-clamp-2 leading-relaxed mb-4">
+            {description}
+          </p>
+        )}
 
-        <div className="flex items-center justify-between pt-4 border-t border-[rgba(255,255,255,0.1)]">
-          <div className="text-sm text-[#737373]">By {instructor}</div>
-          {isFree ? (
-            <span className="px-3 py-1 bg-[rgba(34,197,94,0.2)] text-[#22c55e] rounded-full text-sm font-semibold border border-[rgba(34,197,94,0.3)]">
-              FREE
+        {/* Footer - Pushed to bottom */}
+        <div className="mt-auto pt-4 border-t border-[rgba(255,255,255,0.08)] flex items-end justify-between gap-2">
+          <div className="flex flex-col gap-1">
+            <span className="text-[11px] uppercase tracking-wide text-[#737373] font-medium">
+              Instructor
             </span>
-          ) : (
-            <div className="text-right">
-              <div className="text-2xl font-bold text-gradient-gold">
-                {price_formatted}
+            <span className="text-sm text-[#d4d4d4] line-clamp-1">
+              {instructor}
+            </span>
+          </div>
+
+          <div className="shrink-0 text-right">
+            {isFree ? (
+              <span className="inline-flex items-center justify-center px-3 py-1.5 bg-[#22c55e]/10 text-[#22c55e] rounded-lg text-sm font-bold border border-[#22c55e]/20">
+                Free
+              </span>
+            ) : (
+              <div className="flex flex-col items-end">
+                <span className="text-[11px] uppercase tracking-wide text-[#737373] font-medium mb-0.5">
+                  Price
+                </span>
+                <span className="text-lg font-bold text-gradient-gold leading-none">
+                  {price_formatted}
+                </span>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>

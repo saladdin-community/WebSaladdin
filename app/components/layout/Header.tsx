@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { usePostApiLogout } from "@/app/lib/generated";
 import { getAuthUser, logoutLocal } from "@/app/lib/auth";
 
-export default function Header() {
+export function Header({ hideLogout = false }: { hideLogout?: boolean }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const router = useRouter();
@@ -35,16 +35,16 @@ export default function Header() {
   };
 
   const navItems = [
-    { label: "Home", href: "/" },
-    { label: "About", href: "/" },
-    { label: "Course", href: "/" },
-    { label: "Mentor", href: "/" },
+    { label: "Home", href: "/#home" },
+    { label: "About", href: "/#about" },
+    { label: "Course", href: "/#courses" },
+    { label: "Mentor", href: "/#mentors" },
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-secondary-900/90 backdrop-blur-xl">
       <div className="container-custom">
-        <div className="flex h-20 items-center justify-between">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg">
@@ -58,12 +58,12 @@ export default function Header() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-white">Saladdin</h1>
-              <p className="text-sm text-neutral-400">LMS Platform</p>
+              <p className="text-sm text-neutral-400">Ma'rifi Learning</p>
             </div>
           </Link>
 
           {/* Desktop */}
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav className="hidden items-center gap-6 md:flex">
             {navItems.map((item) => (
               <Link
                 key={item.label}
@@ -92,7 +92,7 @@ export default function Header() {
                   <button className="btn btn-primary">Sign Up</button>
                 </Link>
               </div>
-            ) : (
+            ) : !hideLogout ? (
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 text-neutral-200 max-w-[160px]">
                   <User size={18} className="shrink-0" />
@@ -113,7 +113,7 @@ export default function Header() {
                   Logout
                 </button>
               </div>
-            )}
+            ) : null}
           </nav>
 
           {/* Mobile */}

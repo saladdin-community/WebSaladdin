@@ -1,46 +1,33 @@
 import { LucideIcon } from "lucide-react";
 
-interface StatsCardProps {
-  title: string;
+interface StatCardProps {
+  label: string;
   value: string | number;
-  change?: string;
-  icon: LucideIcon;
-  color: string;
+  icon: React.ReactNode;
   bgColor: string;
-  trend?: "up" | "down" | "neutral";
+  iconColor: string;
 }
 
-export default function StatsCard({
-  title,
+export default function StatCard({
+  label,
   value,
-  change,
-  icon: Icon,
-  color,
+  icon,
   bgColor,
-  trend = "up",
-}: StatsCardProps) {
-  const trendColors = {
-    up: "text-emerald-400",
-    down: "text-rose-400",
-    neutral: "text-amber-400",
-  };
-
+  iconColor,
+}: StatCardProps) {
   return (
-    <div
-      className={`${bgColor} rounded-xl p-6 border border-[rgba(255,255,255,0.1)]`}
-    >
-      <div className="flex items-center justify-between mb-4">
-        <div className={`p-3 rounded-lg bg-black/20 ${color}`}>
-          <Icon className="h-6 w-6" />
-        </div>
-        {change && (
-          <span className={`text-sm font-medium ${trendColors[trend]}`}>
-            {change}
-          </span>
-        )}
+    <div className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/5 flex items-center gap-6 transition-all duration-300 hover:border-white/10 group">
+      <div
+        className={`${bgColor} ${iconColor} p-4 rounded-xl shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
+      >
+        {icon}
       </div>
-      <h3 className="text-3xl font-bold text-white mb-1">{value}</h3>
-      <p className="text-sm text-[#d4d4d4]">{title}</p>
+      <div>
+        <h3 className="text-3xl font-bold text-white mb-0.5">{value}</h3>
+        <p className="text-sm font-medium text-[#737373] uppercase tracking-wider">
+          {label}
+        </p>
+      </div>
     </div>
   );
 }

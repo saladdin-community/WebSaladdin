@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { loginLocal } from "@/app/lib/auth";
-import { getApiAuthGoogleCallback } from "@/app/lib/generated/hooks/useGetApiAuthGoogleCallback";
+import { getApiMe } from "@/app/lib/generated";
 
 function CallbackContent() {
   const router = useRouter();
@@ -29,44 +29,52 @@ function CallbackContent() {
           return;
         }
 
-        const params = Object.fromEntries(searchParams.entries());
-        if (Object.keys(params).length === 0) {
-          setErrorMessage("Data callback tidak ditemukan.");
-          setStatus("error");
-          return;
+    if (!token) {
+      setErrorMessage("Data login tidak lengkap. Silakan coba lagi.");
+      setStatus("error");
+      return;
+    }
+
+    const processLogin = async () => {
+      try {
+        let user;
+
+        if (userRaw) {
+          // Parse user if provided in URL
+          user = JSON.parse(decodeURIComponent(userRaw));
+        } else {
+          // Fetch user profile from API if only token is present
+          const response = await getApiMe({
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          user = response.data;
         }
 
-        const data = await getApiAuthGoogleCallback({ params });
+        if (!user) {
+          throw new Error("User data not found");
+        }
 
-        if (!isMounted) return;
-
-        loginLocal(data.access_token, data.user);
-
+        loginLocal(token, user);
         setStatus("success");
 
         // Redirect based on role
         setTimeout(() => {
-          if (data.user.role === "admin") {
+          if (user.role === "admin") {
             router.replace("/admin/overview");
           } else {
             router.replace("/dashboard");
           }
         }, 1500);
-      } catch (err: any) {
-        if (!isMounted) return;
+      } catch (err) {
         console.error("Error during OAuth callback:", err);
-        setErrorMessage(
-          err.response?.data?.message || "Gagal memproses login Google."
-        );
+        setErrorMessage("Gagal memproses profil pengguna.");
         setStatus("error");
       }
     };
 
-    handleCallback();
-
-    return () => {
-      isMounted = false;
-    };
+    processLogin();
   }, [searchParams, router]);
 
   return (
