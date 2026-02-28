@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { loginLocal } from "@/app/lib/auth";
+import { getApiAuthGoogleCallback } from "@/app/lib/generated/hooks/useGetApiAuthGoogleCallback";
 
 function CallbackContent() {
   const router = useRouter();
@@ -13,45 +14,59 @@ function CallbackContent() {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    const token = searchParams.get("token");
-    const userRaw = searchParams.get("user");
-    const error = searchParams.get("error");
+    let isMounted = true;
 
-    if (error) {
-      setErrorMessage(
-        error === "unauthorized"
-          ? "Login gagal. Silakan coba lagi."
-          : "Terjadi kesalahan saat login.",
-      );
-      setStatus("error");
-      return;
-    }
-
-    if (!token || !userRaw) {
-      setErrorMessage("Data login tidak lengkap. Silakan coba lagi.");
-      setStatus("error");
-      return;
-    }
-
-    try {
-      const user = JSON.parse(decodeURIComponent(userRaw));
-      loginLocal(token, user);
-
-      setStatus("success");
-
-      // Redirect based on role
-      setTimeout(() => {
-        if (user.role === "admin") {
-          router.replace("/admin/overview");
-        } else {
-          router.replace("/dashboard");
+    const handleCallback = async () => {
+      try {
+        const error = searchParams.get("error");
+        if (error) {
+          setErrorMessage(
+            error === "unauthorized"
+              ? "Login gagal. Silakan coba lagi."
+              : "Terjadi kesalahan saat login."
+          );
+          setStatus("error");
+          return;
         }
-      }, 1500);
-    } catch (err) {
-      console.error("Error during OAuth callback:", err);
-      setErrorMessage("Gagal memproses data user.");
-      setStatus("error");
-    }
+
+        const params = Object.fromEntries(searchParams.entries());
+        if (Object.keys(params).length === 0) {
+          setErrorMessage("Data callback tidak ditemukan.");
+          setStatus("error");
+          return;
+        }
+
+        const data = await getApiAuthGoogleCallback({ params });
+
+        if (!isMounted) return;
+
+        loginLocal(data.access_token, data.user);
+
+        setStatus("success");
+
+        // Redirect based on role
+        setTimeout(() => {
+          if (data.user.role === "admin") {
+            router.replace("/admin/overview");
+          } else {
+            router.replace("/dashboard");
+          }
+        }, 1500);
+      } catch (err: any) {
+        if (!isMounted) return;
+        console.error("Error during OAuth callback:", err);
+        setErrorMessage(
+          err.response?.data?.message || "Gagal memproses login Google."
+        );
+        setStatus("error");
+      }
+    };
+
+    handleCallback();
+
+    return () => {
+      isMounted = false;
+    };
   }, [searchParams, router]);
 
   return (
