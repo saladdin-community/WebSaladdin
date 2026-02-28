@@ -103,10 +103,16 @@ export default function RegisterPage() {
       <div className="flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">
           <div className="flex items-center gap-2 mb-10">
-            <div className="w-8 h-8 rounded-md bg-gradient-gold" />
-            <span className="font-semibold text-white">
-              Saladin Ma&apos;rifi
-            </span>
+            <div className="w-8 h-8 flex items-center justify-center">
+              <Image
+                src="/images/icon.png"
+                alt="Logo"
+                width={32}
+                height={32}
+                className="object-contain"
+              />
+            </div>
+            <span className="font-semibold text-white">Saladdin LMS</span>
           </div>
 
           <h1 className="text-3xl font-bold mb-2">Create an Account</h1>

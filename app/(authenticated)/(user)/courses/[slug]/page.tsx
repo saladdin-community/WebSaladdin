@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import PrivateYouTubePlayer from "@/app/components/video/PrivateYoutubePlayer";
+import QuizContent from "@/app/components/courses/QuizContent";
 import {
   useGetApiCoursesSlug,
   useGetApiLessonsLessonid,
@@ -73,6 +74,8 @@ export default function CourseDetailPage({
   const [isVideoCompleted, setIsVideoCompleted] = useState(false);
   // true once the user has viewed or downloaded a document lesson
   const [isDocumentRead, setIsDocumentRead] = useState(false);
+  // true once the user has passed the quiz
+  const [isQuizPassed, setIsQuizPassed] = useState(false);
 
   const { modal: feedbackModal, success: showSuccess } = useFeedbackModal();
 
@@ -127,6 +130,7 @@ export default function CourseDetailPage({
   useEffect(() => {
     setIsVideoCompleted(false);
     setIsDocumentRead(false);
+    setIsQuizPassed(false);
   }, [activeLesson]);
 
   // Update video URL when lesson detail is loaded
@@ -540,14 +544,18 @@ export default function CourseDetailPage({
                   </div>
                 )}
 
-                {/* Quiz Placeholder */}
+                {/* Quiz Lesson */}
                 {activeLessonDetail.type === "quiz" && (
-                  <div className="card mb-6 p-8 text-center text-[#d4d4d4]">
-                    <h3 className="text-xl font-bold mb-2">
-                      Quiz: {activeLessonDetail.title}
-                    </h3>
-                    <p>Quiz functionality coming soon.</p>
-                  </div>
+                  <QuizContent
+                    lessonId={activeLessonDetail.id}
+                    lessonTitle={activeLessonDetail.title}
+                    onPassed={() => {
+                      // 1. Mark lesson complete on the backend
+                      handleLessonComplete(activeLessonDetail.id);
+                      // 2. Unlock the Next button
+                      setIsQuizPassed(true);
+                    }}
+                  />
                 )}
 
                 {/* Lesson Info */}
@@ -601,12 +609,14 @@ export default function CourseDetailPage({
                 <ChevronLeft className="h-5 w-5" />
                 Previous
               </button>
-              {/* Next button: visible for video (after completed) or document (after read) or other types */}
+              {/* Next button: visible for video (after completed) or document (after read) or quiz (after passed) or other types */}
               {(activeLessonDetail?.type === "video"
                 ? isVideoCompleted
                 : activeLessonDetail?.type === "document"
                   ? isDocumentRead
-                  : true) && (
+                  : activeLessonDetail?.type === "quiz"
+                    ? isQuizPassed || activeLessonConfig?.is_completed
+                    : true) && (
                 <button
                   onClick={handleNextButtonClick}
                   className="flex items-center justify-center gap-2 px-6 py-3 btn-primary font-bold disabled:opacity-50 disabled:cursor-not-allowed text-black"

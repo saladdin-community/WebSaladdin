@@ -15,6 +15,13 @@ export function getAuthUser() {
   }
 }
 
+export function loginLocal(token: string, user: any) {
+  Cookies.set("access_token", token, { expires: 7 });
+  Cookies.set("user_role", user.role, { expires: 7 });
+  localStorage.setItem("access_token", token);
+  localStorage.setItem("user", JSON.stringify(user));
+}
+
 export function logoutLocal() {
   localStorage.removeItem("access_token");
   localStorage.removeItem("user");

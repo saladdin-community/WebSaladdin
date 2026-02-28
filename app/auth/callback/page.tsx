@@ -2,13 +2,13 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Cookies from "js-cookie";
+import { loginLocal } from "@/app/lib/auth";
 
 function CallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<"loading" | "success" | "error">(
-    "loading"
+    "loading",
   );
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -20,54 +20,36 @@ function CallbackContent() {
     if (error) {
       setErrorMessage(
         error === "unauthorized"
-          ? "Login dengan Google gagal. Silakan coba lagi."
-          : "Terjadi kesalahan saat login. Silakan coba lagi."
+          ? "Login gagal. Silakan coba lagi."
+          : "Terjadi kesalahan saat login.",
       );
       setStatus("error");
       return;
     }
 
-    if (!token) {
-      setErrorMessage("Token tidak ditemukan. Silakan coba login kembali.");
+    if (!token || !userRaw) {
+      setErrorMessage("Data login tidak lengkap. Silakan coba lagi.");
       setStatus("error");
       return;
     }
 
     try {
-      // Save token to cookies (for middleware access)
-      Cookies.set("access_token", token, { expires: 7 });
+      const user = JSON.parse(decodeURIComponent(userRaw));
+      loginLocal(token, user);
 
-      // Save token to localStorage
-      localStorage.setItem("access_token", token);
+      setStatus("success");
 
-      // Parse and save user data if provided
-      if (userRaw) {
-        try {
-          const user = JSON.parse(decodeURIComponent(userRaw));
-          localStorage.setItem("user", JSON.stringify(user));
-          Cookies.set("user_role", user.role, { expires: 7 });
-
-          setStatus("success");
-          // Redirect based on role
-          if (user.role === "admin") {
-            router.replace("/admin/overview");
-          } else {
-            router.replace("/dashboard");
-          }
-        } catch {
-          // If user JSON fails, still save token and redirect to dashboard
-          localStorage.setItem("user", "{}");
-          setStatus("success");
+      // Redirect based on role
+      setTimeout(() => {
+        if (user.role === "admin") {
+          router.replace("/admin/overview");
+        } else {
           router.replace("/dashboard");
         }
-      } else {
-        // No user data, redirect to dashboard anyway
-        setStatus("success");
-        router.replace("/dashboard");
-      }
+      }, 1500);
     } catch (err) {
       console.error("Error during OAuth callback:", err);
-      setErrorMessage("Terjadi kesalahan. Silakan coba login kembali.");
+      setErrorMessage("Gagal memproses data user.");
       setStatus("error");
     }
   }, [searchParams, router]);

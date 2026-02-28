@@ -7,8 +7,11 @@ import { Providers } from "@/app/providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Salahuddin Heritage Learning",
+  title: "Saladdin LMS",
   description: "Master modern skills rooted in timeless wisdom",
+  icons: {
+    icon: "/images/icon.png",
+  },
 };
 
 export default function RootLayout({

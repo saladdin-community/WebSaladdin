@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 import Image from "next/image";
 import Link from "next/link";
+import { loginLocal } from "@/app/lib/auth";
 import { FaGoogle, FaFacebook, FaLock, FaEnvelope } from "react-icons/fa";
 import { MdArrowBack } from "react-icons/md";
 import LoginBackground from "@/public/images/login-background.jpg";
@@ -20,13 +21,7 @@ export default function LoginPage() {
   const loginMutation = usePostApiAuthLogin({
     mutation: {
       onSuccess: (data) => {
-        // Set cookies for middleware access
-        Cookies.set("access_token", data.access_token, { expires: 7 });
-        Cookies.set("user_role", data.user.role, { expires: 7 });
-
-        localStorage.setItem("access_token", data.access_token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-
+        loginLocal(data.access_token, data.user);
         router.push("/dashboard");
       },
       onError: (error) => {
@@ -88,10 +83,16 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           <div className="text-center mb-10">
             <div className="flex items-center gap-2 mb-4 justify-center">
-              <div className="w-8 h-8 rounded-md bg-gradient-gold" />
-              <span className="font-semibold text-white">
-                Saladin Ma&apos;rifi
-              </span>
+              <div className="w-8 h-8 flex items-center justify-center">
+                <Image
+                  src="/images/icon.png"
+                  alt="Logo"
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                />
+              </div>
+              <span className="font-semibold text-white">Saladdin LMS</span>
             </div>
 
             <h2 className="text-3xl md:text-4xl font-sans text-white mb-3">
