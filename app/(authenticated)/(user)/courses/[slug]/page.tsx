@@ -76,6 +76,17 @@ export default function CourseDetailPage({
   const [isQuizPassed, setIsQuizPassed] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  useEffect(() => {
+    if (isFullscreen) {
+      document.body.classList.add("pdf-fullscreen");
+    } else {
+      document.body.classList.remove("pdf-fullscreen");
+    }
+    return () => {
+      document.body.classList.remove("pdf-fullscreen");
+    };
+  }, [isFullscreen]);
+
   const { modal: feedbackModal, success: showSuccess } = useFeedbackModal();
   const queryClient = useQueryClient();
 
@@ -409,20 +420,20 @@ export default function CourseDetailPage({
 
               {activeLessonDetail.type === "document" && (
                 <div
-                  className={`bg-[#1a1a1a] transition-all duration-300 ${isFullscreen ? "fixed inset-0 z-50 flex flex-col rounded-none" : "rounded-3xl overflow-hidden border border-white/5"}`}
+                  className={`bg-[#1a1a1a] transition-all duration-300 ${isFullscreen ? "fixed top-0 left-0 w-screen h-screen z-[9999] flex flex-col rounded-none m-0 shadow-none" : "rounded-3xl overflow-hidden border border-white/5 w-full relative"}`}
                 >
-                  <div className="p-6 bg-white/5 border-b border-white/5 flex items-center justify-between shrink-0">
-                    <div className="flex items-center gap-3">
-                      <FileText size={20} className="text-[#d4af35]" />
-                      <span className="text-sm font-bold text-white uppercase tracking-wider">
+                  <div className="p-4 md:p-6 bg-white/5 border-b border-white/5 flex items-center justify-between shrink-0">
+                    <div className="flex items-center gap-3 truncate max-w-[50%] md:max-w-[70%]">
+                      <FileText size={20} className="text-[#d4af35] shrink-0" />
+                      <span className="text-sm font-bold text-white uppercase tracking-wider truncate">
                         {activeLessonDetail.title}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={() => setIsFullscreen(!isFullscreen)}
-                        className="p-2.5 bg-white/5 text-white rounded-xl hover:bg-white/10 transition-colors flex items-center gap-2"
+                        className="px-3 py-2 bg-white/5 text-white rounded-xl hover:bg-white/10 transition-colors flex items-center gap-2"
                         title={isFullscreen ? "Minimize" : "Fullscreen"}
                       >
                         {isFullscreen ? (
@@ -431,7 +442,7 @@ export default function CourseDetailPage({
                           <Maximize size={18} />
                         )}
                         <span className="text-xs font-bold uppercase hidden sm:block">
-                          {isFullscreen ? "Minimize" : "Fullscreen"}
+                          {isFullscreen ? "Close Fullscreen" : "Fullscreen"}
                         </span>
                       </button>
 
@@ -440,7 +451,7 @@ export default function CourseDetailPage({
                           href={activeLessonDetail.content.url}
                           download
                           onClick={() => setIsDocumentRead(true)}
-                          className="p-2.5 bg-[#d4af35]/10 text-[#d4af35] rounded-xl hover:bg-[#d4af35]/20 transition-colors flex items-center gap-2"
+                          className="p-2 bg-[#d4af35]/10 text-[#d4af35] rounded-xl hover:bg-[#d4af35]/20 transition-colors flex items-center gap-2"
                           title="Download PDF"
                         >
                           <Download size={18} />
@@ -450,17 +461,18 @@ export default function CourseDetailPage({
                   </div>
                   {activeLessonDetail.content?.url ? (
                     <div
-                      className={`w-full bg-white relative ${isFullscreen ? "flex-1" : "h-[60vh]"}`}
+                      className={`w-full bg-white relative flex-1 ${isFullscreen ? "h-[calc(100vh-80px)]" : "h-[60vh] max-h-[800px]"}`}
                     >
                       <iframe
                         src={activeLessonDetail.content.url}
-                        className="w-full h-full border-0 absolute inset-0"
+                        className="w-full h-full border-0 absolute inset-0 block"
                         title={activeLessonDetail.title}
                         onLoad={() => setIsDocumentRead(true)}
+                        style={{ width: "100%", height: "100%" }}
                       />
                     </div>
                   ) : (
-                    <div className="h-96 flex items-center justify-center text-[#404040]">
+                    <div className="h-96 flex items-center justify-center text-[#404040] w-full">
                       Document not available
                     </div>
                   )}
