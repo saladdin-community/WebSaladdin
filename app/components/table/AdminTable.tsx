@@ -22,6 +22,11 @@ interface AdminTableProps {
   emptyMessage?: string;
   showActions?: boolean;
   rowKey?: string;
+  // Pagination props
+  currentPage?: number;
+  lastPage?: number;
+  total?: number;
+  onPageChange?: (page: number) => void;
 }
 
 export default function AdminTable({
@@ -35,6 +40,10 @@ export default function AdminTable({
   emptyMessage = "No data found",
   showActions = true,
   rowKey = "id",
+  currentPage,
+  lastPage,
+  total,
+  onPageChange,
 }: AdminTableProps) {
   const [actionMenu, setActionMenu] = useState<string | number | null>(null);
   const [sortColumn, setSortColumn] = useState<string | null>(null);
@@ -95,6 +104,9 @@ export default function AdminTable({
       </div>
     );
   }
+
+  const showPagination =
+    onPageChange && currentPage !== undefined && lastPage !== undefined;
 
   return (
     <div className="bg-gradient-to-br from-[#1a1a1a] to-[#121212] rounded-xl border border-[rgba(255,255,255,0.1)] overflow-hidden">
@@ -217,23 +229,48 @@ export default function AdminTable({
         </table>
       </div>
 
-      {/* Table Footer */}
-      {data.length > 0 && (
+      {/* Table Footer / Pagination */}
+      {showPagination && data.length > 0 && (
         <div className="px-6 py-4 border-t border-[rgba(255,255,255,0.1)] flex items-center justify-between">
           <div className="text-sm text-[#737373]">
-            Showing 1 to {data.length} of {data.length} results
+            Showing {data.length > 0 ? (currentPage - 1) * data.length + 1 : 0}{" "}
+            to {(currentPage - 1) * data.length + data.length} of {total}{" "}
+            results
           </div>
           <div className="flex items-center gap-2">
-            <button className="px-3 py-1.5 bg-[#1f1f1f] text-[#d4d4d4] rounded-lg hover:bg-[#262626] text-sm">
+            <button
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage <= 1}
+              className="px-3 py-1.5 bg-[#1f1f1f] text-[#d4d4d4] rounded-lg hover:bg-[#262626] text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Previous
             </button>
-            <button className="px-3 py-1.5 bg-gradient-gold text-black rounded-lg text-sm font-semibold">
-              1
-            </button>
-            <button className="px-3 py-1.5 bg-[#1f1f1f] text-[#d4d4d4] rounded-lg hover:bg-[#262626] text-sm">
-              2
-            </button>
-            <button className="px-3 py-1.5 bg-[#1f1f1f] text-[#d4d4d4] rounded-lg hover:bg-[#262626] text-sm">
+
+            {/* Simple page numbers (could be more complex logic for many pages) */}
+            {Array.from({ length: Math.min(5, lastPage) }, (_, i) => {
+              const pageNum = i + 1;
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => onPageChange(pageNum)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+                    currentPage === pageNum
+                      ? "bg-gradient-gold text-black"
+                      : "bg-[#1f1f1f] text-[#d4d4d4] hover:bg-[#262626]"
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+
+            {lastPage > 5 && <span className="text-[#737373] px-1">...</span>}
+
+            <button
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage >= lastPage}
+              className="px-3 py-1.5 bg-[#1f1f1f] text-[#d4d4d4] rounded-lg hover:bg-[#262626] text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Next
             </button>
           </div>

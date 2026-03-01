@@ -12,7 +12,6 @@ import {
   BookOpen,
 } from "lucide-react";
 import AdminTable from "@/app/components/table/AdminTable";
-import StatsCard from "@/app/components/card/StatCard";
 import ConfirmModal from "@/app/components/modal/ConfirmModal";
 import FeedbackModal from "@/app/components/modal/FeedbackModal";
 import { useFeedbackModal } from "@/hooks/useFeedbackModal";
@@ -234,13 +233,6 @@ export default function AdminStudentsPage() {
         <p className="text-[#737373]">
           Manage student profiles, enrollments, and status.
         </p>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {stats.map((stat, index) => (
-          <StatsCard key={index} {...stat} />
-        ))}
       </div>
 
       {/* Filters */}

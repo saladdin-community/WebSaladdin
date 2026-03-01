@@ -7,7 +7,11 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, LogOut, Home } from "lucide-react";
 import { adminNavItems, settingsNavItems, NavItem } from "@/constants/sidebar";
 import { useRouter } from "next/navigation";
-import { usePostApiLogout } from "@/app/lib/generated";
+import {
+  usePostApiLogout,
+  useGetApiAdminCourses,
+  useGetApiDashboardStats,
+} from "@/app/lib/generated";
 import { logoutLocal } from "@/app/lib/auth";
 
 export default function AdminLayout({
@@ -26,6 +30,30 @@ export default function AdminLayout({
         router.push("/login");
       },
     },
+  });
+
+  const { data: coursesData } = useGetApiAdminCourses({
+    per_page: 1,
+  } as any);
+
+  const { data: statsData } = useGetApiDashboardStats();
+
+  const dynamicAdminNavItems = adminNavItems.map((item) => {
+    if (item.id === "courses") {
+      return {
+        ...item,
+        badge: (coursesData as any)?.data?.total ?? item.badge,
+      };
+    }
+    if (item.id === "students") {
+      // If dashboard stats has a student count, use it.
+      // Fallback to existing badge if not found.
+      const studentCount =
+        (statsData as any)?.total_students ||
+        (statsData as any)?.students_count;
+      return { ...item, badge: studentCount ?? item.badge };
+    }
+    return item;
   });
 
   const renderNavItem = (item: NavItem) => {
@@ -52,7 +80,7 @@ export default function AdminLayout({
           {item.label}
         </div>
 
-        {item.badge && !isCollapsed && (
+        {item.badge !== undefined && !isCollapsed && (
           <span
             className={`px-2 py-1 text-xs rounded-full transition-opacity duration-300 ${
               isActive ? "bg-black/20 text-black" : "bg-[#d4af35] text-black"
@@ -114,7 +142,7 @@ export default function AdminLayout({
                 MAIN MENU
               </p>
               <div className="space-y-1">
-                {adminNavItems.map(renderNavItem)}
+                {dynamicAdminNavItems.map(renderNavItem)}
               </div>
             </div>
 

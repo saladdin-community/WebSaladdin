@@ -269,38 +269,16 @@ export default function AdminCoursesPage() {
           Error loading courses. Please try again.
         </div>
       ) : (
-        <>
-          <AdminTable
-            columns={tableColumns}
-            data={data?.data?.data || []}
-            showActions={false}
-            rowKey="id"
-          />
-
-          {/* Pagination */}
-          <div className="flex justify-between items-center mt-4 text-white">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-4 py-2 btn-dark disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <span>
-              Page {data?.data?.current_page || 1} of{" "}
-              {data?.data?.last_page || 1}
-            </span>
-            <button
-              onClick={() =>
-                setPage((p) => Math.min(data?.data?.last_page || 1, p + 1))
-              }
-              disabled={page === (data?.data?.last_page || 1)}
-              className="px-4 py-2 btn-dark disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-        </>
+        <AdminTable
+          columns={tableColumns}
+          data={data?.data?.data || []}
+          showActions={false}
+          rowKey="id"
+          currentPage={data?.data?.current_page}
+          lastPage={data?.data?.last_page}
+          total={data?.data?.total}
+          onPageChange={(p) => setPage(p)}
+        />
       )}
 
       {/* Footer Info */}
