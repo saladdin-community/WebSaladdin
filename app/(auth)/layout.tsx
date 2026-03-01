@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Scindin Nerifi - Auth",
-  description: "Join our community of knowledge seekers",
+  title: "Saladdin Ma'rifi - Auth",
+  description: "From the river to the sea, Palestine will be free",
 };
 
 export default function AuthLayout({

@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Saladdin Ma'rifi",
-  description: "Master modern skills rooted in timeless wisdom",
+  description: "From the river to the sea, Palestine will be free",
   icons: {
     icon: "/images/icon.png",
   },
