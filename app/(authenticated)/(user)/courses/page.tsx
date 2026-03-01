@@ -21,6 +21,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import FeedbackModal from "@/app/components/modal/FeedbackModal";
 import { useFeedbackModal } from "@/hooks/useFeedbackModal";
+import { getAuthUser } from "@/app/lib/auth";
 
 type Tab = "explore" | "my-learning";
 
@@ -243,6 +244,7 @@ function EmptyState({ tab, onSwitch }: { tab: Tab; onSwitch?: () => void }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function CoursesPage() {
+  const user = getAuthUser();
   const [activeTab, setActiveTab] = useState<Tab>("explore");
   const [searchQuery, setSearchQuery] = useState("");
   const [enrollingId, setEnrollingId] = useState<number | null>(null);
@@ -318,6 +320,7 @@ export default function CoursesPage() {
           setActiveTab={setActiveTab}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
+          user={user}
           isLoading={true}
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -360,6 +363,7 @@ export default function CoursesPage() {
         setActiveTab={setActiveTab}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
+        user={user}
       />
 
       <div className="mt-10">
@@ -405,12 +409,14 @@ function PageHeader({
   setActiveTab,
   searchQuery,
   setSearchQuery,
+  user,
   isLoading = false,
 }: {
   activeTab: Tab;
   setActiveTab: (t: Tab) => void;
   searchQuery: string;
   setSearchQuery: (v: string) => void;
+  user: any;
   isLoading?: boolean;
 }) {
   return (
@@ -439,10 +445,10 @@ function PageHeader({
             <div className="flex items-center gap-3 pl-4 border-l border-white/10 group cursor-pointer">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-bold text-white group-hover:text-[#d4af35] transition-colors">
-                  Ahmed
+                  {user?.name || "User"}
                 </p>
                 <p className="text-[10px] font-medium text-[#737373]">
-                  Student
+                  {user?.role}
                 </p>
               </div>
               <div className="h-10 w-10 bg-gradient-to-br from-[#262626] to-[#1a1a1a] rounded-full flex items-center justify-center border border-white/10 group-hover:border-[#d4af35]/50 transition-all duration-300">

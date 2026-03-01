@@ -12,8 +12,11 @@ import {
   useGetApiMyCourses,
 } from "@/app/lib/generated";
 import { BookOpen, PlayCircle, Award } from "lucide-react";
+import { getAuthUser } from "@/app/lib/auth";
 
 export default function DashboardPage() {
+  const user = getAuthUser();
+  const userName = user?.name || "User";
   const [bookmarkedCourses, setBookmarkedCourses] = useState<number[]>([]);
 
   // Fetch Stats data
@@ -86,7 +89,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-12 pb-12">
-      <DashboardHeader userName="Ahmed" />
+      <DashboardHeader userName={userName} />
 
       {/* Stats Section */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
