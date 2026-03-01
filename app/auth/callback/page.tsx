@@ -16,65 +16,93 @@ function CallbackContent() {
   useEffect(() => {
     let isMounted = true;
 
-    const handleCallback = async () => {
+    const processLogin = async () => {
       try {
+        // 1. Try to get error from search params
         const error = searchParams.get("error");
         if (error) {
           setErrorMessage(
             error === "unauthorized"
               ? "Login gagal. Silakan coba lagi."
-              : "Terjadi kesalahan saat login."
+              : "Terjadi kesalahan saat login.",
           );
           setStatus("error");
           return;
         }
 
-    if (!token) {
-      setErrorMessage("Data login tidak lengkap. Silakan coba lagi.");
-      setStatus("error");
-      return;
-    }
+        // 2. Extract Token and UserRaw (Scrap from SearchParams + Hash)
+        // Check regular search params first
+        let token =
+          searchParams.get("token") || searchParams.get("access_token");
+        let userRaw = searchParams.get("user");
 
-    const processLogin = async () => {
-      try {
+        // If not found in search params, check the URL Hash (Fragment)
+        // Some OAuth providers return tokens in the # hash
+        if (typeof window !== "undefined" && !token) {
+          const hash = window.location.hash.substring(1);
+          const params = new URLSearchParams(hash);
+          token = params.get("token") || params.get("access_token");
+          if (!userRaw) userRaw = params.get("user");
+        }
+
+        if (!token) {
+          setErrorMessage("Data login tidak lengkap (Token tidak ditemukan).");
+          setStatus("error");
+          return;
+        }
+
         let user;
-
         if (userRaw) {
-          // Parse user if provided in URL
-          user = JSON.parse(decodeURIComponent(userRaw));
-        } else {
-          // Fetch user profile from API if only token is present
-          const response = await getApiMe({
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          user = response.data;
+          try {
+            user = JSON.parse(decodeURIComponent(userRaw));
+          } catch (e) {
+            console.error("Failed to parse userRaw", e);
+          }
         }
 
+        // 3. If User data is missing, fetch from API using the token
         if (!user) {
-          throw new Error("User data not found");
+          try {
+            const response = await getApiMe({
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+            user = response.data;
+          } catch (apiErr) {
+            console.error("Failed to fetch user profile", apiErr);
+            throw new Error("Gagal mengambil profil pengguna.");
+          }
         }
 
+        if (!user || !isMounted) return;
+
+        // 4. Save session and redirect
         loginLocal(token, user);
         setStatus("success");
 
         // Redirect based on role
         setTimeout(() => {
+          if (!isMounted) return;
           if (user.role === "admin") {
             router.replace("/admin/overview");
           } else {
             router.replace("/dashboard");
           }
         }, 1500);
-      } catch (err) {
+      } catch (err: any) {
+        if (!isMounted) return;
         console.error("Error during OAuth callback:", err);
-        setErrorMessage("Gagal memproses profil pengguna.");
+        setErrorMessage(err.message || "Gagal memproses login Google.");
         setStatus("error");
       }
     };
 
     processLogin();
+
+    return () => {
+      isMounted = false;
+    };
   }, [searchParams, router]);
 
   return (
