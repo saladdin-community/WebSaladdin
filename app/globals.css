@@ -483,3 +483,15 @@
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: #fde047;
 }
+
+/* Fullscreen PDF overrides */
+body.pdf-fullscreen aside {
+  display: none !important;
+}
+body.pdf-fullscreen .lg\:pl-64,
+body.pdf-fullscreen .lg\:pl-24 {
+  padding-left: 0 !important;
+}
+body.pdf-fullscreen main {
+  z-index: 99999 !important;
+}
