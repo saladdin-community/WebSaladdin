@@ -30,11 +30,13 @@ function CallbackContent() {
           return;
         }
 
-        // 2. Extract Token and UserRaw (Scrap from SearchParams + Hash)
+        // 2. Extract Token and User Data (Scrap from SearchParams + Hash)
         // Check regular search params first
         let token =
           searchParams.get("token") || searchParams.get("access_token");
         let userRaw = searchParams.get("user");
+        let userName = searchParams.get("user_name");
+        let userRole = searchParams.get("role");
 
         // If not found in search params, check the URL Hash (Fragment)
         // Some OAuth providers return tokens in the # hash
@@ -43,6 +45,8 @@ function CallbackContent() {
           const params = new URLSearchParams(hash);
           token = params.get("token") || params.get("access_token");
           if (!userRaw) userRaw = params.get("user");
+          if (!userName) userName = params.get("user_name");
+          if (!userRole) userRole = params.get("role");
         }
 
         if (!token) {
@@ -58,6 +62,12 @@ function CallbackContent() {
           } catch (e) {
             console.error("Failed to parse userRaw", e);
           }
+        } else if (userName && userRole) {
+          // Fallback if backend provides name and role directly in the URL instead of a JSON object
+          user = {
+            name: userName,
+            role: userRole,
+          };
         }
 
         // 3. If User data is missing, fetch from API using the token
