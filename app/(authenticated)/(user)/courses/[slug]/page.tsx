@@ -448,7 +448,10 @@ export default function CourseDetailPage({
 
                       {activeLessonDetail.content?.url && (
                         <a
-                          href={activeLessonDetail.content.url}
+                          href={activeLessonDetail.content.url.replace(
+                            /^http:\/\//i,
+                            "https://",
+                          )}
                           download
                           onClick={() => setIsDocumentRead(true)}
                           className="p-2 bg-[#d4af35]/10 text-[#d4af35] rounded-xl hover:bg-[#d4af35]/20 transition-colors flex items-center gap-2"
@@ -464,7 +467,10 @@ export default function CourseDetailPage({
                       className={`w-full bg-white relative flex-1 ${isFullscreen ? "h-[calc(100vh-80px)]" : "h-[60vh] max-h-[800px]"}`}
                     >
                       <iframe
-                        src={activeLessonDetail.content.url}
+                        src={activeLessonDetail.content.url.replace(
+                          /^http:\/\//i,
+                          "https://",
+                        )}
                         className="w-full h-full border-0 absolute inset-0 block"
                         title={activeLessonDetail.title}
                         onLoad={() => setIsDocumentRead(true)}
@@ -499,7 +505,7 @@ export default function CourseDetailPage({
                   </h2>
                 </div>
                 <div
-                  className="prose prose-invert max-w-none text-sm text-[#737373] leading-relaxed"
+                  className="prose prose-invert max-w-none text-sm text-[#737373] leading-relaxed break-words whitespace-pre-wrap"
                   dangerouslySetInnerHTML={{
                     __html:
                       activeLessonDetail.content_text ||
