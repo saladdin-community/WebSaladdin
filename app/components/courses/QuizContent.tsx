@@ -339,45 +339,54 @@ export default function QuizContent({
         </div>
 
         {/* Detailed Review */}
-        <div className="card p-8">
-          <h4 className="text-xl font-bold text-white mb-6">Quiz Review</h4>
-          <div className="space-y-6">
-            {reviewData?.detailed_answers?.map((item: any, index: number) => (
-              <div
-                key={index}
-                className="p-6 bg-[#1a1a1a] rounded-xl border border-[rgba(255,255,255,0.05)]"
-              >
-                <div className="flex justify-between items-start gap-4 mb-4">
-                  <h5 className="text-[#e5e5e5] font-medium leading-relaxed">
-                    {index + 1}. {item.question_text}
-                  </h5>
-                  {item.is_correct ? (
-                    <span className="flex items-center gap-1.5 text-xs text-green-400 bg-green-400/10 border border-green-400/20 px-2.5 py-1 rounded-full shrink-0">
-                      <CheckCircle className="h-3.5 w-3.5" />
-                      Correct
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-1.5 text-xs text-red-400 bg-red-400/10 border border-red-400/20 px-2.5 py-1 rounded-full shrink-0">
-                      <XCircle className="h-3.5 w-3.5" />
-                      Incorrect
-                    </span>
-                  )}
-                </div>
+        {(() => {
+          const incorrectAnswers =
+            reviewData?.detailed_answers
+              ?.map((item: any, index: number) => ({
+                ...item,
+                originalIndex: index + 1,
+              }))
+              .filter((item: any) => !item.is_correct) || [];
 
-                <div className="space-y-3">
-                  <div className="p-3 rounded-lg bg-black/20 border border-[rgba(255,255,255,0.03)]">
-                    <p className="text-xs text-[#737373] mb-1">Your Answer</p>
-                    <p
-                      className={`text-sm ${item.is_correct ? "text-green-400" : "text-red-400"}`}
-                    >
-                      {item.user_answer?.text || "Not answered"}
-                    </p>
+          if (incorrectAnswers.length === 0) return null;
+
+          return (
+            <div className="card p-8">
+              <h4 className="text-xl font-bold text-white mb-6">
+                Incorrect Answers
+              </h4>
+              <div className="space-y-6">
+                {incorrectAnswers.map((item: any) => (
+                  <div
+                    key={item.originalIndex}
+                    className="p-6 bg-[#1a1a1a] rounded-xl border border-[rgba(255,255,255,0.05)]"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:justify-between items-start gap-4 mb-4">
+                      <h5 className="text-[#e5e5e5] font-medium leading-relaxed">
+                        {item.originalIndex}. {item.question_text}
+                      </h5>
+                      <span className="flex items-center gap-1.5 text-xs text-red-400 bg-red-400/10 border border-red-400/20 px-2.5 py-1 rounded-full shrink-0">
+                        <XCircle className="h-3.5 w-3.5" />
+                        Incorrect
+                      </span>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="p-3 rounded-lg bg-black/20 border border-[rgba(255,255,255,0.03)]">
+                        <p className="text-xs text-[#737373] mb-1">
+                          Your Answer
+                        </p>
+                        <p className="text-sm text-red-400">
+                          {item.user_answer?.text || "Not answered"}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          );
+        })()}
       </div>
     );
   }

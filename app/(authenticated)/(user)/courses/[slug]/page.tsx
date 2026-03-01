@@ -89,7 +89,6 @@ export default function CourseDetailPage({
     });
 
   const completeLessonMutation = usePostApiLessonsLessonidComplete();
-
   // Resume logic
   useEffect(() => {
     if (
@@ -285,6 +284,8 @@ export default function CourseDetailPage({
 
   const activeLessonDetail = lessonData?.data;
   const activeLessonConfig = getCurrentLessonConfig();
+  console.log("this is lesson data: ", lessonData);
+
   const overallProgress =
     (courseData?.data?.sections?.reduce(
       (acc: number, sec: any) =>
@@ -459,7 +460,10 @@ export default function CourseDetailPage({
                 <div
                   className="prose prose-invert max-w-none text-sm text-[#737373] leading-relaxed"
                   dangerouslySetInnerHTML={{
-                    __html: activeLessonDetail.content_text || "",
+                    __html:
+                      activeLessonDetail.content_text ||
+                      activeLessonDetail.description ||
+                      "",
                   }}
                 />
               </div>
