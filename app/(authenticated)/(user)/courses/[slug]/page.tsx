@@ -16,6 +16,8 @@ import {
   Loader2,
   Eye,
   File,
+  Maximize,
+  Minimize,
 } from "lucide-react";
 import Link from "next/link";
 import PrivateYouTubePlayer from "@/app/components/video/PrivateYoutubePlayer";
@@ -72,6 +74,7 @@ export default function CourseDetailPage({
   const [isVideoCompleted, setIsVideoCompleted] = useState(false);
   const [isDocumentRead, setIsDocumentRead] = useState(false);
   const [isQuizPassed, setIsQuizPassed] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const { modal: feedbackModal, success: showSuccess } = useFeedbackModal();
   const queryClient = useQueryClient();
@@ -405,31 +408,57 @@ export default function CourseDetailPage({
               )}
 
               {activeLessonDetail.type === "document" && (
-                <div className="bg-[#1a1a1a] rounded-3xl overflow-hidden border border-white/5">
-                  <div className="p-6 bg-white/5 border-b border-white/5 flex items-center justify-between">
+                <div
+                  className={`bg-[#1a1a1a] transition-all duration-300 ${isFullscreen ? "fixed inset-0 z-50 flex flex-col rounded-none" : "rounded-3xl overflow-hidden border border-white/5"}`}
+                >
+                  <div className="p-6 bg-white/5 border-b border-white/5 flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-3">
                       <FileText size={20} className="text-[#d4af35]" />
                       <span className="text-sm font-bold text-white uppercase tracking-wider">
                         {activeLessonDetail.title}
                       </span>
                     </div>
-                    {activeLessonDetail.content?.url && (
-                      <a
-                        href={activeLessonDetail.content.url}
-                        download
-                        onClick={() => setIsDocumentRead(true)}
-                        className="p-2.5 bg-[#d4af35]/10 text-[#d4af35] rounded-xl hover:bg-[#d4af35]/20 transition-colors"
+
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => setIsFullscreen(!isFullscreen)}
+                        className="p-2.5 bg-white/5 text-white rounded-xl hover:bg-white/10 transition-colors flex items-center gap-2"
+                        title={isFullscreen ? "Minimize" : "Fullscreen"}
                       >
-                        <Download size={18} />
-                      </a>
-                    )}
+                        {isFullscreen ? (
+                          <Minimize size={18} />
+                        ) : (
+                          <Maximize size={18} />
+                        )}
+                        <span className="text-xs font-bold uppercase hidden sm:block">
+                          {isFullscreen ? "Minimize" : "Fullscreen"}
+                        </span>
+                      </button>
+
+                      {activeLessonDetail.content?.url && (
+                        <a
+                          href={activeLessonDetail.content.url}
+                          download
+                          onClick={() => setIsDocumentRead(true)}
+                          className="p-2.5 bg-[#d4af35]/10 text-[#d4af35] rounded-xl hover:bg-[#d4af35]/20 transition-colors flex items-center gap-2"
+                          title="Download PDF"
+                        >
+                          <Download size={18} />
+                        </a>
+                      )}
+                    </div>
                   </div>
                   {activeLessonDetail.content?.url ? (
-                    <iframe
-                      src={`${activeLessonDetail.content.url}#toolbar=0`}
-                      className="w-full h-[70vh] border-0"
-                      onLoad={() => setIsDocumentRead(true)}
-                    />
+                    <div
+                      className={`w-full bg-white relative ${isFullscreen ? "flex-1" : "h-[60vh]"}`}
+                    >
+                      <iframe
+                        src={activeLessonDetail.content.url}
+                        className="w-full h-full border-0 absolute inset-0"
+                        title={activeLessonDetail.title}
+                        onLoad={() => setIsDocumentRead(true)}
+                      />
+                    </div>
                   ) : (
                     <div className="h-96 flex items-center justify-center text-[#404040]">
                       Document not available
