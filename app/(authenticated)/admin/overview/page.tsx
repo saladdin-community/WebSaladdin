@@ -13,102 +13,23 @@ import {
 import AdminTable from "@/app/components/table/AdminTable";
 import StatsCard from "@/app/components/card/StatCard";
 import CourseFormModal from "@/app/components/modal/CourseFormModal";
-
-interface Course {
-  id: number;
-  name: string;
-  instructor: string;
-  price: string;
-  enrolled: number;
-  status: "published" | "draft";
-}
+import { useGetApiAdminCourses } from "@/app/lib/generated";
 
 export default function AdminDashboardPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  // Mock data for stats
-  const stats = [
-    {
-      title: "Total Revenue",
-      value: "$24,580",
-      change: "+23%",
-      icon: DollarSign,
-      color: "text-emerald-400",
-      bgColor: "bg-gradient-to-br from-emerald-500/10 to-emerald-600/10",
-      trend: "up" as const,
-    },
-    {
-      title: "Active Students",
-      value: "2,154",
-      change: "+12%",
-      icon: Users,
-      color: "text-blue-400",
-      bgColor: "bg-gradient-to-br from-blue-500/10 to-blue-600/10",
-      trend: "up" as const,
-    },
-    {
-      title: "Total Courses",
-      value: "48",
-      change: "+5%",
-      icon: BookOpen,
-      color: "text-purple-400",
-      bgColor: "bg-gradient-to-br from-purple-500/10 to-purple-600/10",
-      trend: "up" as const,
-    },
-    {
-      title: "Completion Rate",
-      value: "76%",
-      change: "+3%",
-      icon: Award,
-      color: "text-amber-400",
-      bgColor: "bg-gradient-to-br from-amber-500/10 to-amber-600/10",
-      trend: "up" as const,
-    },
-  ];
+  const { data: coursesData, isLoading } = useGetApiAdminCourses({
+    per_page: 5,
+  });
 
-  // Mock data for recent courses
-  const recentCourses: Course[] = [
-    {
-      id: 1,
-      name: "Islamic History: The Golden Age",
-      instructor: "Dr. Yasir Qadhi",
-      price: "$49.00",
-      enrolled: 324,
-      status: "published",
-    },
-    {
-      id: 2,
-      name: "Arabic Level 1",
-      instructor: "Ustadh Ali Khan",
-      price: "$99.00",
-      enrolled: 856,
-      status: "published",
-    },
-    {
-      id: 3,
-      name: "Intro to Fiqh",
-      instructor: "Sheikh Omar",
-      price: "$149.00",
-      enrolled: 0,
-      status: "draft",
-    },
-    {
-      id: 4,
-      name: "Quranic Recitation",
-      instructor: "Qari Abdul Basit",
-      price: "$29.00",
-      enrolled: 60,
-      status: "published",
-    },
-    {
-      id: 5,
-      name: "Seerah: The Prophetic Biography",
-      instructor: "Dr. Yasir Qadhi",
-      price: "$59.00",
-      enrolled: 0,
-      status: "draft",
-    },
-  ];
+  const recentCourses = (coursesData?.data?.data || []).map((course: any) => ({
+    id: course.id,
+    name: course.title,
+    instructor: course.instructor_name || "N/A",
+    price: parseInt(course.price) === 0 ? "Free" : `Rp. ${course.price}`,
+    enrolled: course.students_count || 0,
+    status: course.status,
+  }));
 
   const tableColumns = [
     {
@@ -152,13 +73,6 @@ export default function AdminDashboardPage() {
           </p>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => (
-            <StatsCard key={index} {...stat} />
-          ))}
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Recent Courses */}
           <div className="lg:col-span-2">
@@ -177,6 +91,7 @@ export default function AdminDashboardPage() {
                 data={recentCourses}
                 showActions={false}
                 rowKey="id"
+                isLoading={isLoading}
               />
             </div>
           </div>
